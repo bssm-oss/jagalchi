@@ -21,5 +21,6 @@ module.exports = {
         'hotfix',
       ],
     ],
+    'subject-case': [0],
   },
 };
