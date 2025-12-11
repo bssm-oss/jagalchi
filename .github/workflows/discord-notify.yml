@@ -1,0 +1,37 @@
+name: Discord Notify
+
+on:
+  pull_request:
+    types: [closed]
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'release'
+
+    steps:
+      - name: PR Merged Notification
+        if: github.event_name == 'pull_request'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "🎉 PR Merged"
+          description: |
+            **${{ github.event.pull_request.title }}**
+            by ${{ github.event.pull_request.user.login }}
+          color: 0x00ff00
+          url: ${{ github.event.pull_request.html_url }}
+
+      - name: Release Notification
+        if: github.event_name == 'release'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "🚀 New Release"
+          description: |
+            **${{ github.event.release.tag_name }}**
+            ${{ github.event.release.body }}
+          color: 0x0099ff
+          url: ${{ github.event.release.html_url }}

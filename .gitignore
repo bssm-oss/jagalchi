@@ -45,3 +45,5 @@ storybook-static
 
 .idea/
 .vscode/
+# Local Netlify folder
+.netlify
