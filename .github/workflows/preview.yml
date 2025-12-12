@@ -26,7 +26,7 @@ jobs:
       - name: Deploy to Netlify
         id: netlify
         run: |
-          pnpm dlx netlify-cli deploy \
+          pnpm --package=netlify-cli dlx netlify deploy \
             --build \
             --site=$NETLIFY_SITE_ID \
             --auth=$NETLIFY_AUTH_TOKEN \
