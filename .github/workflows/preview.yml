@@ -48,5 +48,11 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🚀 Preview deployed to: ${{ steps.netlify.outputs.deploy_url }}`
+              body: `## 🚀 Preview Deployment / 미리보기 배포
+
+| | |
+|---|---|
+| **URL** | ${{ steps.netlify.outputs.deploy_url }} |
+| **Status / 상태** | ✅ Deployed / 배포 완료 |
+| **Commit** | \`${context.sha.substring(0, 7)}\` |`
             })
