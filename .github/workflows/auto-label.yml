@@ -2,7 +2,7 @@ name: Auto Label
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, synchronize]
   issues:
     types: [opened, edited]
 
