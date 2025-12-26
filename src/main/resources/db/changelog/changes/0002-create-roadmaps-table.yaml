@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-create-roadmaps-table
+      author: agent
+      changes:
+        - createTable:
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: true
+              - column:
+                  name: directory_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: owner_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_public
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: view_count
+                  type: bigint
+                  defaultValueNumeric: 0
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: roadmaps
+            baseColumnNames: directory_id
+            referencedTableName: directories
+            referencedColumnNames: id
+            constraintName: fk_roadmaps_directory
+            onDelete: SET NULL
