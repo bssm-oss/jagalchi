@@ -66,6 +66,21 @@ public class Roadmap {
         this.viewCount = 0L;
     }
 
+    public void update(String title, String description, Long directoryId, Boolean isPublic) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (directoryId != null) {
+            this.directoryId = directoryId;
+        }
+        if (isPublic != null) {
+            this.isPublic = isPublic;
+        }
+    }
+
     public boolean isOwnedBy(Long userId) {
         return this.ownerId.equals(userId);
     }
