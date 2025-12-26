@@ -42,6 +42,12 @@ public class Roadmap {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
+    @Column(name = "is_public")
+    private Boolean isPublic = true;
+
+    @Column(name = "view_count")
+    private Long viewCount = 0L;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -51,14 +57,24 @@ public class Roadmap {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Roadmap(String title, String description, Long directoryId, Long ownerId) {
+    public Roadmap(String title, String description, Long directoryId, Long ownerId, Boolean isPublic) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
         this.ownerId = ownerId;
+        this.isPublic = isPublic != null ? isPublic : true;
+        this.viewCount = 0L;
     }
 
     public boolean isOwnedBy(Long userId) {
         return this.ownerId.equals(userId);
+    }
+
+    public boolean isAccessibleBy(Long userId) {
+        return this.isPublic || this.isOwnedBy(userId);
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 }
