@@ -58,6 +58,10 @@ public class Roadmap {
         this.ownerId = ownerId;
     }
 
+    public void moveToDirectory(Long directoryId) {
+        this.directoryId = directoryId;
+    }
+
     public boolean isOwnedBy(Long userId) {
         return this.ownerId.equals(userId);
     }
