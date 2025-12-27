@@ -4,7 +4,7 @@ import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,7 +59,12 @@ class RoadmapListControllerTest {
                         .param("size", "50")
                         .param("sort", "latest"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].id", hasItems(savedPublic.getId().intValue(), savedMine.getId().intValue())));
+                .andExpect(jsonPath("$.content[*].id",
+                        hasItems(savedPublic.getId().intValue(), savedMine.getId().intValue())))
+                .andExpect(jsonPath("$.content[*].owner.id", hasItems(1, 2)))
+                .andExpect(jsonPath("$.pageable.pageNumber").value(0))
+                .andExpect(jsonPath("$.pageable.pageSize").value(50))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 
     @Test
