@@ -1,6 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
-import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapUpdateResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.application.roadmap.RoadmapService;
 import jakarta.validation.Valid;
@@ -21,11 +21,11 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
 
     @PatchMapping("/{roadmapId}")
-    public ResponseEntity<RoadmapResponse> update(
+    public ResponseEntity<RoadmapUpdateResponse> update(
             @PathVariable Long roadmapId,
             @RequestHeader(value = "X-User-Id", required = false) Long userId,
             @Valid @RequestBody UpdateRoadmapRequest request) {
-        RoadmapResponse response = roadmapService.update(roadmapId, request, requireUserId(userId));
+        RoadmapUpdateResponse response = roadmapService.update(roadmapId, request, requireUserId(userId));
         return ResponseEntity.ok(response);
     }
 
