@@ -20,22 +20,58 @@ public class DirectoryService {
     private final RoadmapRepository roadmapRepository;
 
     @Transactional
-    public void delete(Long directoryId, Long userId) {
+    public void delete(Long directoryId, Long userId, String mode, Long targetDirectoryId) {
         Directory directory = findByIdAndOwner(directoryId, userId);
         if (directory == null) {
             throw new ResourceNotFoundException("Directory", directoryId);
         }
 
-        List<Directory> children = directoryRepository.findByOwnerIdAndParentId(userId, directoryId);
+        String action = mode == null ? "delete" : mode;
+        if ("move".equals(action)) {
+            moveChildren(directory, userId, targetDirectoryId);
+            directoryRepository.delete(directory);
+            return;
+        }
+
+        if ("delete".equals(action)) {
+            deleteRecursively(directory, userId);
+            return;
+        }
+
+        throw new IllegalArgumentException("mode must be delete or move");
+    }
+
+    private void moveChildren(Directory directory, Long userId, Long targetDirectoryId) {
+        if (targetDirectoryId == null) {
+            throw new IllegalArgumentException("targetDirectoryId is required");
+        }
+        if (directory.getId().equals(targetDirectoryId)) {
+            throw new IllegalArgumentException("targetDirectoryId must be different");
+        }
+
+        Directory target = findByIdAndOwner(targetDirectoryId, userId);
+        if (target == null) {
+            throw new ResourceNotFoundException("Directory", targetDirectoryId);
+        }
+
+        List<Directory> children = directoryRepository.findByOwnerIdAndParentId(userId, directory.getId());
         for (Directory child : children) {
-            child.moveTo(directory.getParentId());
+            child.moveTo(targetDirectoryId);
         }
 
-        List<Roadmap> roadmaps = roadmapRepository.findByOwnerIdAndDirectoryId(userId, directoryId);
+        List<Roadmap> roadmaps = roadmapRepository.findByOwnerIdAndDirectoryId(userId, directory.getId());
         for (Roadmap roadmap : roadmaps) {
-            roadmap.moveToDirectory(directory.getParentId());
+            roadmap.moveToDirectory(targetDirectoryId);
+        }
+    }
+
+    private void deleteRecursively(Directory directory, Long userId) {
+        List<Directory> children = directoryRepository.findByOwnerIdAndParentId(userId, directory.getId());
+        for (Directory child : children) {
+            deleteRecursively(child, userId);
         }
 
+        roadmapRepository.deleteByOwnerIdAndDirectoryId(userId, directory.getId());
         directoryRepository.delete(directory);
     }
 

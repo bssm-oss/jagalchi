@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/roadmaps/directories")
@@ -17,11 +20,13 @@ public class DirectoryController {
     private final DirectoryService directoryService;
 
     @DeleteMapping("/{directoryId}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Map<String, String>> delete(
             @PathVariable Long directoryId,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-        directoryService.delete(directoryId, requireUserId(userId));
-        return ResponseEntity.noContent().build();
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestParam(required = false) String mode,
+            @RequestParam(required = false) Long targetDirectoryId) {
+        directoryService.delete(directoryId, requireUserId(userId), mode, targetDirectoryId);
+        return ResponseEntity.ok(Map.of("message", "Directory deleted successfully"));
     }
 
     private Long requireUserId(Long userId) {
