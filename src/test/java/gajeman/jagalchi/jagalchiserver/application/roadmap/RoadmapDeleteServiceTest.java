@@ -1,7 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.application.roadmap;
 
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
-import gajeman.jagalchi.jagalchiserver.domain.directory.DirectoryRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
@@ -22,9 +21,6 @@ class RoadmapDeleteServiceTest {
 
     @Mock
     private RoadmapRepository roadmapRepository;
-
-    @Mock
-    private DirectoryRepository directoryRepository;
 
     @InjectMocks
     private RoadmapService roadmapService;
