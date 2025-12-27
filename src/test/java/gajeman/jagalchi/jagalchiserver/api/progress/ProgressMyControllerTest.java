@@ -8,7 +8,7 @@ import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,9 +67,13 @@ class ProgressMyControllerTest {
         mockMvc.perform(get("/roadmaps/{roadmapId}/my-progress", savedRoadmap.getId())
                         .header("X-User-Id", "1"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.roadmapId").value(savedRoadmap.getId()))
                 .andExpect(jsonPath("$.totalNodes").value(2))
                 .andExpect(jsonPath("$.completedNodes").value(1))
-                .andExpect(jsonPath("$.progressPercentage").value(50.0));
+                .andExpect(jsonPath("$.progressPercentage").value(50.0))
+                .andExpect(jsonPath("$.completedNodeIds[0]").value(savedNode1.getId()))
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.userId").doesNotExist());
     }
 
     @Test
