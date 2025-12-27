@@ -1,9 +1,9 @@
 package gajeman.jagalchi.jagalchiserver.application.roadmap;
 
-import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
-import gajeman.jagalchi.jagalchiserver.domain.directory.DirectoryRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
+import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class RoadmapDetailServiceTest {
     private RoadmapRepository roadmapRepository;
 
     @Mock
-    private DirectoryRepository directoryRepository;
+    private RoadmapNodeRepository roadmapNodeRepository;
 
     @InjectMocks
     private RoadmapService roadmapService;
@@ -43,10 +43,13 @@ class RoadmapDetailServiceTest {
         ReflectionTestUtils.setField(roadmap, "viewCount", 0L);
 
         when(roadmapRepository.findById(1L)).thenReturn(Optional.of(roadmap));
+        when(roadmapNodeRepository.countByRoadmapId(1L)).thenReturn(2L);
 
-        RoadmapResponse response = roadmapService.getDetail(1L, 1L);
+        RoadmapDetailResponse response = roadmapService.getDetail(1L, 1L);
 
         assertThat(response.getViewCount()).isEqualTo(1L);
+        assertThat(response.getStats().getTotalNodes()).isEqualTo(2L);
+        assertThat(response.getStats().getTotalEdges()).isEqualTo(1L);
     }
 
     @Test
