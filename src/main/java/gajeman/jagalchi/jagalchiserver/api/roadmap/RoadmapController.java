@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDeleteResponse;
 import gajeman.jagalchi.jagalchiserver.application.roadmap.RoadmapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,14 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
 
     @DeleteMapping("/{roadmapId}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<RoadmapDeleteResponse> delete(
             @PathVariable Long roadmapId,
             @RequestHeader(value = "X-User-Id", required = false) Long userId) {
         roadmapService.delete(roadmapId, requireUserId(userId));
-        return ResponseEntity.noContent().build();
+        RoadmapDeleteResponse response = RoadmapDeleteResponse.builder()
+                .message("Roadmap " + roadmapId + " deleted successfully")
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     private Long requireUserId(Long userId) {
