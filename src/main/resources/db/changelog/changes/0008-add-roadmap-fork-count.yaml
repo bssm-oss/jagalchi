@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0008-add-roadmap-fork-count
+      author: agent
+      changes:
+        - addColumn:
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: fork_count
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

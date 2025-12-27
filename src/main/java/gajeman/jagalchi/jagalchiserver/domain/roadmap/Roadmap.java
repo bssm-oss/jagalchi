@@ -42,11 +42,21 @@ public class Roadmap {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
     @Column(name = "is_public")
     private Boolean isPublic = true;
 
     @Column(name = "view_count")
     private Long viewCount = 0L;
+
+    @Column(name = "fork_count")
+    private Long forkCount = 0L;
+
+    @Lob
+    @Column(name = "tags")
+    private String tags;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -57,13 +67,17 @@ public class Roadmap {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Roadmap(String title, String description, Long directoryId, Long ownerId, Boolean isPublic) {
+    public Roadmap(String title, String description, Long directoryId, Long ownerId, String thumbnailUrl,
+                   String tags, Boolean isPublic, Long forkCount) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
         this.ownerId = ownerId;
+        this.thumbnailUrl = thumbnailUrl;
+        this.tags = tags;
         this.isPublic = isPublic != null ? isPublic : true;
         this.viewCount = 0L;
+        this.forkCount = forkCount != null ? forkCount : 0L;
     }
 
     public boolean isOwnedBy(Long userId) {
