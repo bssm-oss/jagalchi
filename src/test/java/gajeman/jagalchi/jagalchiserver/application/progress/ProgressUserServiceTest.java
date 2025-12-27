@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,15 +47,19 @@ class ProgressUserServiceTest {
                 .isPublic(false)
                 .build();
         ReflectionTestUtils.setField(roadmap, "id", 1L);
+        LocalDateTime updatedAt = LocalDateTime.of(2024, 5, 21, 15, 30);
 
         when(roadmapRepository.findById(1L)).thenReturn(Optional.of(roadmap));
         when(roadmapNodeRepository.countByRoadmapId(1L)).thenReturn(2L);
         when(progressRepository.countCompletedByRoadmapIdAndUserId(1L, 2L)).thenReturn(1L);
+        when(progressRepository.findCompletedNodeIdsByRoadmapIdAndUserId(1L, 2L)).thenReturn(List.of(10L));
+        when(progressRepository.findLatestUpdatedAtByRoadmapIdAndUserId(1L, 2L)).thenReturn(Optional.of(updatedAt));
 
         ProgressResponse response = progressService.getUserProgress(1L, 2L, 1L);
 
-        assertThat(response.getUserId()).isEqualTo(2L);
         assertThat(response.getProgressPercentage()).isEqualTo(new BigDecimal("50.0"));
+        assertThat(response.getCompletedNodeIds()).containsExactly(10L);
+        assertThat(response.getUpdatedAt()).isEqualTo(updatedAt);
     }
 
     @Test

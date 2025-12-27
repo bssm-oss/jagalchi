@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,22 +38,28 @@ public class ProgressService {
     private ProgressResponse calculateProgress(Long roadmapId, Long userId) {
         long totalNodes = roadmapNodeRepository.countByRoadmapId(roadmapId);
         long completedNodes = progressRepository.countCompletedByRoadmapIdAndUserId(roadmapId, userId);
+        List<Long> completedNodeIds = progressRepository.findCompletedNodeIdsByRoadmapIdAndUserId(roadmapId, userId);
+        LocalDateTime updatedAt = progressRepository.findLatestUpdatedAtByRoadmapIdAndUserId(roadmapId, userId)
+                .orElse(null);
 
-        BigDecimal percentage;
-        if (totalNodes == 0) {
-            percentage = BigDecimal.ZERO;
-        } else {
-            percentage = BigDecimal.valueOf(completedNodes)
-                    .multiply(BigDecimal.valueOf(100))
-                    .divide(BigDecimal.valueOf(totalNodes), 1, RoundingMode.HALF_UP);
-        }
+        BigDecimal percentage = calculateProgressPercentage(totalNodes, completedNodes);
 
         return ProgressResponse.builder()
                 .roadmapId(roadmapId)
-                .userId(userId)
                 .totalNodes(totalNodes)
                 .completedNodes(completedNodes)
                 .progressPercentage(percentage)
+                .completedNodeIds(completedNodeIds)
+                .updatedAt(updatedAt)
                 .build();
+    }
+
+    private BigDecimal calculateProgressPercentage(long totalNodes, long completedNodes) {
+        if (totalNodes == 0) {
+            return new BigDecimal("0.0");
+        }
+        return BigDecimal.valueOf(completedNodes)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(totalNodes), 1, RoundingMode.HALF_UP);
     }
 }
