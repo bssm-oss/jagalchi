@@ -1,6 +1,5 @@
 package gajeman.jagalchi.jagalchiserver.api.progress;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gajeman.jagalchi.jagalchiserver.api.progress.dto.CompleteNodeRequest;
 import gajeman.jagalchi.jagalchiserver.domain.progress.RoadmapNodeProgress;
 import gajeman.jagalchi.jagalchiserver.domain.progress.RoadmapNodeProgressRepository;
@@ -10,7 +9,7 @@ import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -59,14 +59,23 @@ class ProgressCompleteControllerTest {
                 .label("노드")
                 .build();
         RoadmapNode savedNode = roadmapNodeRepository.save(node);
+        RoadmapNode extraNode = RoadmapNode.builder()
+                .roadmapId(savedRoadmap.getId())
+                .label("노드2")
+                .build();
+        roadmapNodeRepository.save(extraNode);
 
-        CompleteNodeRequest request = new CompleteNodeRequest(true);
+        CompleteNodeRequest request = new CompleteNodeRequest(true, null);
 
         mockMvc.perform(post("/roadmaps/{roadmapId}/nodes/{nodeId}/complete", savedRoadmap.getId(), savedNode.getId())
                         .header("X-User-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nodeId").value(savedNode.getId()))
+                .andExpect(jsonPath("$.isCompleted").value(true))
+                .andExpect(jsonPath("$.roadmapProgress").value(50.0))
+                .andExpect(jsonPath("$.completedAt").isNotEmpty());
 
         Optional<RoadmapNodeProgress> progress = progressRepository
                 .findByRoadmapIdAndNodeIdAndUserId(savedRoadmap.getId(), savedNode.getId(), 1L);
@@ -101,7 +110,7 @@ class ProgressCompleteControllerTest {
                 .build();
         RoadmapNode savedNode = roadmapNodeRepository.save(node);
 
-        CompleteNodeRequest request = new CompleteNodeRequest(true);
+        CompleteNodeRequest request = new CompleteNodeRequest(true, null);
 
         mockMvc.perform(post("/roadmaps/{roadmapId}/nodes/{nodeId}/complete", savedRoadmap.getId(), savedNode.getId())
                         .header("X-User-Id", "1")

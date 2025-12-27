@@ -15,10 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,10 +58,14 @@ class ProgressCompleteServiceTest {
 
         when(roadmapRepository.findById(1L)).thenReturn(Optional.of(roadmap));
         when(roadmapNodeRepository.findById(10L)).thenReturn(Optional.of(node));
+        when(roadmapNodeRepository.countByRoadmapId(1L)).thenReturn(2L);
         when(progressRepository.findByRoadmapIdAndNodeIdAndUserId(1L, 10L, 1L))
                 .thenReturn(Optional.empty());
+        when(progressRepository.save(any(RoadmapNodeProgress.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(progressRepository.countCompletedByRoadmapIdAndUserId(1L, 1L)).thenReturn(1L);
 
-        progressService.completeNode(1L, 10L, 1L, true);
+        var response = progressService.completeNode(1L, 10L, 1L, true);
 
         ArgumentCaptor<RoadmapNodeProgress> captor = ArgumentCaptor.forClass(RoadmapNodeProgress.class);
         verify(progressRepository).save(captor.capture());
@@ -67,6 +73,10 @@ class ProgressCompleteServiceTest {
         RoadmapNodeProgress saved = captor.getValue();
         assertThat(saved.getIsCompleted()).isTrue();
         assertThat(saved.getCompletedAt()).isNotNull();
+        assertThat(response.getNodeId()).isEqualTo(10L);
+        assertThat(response.getIsCompleted()).isTrue();
+        assertThat(response.getRoadmapProgress()).isEqualTo(new BigDecimal("50.0"));
+        assertThat(response.getCompletedAt()).isNotNull();
     }
 
     @Test
