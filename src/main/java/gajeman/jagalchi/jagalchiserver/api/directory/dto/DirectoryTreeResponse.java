@@ -12,7 +12,7 @@ public class DirectoryTreeResponse {
 
     private Long id;
     private String name;
-    private Long parentId;
+    private String path;
     private List<DirectoryTreeResponse> children;
     private List<RoadmapSummaryResponse> roadmaps;
 }

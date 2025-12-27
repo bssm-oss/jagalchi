@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -48,39 +47,39 @@ public class DirectoryService {
                 .sorted(directoryComparator)
                 .toList();
 
-        List<DirectoryTreeResponse> result = new ArrayList<>();
-
         List<RoadmapSummaryResponse> rootRoadmaps = roadmapsByDirectory.getOrDefault(-1L, List.of())
                 .stream()
                 .map(RoadmapSummaryResponse::from)
                 .toList();
 
-        for (Directory root : roots) {
-            result.add(buildTree(root, childrenByParent, roadmapsByDirectory));
-        }
+        List<DirectoryTreeResponse> rootChildren = roots.stream()
+                .map(root -> buildTree(root, childrenByParent, roadmapsByDirectory, "/"))
+                .toList();
 
-        if (!rootRoadmaps.isEmpty()) {
-            result.add(0, DirectoryTreeResponse.builder()
-                    .id(null)
-                    .name(\"(루트)\")
-                    .parentId(null)
-                    .children(List.of())
-                    .roadmaps(rootRoadmaps)
-                    .build());
-        }
+        DirectoryTreeResponse root = DirectoryTreeResponse.builder()
+                .id(null)
+                .name("Root")
+                .path("/")
+                .children(rootChildren)
+                .roadmaps(rootRoadmaps)
+                .build();
 
-        return result;
+        return List.of(root);
     }
 
     private DirectoryTreeResponse buildTree(
             Directory directory,
             Map<Long, List<Directory>> childrenByParent,
-            Map<Long, List<Roadmap>> roadmapsByDirectory) {
+            Map<Long, List<Roadmap>> roadmapsByDirectory,
+            String parentPath) {
+        String currentPath = "/".equals(parentPath)
+                ? parentPath + directory.getName()
+                : parentPath + "/" + directory.getName();
         List<Directory> children = childrenByParent.getOrDefault(directory.getId(), List.of());
         List<Roadmap> roadmaps = roadmapsByDirectory.getOrDefault(directory.getId(), List.of());
 
         List<DirectoryTreeResponse> childTrees = children.stream()
-                .map(child -> buildTree(child, childrenByParent, roadmapsByDirectory))
+                .map(child -> buildTree(child, childrenByParent, roadmapsByDirectory, currentPath))
                 .toList();
 
         List<RoadmapSummaryResponse> roadmapResponses = roadmaps.stream()
@@ -90,7 +89,7 @@ public class DirectoryService {
         return DirectoryTreeResponse.builder()
                 .id(directory.getId())
                 .name(directory.getName())
-                .parentId(directory.getParentId())
+                .path(currentPath)
                 .children(childTrees)
                 .roadmaps(roadmapResponses)
                 .build();
