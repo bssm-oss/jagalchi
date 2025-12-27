@@ -6,7 +6,7 @@ import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,9 +56,11 @@ class DirectoryTreeControllerTest {
         mockMvc.perform(get("/roadmaps/directories/tree")
                         .header("X-User-Id", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("학습"))
-                .andExpect(jsonPath("$[0].children[0].name").value("하위"))
-                .andExpect(jsonPath("$[0].roadmaps[0].title").value("Java"));
+                .andExpect(jsonPath("$[0].name").value("Root"))
+                .andExpect(jsonPath("$[0].path").value("/"))
+                .andExpect(jsonPath("$[0].children[0].name").value("학습"))
+                .andExpect(jsonPath("$[0].children[0].children[0].name").value("하위"))
+                .andExpect(jsonPath("$[0].children[0].roadmaps[0].title").value("Java"));
     }
 
     @Test

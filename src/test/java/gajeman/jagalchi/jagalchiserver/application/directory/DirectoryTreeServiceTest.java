@@ -89,14 +89,16 @@ class DirectoryTreeServiceTest {
 
         List<DirectoryTreeResponse> result = directoryService.getTree(1L);
 
-        assertThat(result.get(0).getName()).isEqualTo("(루트)");
-        assertThat(result.get(1).getName()).isEqualTo("A");
-        assertThat(result.get(2).getName()).isEqualTo("B");
-        assertThat(result.get(1).getChildren()).hasSize(1);
-        assertThat(result.get(1).getChildren().get(0).getName()).isEqualTo("A-1");
-        assertThat(result.get(0).getRoadmaps().get(0).getTitle()).isEqualTo("Root1");
-        assertThat(result.get(0).getRoadmaps().get(1).getTitle()).isEqualTo("Root2");
-        assertThat(result.get(1).getRoadmaps().get(0).getTitle()).isEqualTo("Amap");
-        assertThat(result.get(1).getRoadmaps().get(1).getTitle()).isEqualTo("Bmap");
+        DirectoryTreeResponse root = result.get(0);
+        assertThat(root.getName()).isEqualTo("Root");
+        assertThat(root.getPath()).isEqualTo("/");
+        assertThat(root.getChildren().get(0).getName()).isEqualTo("A");
+        assertThat(root.getChildren().get(1).getName()).isEqualTo("B");
+        assertThat(root.getChildren().get(0).getChildren()).hasSize(1);
+        assertThat(root.getChildren().get(0).getChildren().get(0).getName()).isEqualTo("A-1");
+        assertThat(root.getRoadmaps().get(0).getTitle()).isEqualTo("Root1");
+        assertThat(root.getRoadmaps().get(1).getTitle()).isEqualTo("Root2");
+        assertThat(root.getChildren().get(0).getRoadmaps().get(0).getTitle()).isEqualTo("Amap");
+        assertThat(root.getChildren().get(0).getRoadmaps().get(1).getTitle()).isEqualTo("Bmap");
     }
 }
