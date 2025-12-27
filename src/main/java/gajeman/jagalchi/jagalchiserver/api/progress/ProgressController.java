@@ -1,6 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.api.progress;
 
 import gajeman.jagalchi.jagalchiserver.api.progress.dto.CompleteNodeRequest;
+import gajeman.jagalchi.jagalchiserver.api.progress.dto.NodeCompleteResponse;
 import gajeman.jagalchi.jagalchiserver.application.progress.ProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,14 @@ public class ProgressController {
     private final ProgressService progressService;
 
     @PostMapping("/{roadmapId}/nodes/{nodeId}/complete")
-    public ResponseEntity<Void> completeNode(
+    public ResponseEntity<NodeCompleteResponse> completeNode(
             @PathVariable Long roadmapId,
             @PathVariable Long nodeId,
             @RequestHeader(value = "X-User-Id", required = false) Long userId,
             @RequestBody CompleteNodeRequest request) {
-        progressService.completeNode(roadmapId, nodeId, requireUserId(userId), request.getIsCompleted());
-        return ResponseEntity.ok().build();
+        NodeCompleteResponse response = progressService.completeNode(
+                roadmapId, nodeId, requireUserId(userId), request.getIsCompleted());
+        return ResponseEntity.ok(response);
     }
 
     private Long requireUserId(Long userId) {

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class CompleteNodeRequest {
 
     private Boolean isCompleted;
+    private String link;
 }
