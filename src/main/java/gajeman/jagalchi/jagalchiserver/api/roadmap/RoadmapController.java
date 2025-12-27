@@ -1,6 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
-import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.application.roadmap.RoadmapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,10 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
 
     @GetMapping("/{roadmapId}")
-    public ResponseEntity<RoadmapResponse> getDetail(
+    public ResponseEntity<RoadmapDetailResponse> getDetail(
             @PathVariable Long roadmapId,
             @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-        RoadmapResponse response = roadmapService.getDetail(roadmapId, userId);
+        RoadmapDetailResponse response = roadmapService.getDetail(roadmapId, userId);
         return ResponseEntity.ok(response);
     }
 }

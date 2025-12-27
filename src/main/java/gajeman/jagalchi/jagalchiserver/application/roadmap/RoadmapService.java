@@ -1,9 +1,9 @@
 package gajeman.jagalchi.jagalchiserver.application.roadmap;
 
-import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
-import gajeman.jagalchi.jagalchiserver.domain.directory.DirectoryRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
+import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
-    private final DirectoryRepository directoryRepository;
+    private final RoadmapNodeRepository roadmapNodeRepository;
 
     @Transactional
-    public RoadmapResponse getDetail(Long roadmapId, Long userId) {
+    public RoadmapDetailResponse getDetail(Long roadmapId, Long userId) {
         Roadmap roadmap = roadmapRepository.findById(roadmapId)
                 .orElseThrow(() -> new ResourceNotFoundException("Roadmap", roadmapId));
 
@@ -26,10 +26,12 @@ public class RoadmapService {
             throw new ResourceNotFoundException("Roadmap", roadmapId);
         }
 
-        if (userId == null || !roadmap.isOwnedBy(userId)) {
+        if (roadmap.getIsPublic() && (userId == null || !roadmap.isOwnedBy(userId))) {
             roadmap.incrementViewCount();
         }
 
-        return RoadmapResponse.from(roadmap);
+        long totalNodes = roadmapNodeRepository.countByRoadmapId(roadmapId);
+        long totalEdges = Math.max(totalNodes - 1, 0);
+        return RoadmapDetailResponse.from(roadmap, totalNodes, totalEdges);
     }
 }
