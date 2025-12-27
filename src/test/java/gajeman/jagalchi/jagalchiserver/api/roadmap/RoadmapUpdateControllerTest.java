@@ -1,16 +1,18 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,7 +43,12 @@ class RoadmapUpdateControllerTest {
                 .build();
         Roadmap saved = roadmapRepository.save(roadmap);
 
-        UpdateRoadmapRequest request = new UpdateRoadmapRequest("변경", null, null, false);
+        UpdateRoadmapRequest request = new UpdateRoadmapRequest(
+                "변경",
+                "변경 설명",
+                false,
+                "https://cdn.example.com/new.png",
+                List.of("spring", "jpa"));
 
         mockMvc.perform(patch("/roadmaps/{id}", saved.getId())
                         .header("X-User-Id", "1")
@@ -49,8 +56,7 @@ class RoadmapUpdateControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(saved.getId()))
-                .andExpect(jsonPath("$.title").value("변경"))
-                .andExpect(jsonPath("$.isPublic").value(false));
+                .andExpect(jsonPath("$.updatedAt").exists());
     }
 
     @Test
@@ -64,7 +70,12 @@ class RoadmapUpdateControllerTest {
                 .build();
         Roadmap saved = roadmapRepository.save(roadmap);
 
-        UpdateRoadmapRequest request = new UpdateRoadmapRequest("변경", null, null, false);
+        UpdateRoadmapRequest request = new UpdateRoadmapRequest(
+                "변경",
+                null,
+                false,
+                null,
+                null);
 
         mockMvc.perform(patch("/roadmaps/{id}", saved.getId())
                         .header("X-User-Id", "1")
