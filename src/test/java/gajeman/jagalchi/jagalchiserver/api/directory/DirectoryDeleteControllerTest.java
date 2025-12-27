@@ -6,7 +6,7 @@ import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,8 +64,11 @@ class DirectoryDeleteControllerTest {
         Roadmap savedRoadmap = roadmapRepository.save(roadmap);
 
         mockMvc.perform(delete("/roadmaps/directories/{id}", savedTarget.getId())
+                        .param("mode", "move")
+                        .param("targetDirectoryId", String.valueOf(savedParent.getId()))
                         .header("X-User-Id", "1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Directory deleted successfully"));
 
         Optional<Directory> deleted = directoryRepository.findById(savedTarget.getId());
         assertThat(deleted).isEmpty();
@@ -87,6 +90,7 @@ class DirectoryDeleteControllerTest {
         Directory savedTarget = directoryRepository.save(target);
 
         mockMvc.perform(delete("/roadmaps/directories/{id}", savedTarget.getId())
+                        .param("mode", "delete")
                         .header("X-User-Id", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("RESOURCE_NOT_FOUND"));
