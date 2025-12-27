@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +17,9 @@ public class UpdateRoadmapRequest {
 
     private String description;
 
-    private Long directoryId;
-
     private Boolean isPublic;
+
+    private String thumbnailUrl;
+
+    private List<String> tags;
 }
