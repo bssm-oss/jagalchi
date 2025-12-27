@@ -13,18 +13,16 @@ public class DirectoryResponse {
     private Long id;
     private String name;
     private Long parentId;
-    private Long ownerId;
+    private String path;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public static DirectoryResponse from(Directory directory) {
+    public static DirectoryResponse from(Directory directory, String path) {
         return DirectoryResponse.builder()
                 .id(directory.getId())
                 .name(directory.getName())
                 .parentId(directory.getParentId())
-                .ownerId(directory.getOwnerId())
+                .path(path)
                 .createdAt(directory.getCreatedAt())
-                .updatedAt(directory.getUpdatedAt())
                 .build();
     }
 }

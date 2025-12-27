@@ -34,7 +34,21 @@ public class DirectoryService {
                 .build();
 
         Directory saved = directoryRepository.save(directory);
-        return DirectoryResponse.from(saved);
+        String path = calculatePath(saved);
+        return DirectoryResponse.from(saved, path);
+    }
+
+    private String calculatePath(Directory directory) {
+        if (directory.getParentId() == null) {
+            return "/" + directory.getName();
+        }
+
+        Directory parent = directoryRepository.findById(directory.getParentId()).orElse(null);
+        if (parent == null) {
+            return "/" + directory.getName();
+        }
+
+        return calculatePath(parent) + "/" + directory.getName();
     }
 
     private Directory findByIdAndOwner(Long directoryId, Long ownerId) {
