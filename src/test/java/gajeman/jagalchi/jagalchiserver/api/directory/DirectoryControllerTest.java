@@ -1,12 +1,11 @@
 package gajeman.jagalchi.jagalchiserver.api.directory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.CreateDirectoryRequest;
 import gajeman.jagalchi.jagalchiserver.domain.directory.Directory;
 import gajeman.jagalchi.jagalchiserver.domain.directory.DirectoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,6 +15,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,7 +42,8 @@ class DirectoryControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name").value("학습자료"))
-                .andExpect(jsonPath("$.ownerId").value(1))
+                .andExpect(jsonPath("$.path").value("/학습자료"))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.parentId").value(nullValue()));
     }
 

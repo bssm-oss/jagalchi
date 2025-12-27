@@ -58,6 +58,6 @@ class DirectoryServiceTest {
 
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("공부");
-        assertThat(response.getOwnerId()).isEqualTo(1L);
+        assertThat(response.getPath()).isEqualTo("/공부");
     }
 }
