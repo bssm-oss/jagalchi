@@ -1,7 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.application.roadmap;
 
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
-import gajeman.jagalchi.jagalchiserver.domain.directory.DirectoryRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
-    private final DirectoryRepository directoryRepository;
 
     @Transactional
     public void delete(Long roadmapId, Long userId) {
