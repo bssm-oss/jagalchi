@@ -18,7 +18,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Jagalchi Roadmap API")
-                        .description("로드맵/디렉토리/진행률 관리 API")
+                        .description("로드맵/디렉토리/진행률 관리 API (Base URL: /roadmaps)")
                         .version("v1.0.0")
                         .contact(new Contact()
                                 .name("Gajeman")
