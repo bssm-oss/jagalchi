@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0007-add-roadmap-tags
+      author: jagalchi
+      changes:
+        - addColumn:
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: tags
+                  type: text
