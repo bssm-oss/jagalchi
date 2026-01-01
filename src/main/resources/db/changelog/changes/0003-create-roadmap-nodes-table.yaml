@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0003-create-roadmap-nodes-table
+      author: agent
+      changes:
+        - createTable:
+            tableName: roadmap_nodes
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: roadmap_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: roadmap_nodes
+            baseColumnNames: roadmap_id
+            referencedTableName: roadmaps
+            referencedColumnNames: id
+            constraintName: fk_roadmap_nodes_roadmap
+            onDelete: CASCADE
