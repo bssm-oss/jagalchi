@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0004-create-roadmap-node-progress-table
+      author: agent
+      changes:
+        - createTable:
+            tableName: roadmap_node_progress
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: roadmap_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: node_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_completed
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: completed_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: roadmap_node_progress
+            baseColumnNames: roadmap_id
+            referencedTableName: roadmaps
+            referencedColumnNames: id
+            constraintName: fk_progress_roadmap
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: roadmap_node_progress
+            baseColumnNames: node_id
+            referencedTableName: roadmap_nodes
+            referencedColumnNames: id
+            constraintName: fk_progress_node
+            onDelete: CASCADE
+        - addUniqueConstraint:
+            tableName: roadmap_node_progress
+            columnNames: roadmap_id, node_id, user_id
+            constraintName: uk_progress_roadmap_node_user
