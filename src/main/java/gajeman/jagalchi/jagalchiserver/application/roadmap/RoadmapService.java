@@ -3,6 +3,8 @@ package gajeman.jagalchi.jagalchiserver.application.roadmap;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListItemResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapUpdateResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
@@ -62,6 +64,28 @@ public class RoadmapService {
         Page<Roadmap> roadmaps = roadmapRepository.findAll(specification, pageable);
 
         return RoadmapListResponse.from(roadmaps.map(RoadmapListItemResponse::from));
+    }
+
+    @Transactional
+    public RoadmapUpdateResponse update(Long roadmapId, UpdateRoadmapRequest request, Long userId) {
+        Roadmap roadmap = findByIdAndOwner(roadmapId, userId);
+        if (roadmap == null) {
+            throw new ResourceNotFoundException("Roadmap", roadmapId);
+        }
+
+        roadmap.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getIsPublic(),
+                request.getThumbnailUrl());
+        if (request.getTags() != null) {
+            roadmap.updateTags(joinTags(request.getTags()));
+        }
+
+        return RoadmapUpdateResponse.builder()
+                .id(roadmap.getId())
+                .updatedAt(roadmap.getUpdatedAt())
+                .build();
     }
 
     private Sort resolveSort(String sort) {
@@ -133,5 +157,18 @@ public class RoadmapService {
                     cb.isTrue(root.get("isPublic")),
                     cb.equal(root.get("ownerId"), requesterId));
         };
+    }
+
+    private Roadmap findByIdAndOwner(Long roadmapId, Long ownerId) {
+        return roadmapRepository.findById(roadmapId)
+                .filter(roadmap -> roadmap.isOwnedBy(ownerId))
+                .orElse(null);
+    }
+
+    private String joinTags(java.util.List<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return "";
+        }
+        return String.join(",", tags);
     }
 }

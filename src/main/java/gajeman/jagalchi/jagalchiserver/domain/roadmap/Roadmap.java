@@ -80,6 +80,25 @@ public class Roadmap {
         this.forkCount = forkCount != null ? forkCount : 0L;
     }
 
+    public void update(String title, String description, Boolean isPublic, String thumbnailUrl) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (isPublic != null) {
+            this.isPublic = isPublic;
+        }
+        if (thumbnailUrl != null) {
+            this.thumbnailUrl = thumbnailUrl;
+        }
+    }
+
+    public void updateTags(String tags) {
+        this.tags = tags;
+    }
+
     public void moveToDirectory(Long directoryId) {
         this.directoryId = directoryId;
     }
