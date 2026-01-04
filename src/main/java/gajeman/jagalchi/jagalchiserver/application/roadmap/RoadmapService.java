@@ -88,6 +88,15 @@ public class RoadmapService {
                 .build();
     }
 
+    @Transactional
+    public void delete(Long roadmapId, Long userId) {
+        Roadmap roadmap = findByIdAndOwner(roadmapId, userId);
+        if (roadmap == null) {
+            throw new ResourceNotFoundException("Roadmap", roadmapId);
+        }
+        roadmapRepository.delete(roadmap);
+    }
+
     private Sort resolveSort(String sort) {
         if (sort == null || sort.isBlank() || sort.equals("latest")) {
             return Sort.by(Sort.Direction.DESC, "createdAt");
