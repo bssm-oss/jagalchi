@@ -11,4 +11,6 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
     List<Roadmap> findByOwnerIdAndDirectoryId(Long ownerId, Long directoryId);
 
     List<Roadmap> findByOwnerIdAndDirectoryIdIsNull(Long ownerId);
+
+    void deleteByOwnerIdAndDirectoryId(Long ownerId, Long directoryId);
 }
