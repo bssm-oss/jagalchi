@@ -51,6 +51,13 @@ public class Roadmap {
     @Column(name = "view_count")
     private Long viewCount = 0L;
 
+    @Column(name = "fork_count")
+    private Long forkCount = 0L;
+
+    @Lob
+    @Column(name = "tags")
+    private String tags;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -61,14 +68,16 @@ public class Roadmap {
 
     @Builder
     public Roadmap(String title, String description, Long directoryId, Long ownerId, String thumbnailUrl,
-                   Boolean isPublic) {
+            String tags, Boolean isPublic, Long forkCount) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
         this.ownerId = ownerId;
         this.thumbnailUrl = thumbnailUrl;
+        this.tags = tags;
         this.isPublic = isPublic != null ? isPublic : true;
         this.viewCount = 0L;
+        this.forkCount = forkCount != null ? forkCount : 0L;
     }
 
     public void moveToDirectory(Long directoryId) {
@@ -77,5 +86,13 @@ public class Roadmap {
 
     public boolean isOwnedBy(Long userId) {
         return this.ownerId.equals(userId);
+    }
+
+    public boolean isAccessibleBy(Long userId) {
+        return this.isPublic || this.isOwnedBy(userId);
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 }
