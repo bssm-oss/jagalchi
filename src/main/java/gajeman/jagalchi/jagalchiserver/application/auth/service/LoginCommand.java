@@ -3,6 +3,8 @@ package gajeman.jagalchi.jagalchiserver.application.auth.service;
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.application.auth.usecase.LoginUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.WrongLoginException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
@@ -21,7 +23,7 @@ public class LoginCommand implements LoginUseCase {
     @Override
     public LoginResult login(LoginRequest request) {
         Users user = usersRepository.findByEmail(request.getEmail())
-                        .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                        .orElseThrow(UserNotFoundException::new);
 
         validate(request.getPassword(), user.getPassword());
 
@@ -35,7 +37,7 @@ public class LoginCommand implements LoginUseCase {
 
     private void validate(String rawPassword, String encodedPassword) {
         if (!bCryptPasswordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new WrongLoginException();
         }
     }
 }

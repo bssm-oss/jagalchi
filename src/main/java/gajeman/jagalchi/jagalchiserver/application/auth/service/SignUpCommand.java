@@ -4,6 +4,8 @@ import gajeman.jagalchi.jagalchiserver.application.auth.usecase.SignUpUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerificationException;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SignUpRequest;
@@ -44,10 +46,10 @@ public class SignUpCommand implements SignUpUseCase {
      */
     private void validate(String email){
         Verification verification = verificationRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("인증코드를 찾을 수 없습니다."));
+                .orElseThrow(VerificationNotFoundException::new);
 
         if(!verification.isVerified() || verification.getType() != VerificationType.SIGN_UP){
-            throw new IllegalArgumentException("인증되지 않은 코드입니다.");
+            throw new NotVerificationException();
         }else{
             verificationRepository.delete(verification);
         }

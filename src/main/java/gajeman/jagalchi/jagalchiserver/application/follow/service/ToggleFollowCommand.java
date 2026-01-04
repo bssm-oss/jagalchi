@@ -2,7 +2,9 @@ package gajeman.jagalchi.jagalchiserver.application.follow.service;
 
 import gajeman.jagalchi.jagalchiserver.application.follow.usecase.ToggleFollowUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.follow.Follow;
+import gajeman.jagalchi.jagalchiserver.domain.follow.exception.CantSelfFollowException;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -20,13 +22,13 @@ public class ToggleFollowCommand implements ToggleFollowUseCase {
     @Transactional
     public void toggleFollowing(Long userId, String targetName, boolean toggle) {
         Users me = usersRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         Users target = usersRepository.findByName(targetName)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         if (me.getId().equals(target.getId())) {
-            throw new IllegalArgumentException("자기 자신은 팔로우할 수 없습니다.");
+            throw new CantSelfFollowException();
         }
 
         boolean exists = followRepository.existsByFollowerAndFollowing(me, target);
