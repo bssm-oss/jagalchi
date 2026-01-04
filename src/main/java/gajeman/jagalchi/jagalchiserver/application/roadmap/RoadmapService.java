@@ -1,8 +1,11 @@
 package gajeman.jagalchi.jagalchiserver.application.roadmap;
 
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListItemResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListResponse;
+import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
+import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,10 +24,29 @@ import java.util.List;
 public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
+    private final RoadmapNodeRepository roadmapNodeRepository;
+
+    @Transactional
+    public RoadmapDetailResponse getDetail(Long roadmapId, Long userId) {
+        Roadmap roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new ResourceNotFoundException("Roadmap", roadmapId));
+
+        if (!roadmap.isAccessibleBy(userId)) {
+            throw new ResourceNotFoundException("Roadmap", roadmapId);
+        }
+
+        if (roadmap.getIsPublic() && (userId == null || !roadmap.isOwnedBy(userId))) {
+            roadmap.incrementViewCount();
+        }
+
+        long totalNodes = roadmapNodeRepository.countByRoadmapId(roadmapId);
+        long totalEdges = Math.max(totalNodes - 1, 0);
+        return RoadmapDetailResponse.from(roadmap, totalNodes, totalEdges);
+    }
 
     public RoadmapListResponse getList(Long requesterId, int page, int size, String sort,
-                                       String query, Long userId, Long directoryId,
-                                       Boolean isPublic, List<String> tags) {
+            String query, Long userId, Long directoryId,
+            Boolean isPublic, List<String> tags) {
         int resolvedPage = Math.max(page, 0);
         int resolvedSize = size < 1 ? 10 : size;
         if (resolvedSize > 50) {
@@ -76,8 +98,7 @@ public class RoadmapService {
             spec = spec.and((root, criteriaQuery, cb) -> cb.or(
                     cb.like(cb.lower(root.get("title")), likeQuery),
                     cb.like(cb.lower(root.get("description")), likeQuery),
-                    cb.like(cb.lower(root.get("tags")), likeQuery)
-            ));
+                    cb.like(cb.lower(root.get("tags")), likeQuery)));
         }
 
         if (tags != null) {
@@ -101,8 +122,7 @@ public class RoadmapService {
                 }
                 return cb.and(
                         cb.equal(root.get("ownerId"), userId),
-                        cb.isTrue(root.get("isPublic"))
-                );
+                        cb.isTrue(root.get("isPublic")));
             }
 
             if (requesterId == null) {
@@ -111,8 +131,7 @@ public class RoadmapService {
 
             return cb.or(
                     cb.isTrue(root.get("isPublic")),
-                    cb.equal(root.get("ownerId"), requesterId)
-            );
+                    cb.equal(root.get("ownerId"), requesterId));
         };
     }
 }
