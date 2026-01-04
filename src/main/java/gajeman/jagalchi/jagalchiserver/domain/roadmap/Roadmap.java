@@ -68,7 +68,7 @@ public class Roadmap {
 
     @Builder
     public Roadmap(String title, String description, Long directoryId, Long ownerId, String thumbnailUrl,
-                   String tags, Boolean isPublic, Long forkCount) {
+            String tags, Boolean isPublic, Long forkCount) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
@@ -78,6 +78,10 @@ public class Roadmap {
         this.isPublic = isPublic != null ? isPublic : true;
         this.viewCount = 0L;
         this.forkCount = forkCount != null ? forkCount : 0L;
+    }
+
+    public void moveToDirectory(Long directoryId) {
+        this.directoryId = directoryId;
     }
 
     public boolean isOwnedBy(Long userId) {

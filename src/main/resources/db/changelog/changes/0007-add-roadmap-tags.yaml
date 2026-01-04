@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 0007-add-roadmap-tags
-      author: agent
+      author: jagalchi
       changes:
         - addColumn:
             tableName: roadmaps
@@ -9,5 +9,3 @@ databaseChangeLog:
               - column:
                   name: tags
                   type: text
-                  constraints:
-                    nullable: true

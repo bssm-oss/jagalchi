@@ -24,4 +24,6 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long>, JpaSpec
     Page<Roadmap> findAllAccessibleBy(@Param("userId") Long userId, Pageable pageable);
 
     Page<Roadmap> findByIsPublicTrue(Pageable pageable);
+
+    void deleteByOwnerIdAndDirectoryId(Long ownerId, Long directoryId);
 }
