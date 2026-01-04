@@ -71,6 +71,10 @@ public class Roadmap {
         this.viewCount = 0L;
     }
 
+    public void moveToDirectory(Long directoryId) {
+        this.directoryId = directoryId;
+    }
+
     public boolean isOwnedBy(Long userId) {
         return this.ownerId.equals(userId);
     }
