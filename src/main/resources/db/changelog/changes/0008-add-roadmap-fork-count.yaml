@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 0008-add-roadmap-fork-count
-      author: agent
+      author: jagalchi
       changes:
         - addColumn:
             tableName: roadmaps

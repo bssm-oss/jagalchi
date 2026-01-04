@@ -1,13 +1,11 @@
 databaseChangeLog:
   - changeSet:
       id: 0006-add-roadmap-thumbnail-url
-      author: agent
+      author: jagalchi
       changes:
         - addColumn:
             tableName: roadmaps
             columns:
               - column:
                   name: thumbnail_url
-                  type: varchar(500)
-                  constraints:
-                    nullable: true
+                  type: varchar(512)
