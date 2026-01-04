@@ -42,6 +42,15 @@ public class Roadmap {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+    @Column(name = "is_public")
+    private Boolean isPublic = true;
+
+    @Column(name = "view_count")
+    private Long viewCount = 0L;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -51,11 +60,15 @@ public class Roadmap {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Roadmap(String title, String description, Long directoryId, Long ownerId) {
+    public Roadmap(String title, String description, Long directoryId, Long ownerId, String thumbnailUrl,
+                   Boolean isPublic) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
         this.ownerId = ownerId;
+        this.thumbnailUrl = thumbnailUrl;
+        this.isPublic = isPublic != null ? isPublic : true;
+        this.viewCount = 0L;
     }
 
     public void moveToDirectory(Long directoryId) {
