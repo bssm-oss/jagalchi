@@ -10,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class DirectoryDeleteControllerTest {
 
     @Autowired
@@ -63,7 +65,7 @@ class DirectoryDeleteControllerTest {
                 .build();
         Roadmap savedRoadmap = roadmapRepository.save(roadmap);
 
-        mockMvc.perform(delete("/roadmaps/directories/{id}", savedTarget.getId())
+        mockMvc.perform(delete("/directories/{id}", savedTarget.getId())
                         .param("mode", "move")
                         .param("targetDirectoryId", String.valueOf(savedParent.getId()))
                         .header("X-User-Id", "1"))
@@ -89,7 +91,7 @@ class DirectoryDeleteControllerTest {
                 .build();
         Directory savedTarget = directoryRepository.save(target);
 
-        mockMvc.perform(delete("/roadmaps/directories/{id}", savedTarget.getId())
+        mockMvc.perform(delete("/directories/{id}", savedTarget.getId())
                         .param("mode", "delete")
                         .header("X-User-Id", "1"))
                 .andExpect(status().isNotFound())
