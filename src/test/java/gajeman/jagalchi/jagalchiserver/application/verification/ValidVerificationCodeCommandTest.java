@@ -3,6 +3,8 @@ package gajeman.jagalchi.jagalchiserver.application.verification;
 import gajeman.jagalchi.jagalchiserver.application.verification.service.ValidVerificationCodeCommand;
 import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerificationException;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.VerifyRequest;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,10 +61,8 @@ class ValidVerificationCodeCommandTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() ->
-                validVerificationCodeCommand.validVerificationCode(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("인증코드를 찾을 수 없습니다.");
+        assertThrows(VerificationNotFoundException.class,
+                () -> validVerificationCodeCommand.validVerificationCode(request));
 
         then(verificationRepository).should(never()).save(any());
     }
@@ -81,10 +81,8 @@ class ValidVerificationCodeCommandTest {
                 .willReturn(Optional.of(verification));
 
         // when & then
-        assertThatThrownBy(() ->
-                validVerificationCodeCommand.validVerificationCode(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("틀린 인증코드입니다.");
+        assertThrows(NotVerificationException.class,
+                () -> validVerificationCodeCommand.validVerificationCode(request));
 
         assertThat(verification.isVerified()).isFalse();
         then(verificationRepository).should(never()).save(any());

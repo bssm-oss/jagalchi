@@ -54,7 +54,7 @@ class RefreshAccessTokenCommandTest {
         String refreshToken = "invalid-refresh-token";
 
         given(tokenService.refreshAccessToken(refreshToken))
-                .willThrow(new IllegalArgumentException("유효하지 않은 토큰입니다."));
+                .willThrow(TokenNotEqualsException.class);
 
         // when & then
         assertThrows(TokenNotEqualsException.class,
