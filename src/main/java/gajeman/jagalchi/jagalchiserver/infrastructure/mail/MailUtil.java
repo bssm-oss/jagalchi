@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.infrastructure.mail;
 
+import gajeman.jagalchi.jagalchiserver.infrastructure.mail.exception.FailedSendMailException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -122,7 +123,7 @@ public class MailUtil {
             javaMailSender.send(mimeMessage);
 
         } catch (Exception e) {
-            throw new IllegalStateException("메일전송에 실패하였습니다." + e.getMessage());
+            throw new FailedSendMailException();
         }
     }
 

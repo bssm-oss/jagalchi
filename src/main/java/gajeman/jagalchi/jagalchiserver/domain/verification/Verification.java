@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.domain.verification;
 
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerificationException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,13 +51,13 @@ public class Verification {
 
     private void validateCode(String requestCode) {
         if (!code.equals(requestCode)) {
-            throw new IllegalArgumentException("틀린 인증코드입니다.");
+            throw new NotVerificationException();
         }
     }
 
     public void validateVerified() {
         if (!verified) {
-            throw new IllegalArgumentException("인증되지않았습니다.");
+            throw new NotVerificationException();
         }
     }
 }
