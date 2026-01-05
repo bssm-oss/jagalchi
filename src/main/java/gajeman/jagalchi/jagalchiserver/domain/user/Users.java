@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.domain.user;
 
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.ExternalLinksLimitExceededException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 
@@ -8,8 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -34,9 +37,9 @@ public class Users {
     @Column(nullable = false)
     private UserRole role;
 
-    private String profileUrl;
+    private String profileImageUrl;
 
-    private String text;
+    private String bio;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -45,6 +48,9 @@ public class Users {
     private LocalDateTime updatedAt;
 
     private boolean isActive = false;
+
+    @Column(columnDefinition = "json")
+    private String externalLinks;
 
     @Builder
     private Users(String email, String name, String password) {
@@ -68,6 +74,16 @@ public class Users {
 
     public void changeActive(){
         this.isActive = !this.isActive;
+    }
+
+    public void updateProfile(String profileImage, String bio, Map<String, String> externalLinks) {
+        this.profileImageUrl = profileImage;
+        this.bio = bio;
+        if (externalLinks.size() > 5) {
+            throw new ExternalLinksLimitExceededException();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        this.externalLinks = mapper.writeValueAsString(externalLinks);
     }
 
 }
