@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +30,22 @@ public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
     private final RoadmapNodeRepository roadmapNodeRepository;
+
+    @Transactional
+    public RoadmapResponse create(CreateRoadmapRequest request, Long ownerId) {
+        Roadmap roadmap = Roadmap.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .directoryId(request.getDirectoryId())
+                .ownerId(ownerId)
+                .isPublic(request.getIsPublic())
+                .thumbnailUrl(request.getThumbnailUrl())
+                .tags(joinTags(request.getTags()))
+                .build();
+
+        Roadmap saved = roadmapRepository.save(roadmap);
+        return RoadmapResponse.from(saved);
+    }
 
     @Transactional
     public RoadmapDetailResponse getDetail(Long roadmapId, Long userId) {

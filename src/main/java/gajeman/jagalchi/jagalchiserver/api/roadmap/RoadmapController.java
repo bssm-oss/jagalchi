@@ -1,5 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDeleteResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListResponse;
@@ -8,11 +10,13 @@ import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.application.roadmap.RoadmapService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,14 @@ import java.util.List;
 public class RoadmapController {
 
     private final RoadmapService roadmapService;
+
+    @PostMapping
+    public ResponseEntity<RoadmapResponse> create(
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @Valid @RequestBody CreateRoadmapRequest request) {
+        RoadmapResponse response = roadmapService.create(request, requireUserId(userId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @GetMapping("/{roadmapId}")
     public ResponseEntity<RoadmapDetailResponse> getDetail(
