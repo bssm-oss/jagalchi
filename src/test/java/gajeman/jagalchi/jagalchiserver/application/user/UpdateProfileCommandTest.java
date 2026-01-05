@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 
@@ -26,6 +27,9 @@ public class UpdateProfileCommandTest {
 
     @Mock
     private UsersRepository userRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @Test
     void 프로필을_성공적으로_수정한다() {

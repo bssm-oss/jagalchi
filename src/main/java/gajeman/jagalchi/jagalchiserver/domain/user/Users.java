@@ -1,6 +1,5 @@
 package gajeman.jagalchi.jagalchiserver.domain.user;
 
-import gajeman.jagalchi.jagalchiserver.domain.user.exception.ExternalLinksLimitExceededException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 
@@ -9,10 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -76,14 +73,10 @@ public class Users {
         this.isActive = !this.isActive;
     }
 
-    public void updateProfile(String profileImage, String bio, Map<String, String> externalLinks) {
+    public void updateProfile(String profileImage, String bio, String externalLinks) {
         this.profileImageUrl = profileImage;
         this.bio = bio;
-        if (externalLinks.size() > 5) {
-            throw new ExternalLinksLimitExceededException();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        this.externalLinks = mapper.writeValueAsString(externalLinks);
+        this.externalLinks = externalLinks;
     }
 
 }
