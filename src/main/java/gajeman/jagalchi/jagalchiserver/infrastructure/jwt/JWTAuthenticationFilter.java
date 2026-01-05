@@ -1,6 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.infrastructure.jwt;
 
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.exception.InvalidTokenTypeException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,7 +37,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                 String type = claims.get("type", String.class);
                 if (!"ACCESS_TOKEN".equals(type)) {
-                    throw new IllegalArgumentException("올바른 토큰이 아닙니다.");
+                    throw new InvalidTokenTypeException();
                 }
 
                 Long id = claims.get("id", Long.class);

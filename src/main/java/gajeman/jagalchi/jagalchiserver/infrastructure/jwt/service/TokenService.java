@@ -3,8 +3,12 @@ package gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service;
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.domain.user.UserRole;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.RefreshToken;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.TokenType;
+import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.exception.InvalidTokenTypeException;
+import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.exception.TokenNotEqualsException;
+import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.exception.TokenNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.refreshToken.RefreshTokenRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import io.jsonwebtoken.Claims;
@@ -91,16 +95,16 @@ public class TokenService {
 
         String type = claims.get("type", String.class);
         if (!TokenType.REFRESH_TOKEN.name().equals(type)) {
-            throw new IllegalArgumentException("올바른 토큰 타입이 아닙니다.");
+            throw new InvalidTokenTypeException();
         }
 
         Long id = claims.get("id", Long.class);
 
         RefreshToken token = refreshTokenRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("리프레쉬 토큰을 찾을 수 없습니다."));
+                .orElseThrow(TokenNotFoundException::new);
 
         if (!token.getRefreshToken().equals(refreshToken)) {
-            throw new IllegalArgumentException("올바른 토큰이 아닙니다.");
+            throw new TokenNotEqualsException();
         }
 
         Users user = getUserById(id);
@@ -137,7 +141,7 @@ public class TokenService {
      */
     public Users getUserById(Long id) {
         return usersRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
     }
 
 }

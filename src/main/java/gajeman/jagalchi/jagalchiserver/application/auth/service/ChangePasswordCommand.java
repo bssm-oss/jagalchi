@@ -2,8 +2,11 @@ package gajeman.jagalchi.jagalchiserver.application.auth.service;
 
 import gajeman.jagalchi.jagalchiserver.application.auth.usecase.ChangePasswordUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerificationException;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
@@ -26,7 +29,7 @@ public class ChangePasswordCommand implements ChangePasswordUseCase {
         validate(request.getEmail());
 
         Users user = usersRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         user.changePassword(bCryptPasswordEncoder.encode(request.getNewPassword()));
 
@@ -38,10 +41,10 @@ public class ChangePasswordCommand implements ChangePasswordUseCase {
      */
     private void validate(String email){
         Verification verification = verificationRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("인증코드를 찾을 수 없습니다"));
+                .orElseThrow(VerificationNotFoundException::new);
 
         if(!verification.isVerified() || verification.getType() != VerificationType.UPDATE_PASSWORD){
-            throw new IllegalArgumentException("유효하지 않은 인증코드입니다.");
+            throw new NotVerificationException();
         }else{
             verificationRepository.delete(verification);
         }

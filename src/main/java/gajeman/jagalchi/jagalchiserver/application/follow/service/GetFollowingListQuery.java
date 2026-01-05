@@ -3,6 +3,7 @@ package gajeman.jagalchi.jagalchiserver.application.follow.service;
 import gajeman.jagalchi.jagalchiserver.application.follow.usecase.GetFollowingListUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.follow.Follow;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
@@ -23,7 +24,7 @@ public class GetFollowingListQuery implements GetFollowingListUseCase {
     public FollowListResponse getFollowingList(String name) {
 
         Users me = userRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
         List<Follow> follows = followRepository.findByFollower(me);
 
