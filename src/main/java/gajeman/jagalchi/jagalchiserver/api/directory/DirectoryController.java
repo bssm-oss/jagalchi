@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.directory;
 
+import gajeman.jagalchi.jagalchiserver.api.directory.dto.UpdateDirectoryRequest;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.CreateDirectoryRequest;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.DirectoryResponse;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.DirectoryTreeResponse;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/roadmaps/directories")
+@RequestMapping("/directories")
 @RequiredArgsConstructor
 public class DirectoryController {
 
@@ -32,6 +34,15 @@ public class DirectoryController {
     public ResponseEntity<List<DirectoryTreeResponse>> getTree(
             @RequestHeader(value = "X-User-Id", required = false) Long userId) {
         List<DirectoryTreeResponse> response = directoryService.getTree(requireUserId(userId));
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{directoryId}")
+    public ResponseEntity<DirectoryResponse> update(
+            @PathVariable Long directoryId,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @Valid @RequestBody UpdateDirectoryRequest request) {
+        DirectoryResponse response = directoryService.update(directoryId, request, requireUserId(userId));
         return ResponseEntity.ok(response);
     }
 

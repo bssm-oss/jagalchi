@@ -3,6 +3,7 @@ package gajeman.jagalchi.jagalchiserver.application.directory;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.CreateDirectoryRequest;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.DirectoryResponse;
 import gajeman.jagalchi.jagalchiserver.api.directory.dto.DirectoryTreeResponse;
+import gajeman.jagalchi.jagalchiserver.api.directory.dto.UpdateDirectoryRequest;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapSummaryResponse;
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.directory.Directory;
@@ -68,6 +69,18 @@ public class DirectoryService {
                 .build();
 
         return List.of(root);
+    }
+
+    @Transactional
+    public DirectoryResponse update(Long directoryId, UpdateDirectoryRequest request, Long userId) {
+        Directory directory = findByIdAndOwner(directoryId, userId);
+        if (directory == null) {
+            throw new ResourceNotFoundException("Directory", directoryId);
+        }
+
+        directory.updateName(request.getName());
+        String path = calculatePath(directory);
+        return DirectoryResponse.from(directory, path);
     }
 
     private DirectoryTreeResponse buildTree(
