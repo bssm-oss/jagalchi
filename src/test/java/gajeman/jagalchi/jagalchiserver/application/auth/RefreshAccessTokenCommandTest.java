@@ -60,4 +60,6 @@ class RefreshAccessTokenCommandTest {
         assertThrows(TokenNotEqualsException.class,
                 () -> refreshAccessTokenCommand.refreshAccessToken(refreshToken));
     }
+
+    //깃허브 좆같은 새끼들
 }
