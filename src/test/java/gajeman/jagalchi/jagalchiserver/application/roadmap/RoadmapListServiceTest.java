@@ -57,4 +57,11 @@ class RoadmapListServiceTest {
                 null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void when_사이즈가_50을_초과하면_예외가_발생한다() {
+        assertThatThrownBy(() -> roadmapService.getList(null, 0, 51, "latest",
+                null, null, null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
