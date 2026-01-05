@@ -4,7 +4,7 @@ import gajeman.jagalchi.jagalchiserver.application.verification.usecase.ValidVer
 import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.VerifyRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.VerifyRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

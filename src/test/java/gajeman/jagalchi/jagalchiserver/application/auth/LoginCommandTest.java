@@ -7,7 +7,7 @@ import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundExcepti
 import gajeman.jagalchi.jagalchiserver.domain.user.exception.WrongLoginException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

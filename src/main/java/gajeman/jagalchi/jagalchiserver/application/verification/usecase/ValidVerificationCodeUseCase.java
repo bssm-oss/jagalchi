@@ -1,6 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.application.verification.usecase;
 
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.VerifyRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.VerifyRequest;
 
 public interface ValidVerificationCodeUseCase {
 

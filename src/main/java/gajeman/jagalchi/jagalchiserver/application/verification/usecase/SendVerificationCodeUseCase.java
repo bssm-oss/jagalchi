@@ -1,7 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.application.verification.usecase;
 
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SendVerificationCodeRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SendVerificationCodeRequest;
 
 public interface SendVerificationCodeUseCase {
     /**

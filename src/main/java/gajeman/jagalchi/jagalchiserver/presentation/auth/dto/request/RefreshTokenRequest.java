@@ -1,4 +1,4 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user.dto.request;
+package gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

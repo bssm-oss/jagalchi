@@ -1,4 +1,4 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user.dto.response;
+package gajeman.jagalchi.jagalchiserver.presentation.user.response;
 
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 
@@ -9,7 +9,7 @@ public record FollowUserResponse(
         Boolean isFollowing
 ) {
     public static FollowUserResponse from(Users user, boolean isFollowing) {
-        String url = user.getProfileUrl() == null ? null : user.getProfileUrl();
+        String url = user.getProfileImageUrl() == null ? null : user.getProfileImageUrl();
         return new FollowUserResponse(
                 user.getId(),
                 user.getName(),

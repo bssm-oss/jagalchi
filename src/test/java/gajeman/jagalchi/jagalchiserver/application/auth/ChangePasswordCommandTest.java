@@ -9,7 +9,7 @@ import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerifica
 import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

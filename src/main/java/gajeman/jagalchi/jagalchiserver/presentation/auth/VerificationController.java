@@ -1,10 +1,10 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user;
+package gajeman.jagalchi.jagalchiserver.presentation.auth;
 
 import gajeman.jagalchi.jagalchiserver.application.verification.service.SendVerificationCodeCommand;
 import gajeman.jagalchi.jagalchiserver.application.verification.service.ValidVerificationCodeCommand;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SendVerificationCodeRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.VerifyRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SendVerificationCodeRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.VerifyRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

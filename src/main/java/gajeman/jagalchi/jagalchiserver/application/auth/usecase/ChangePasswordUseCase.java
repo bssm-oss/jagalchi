@@ -1,6 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.application.auth.usecase;
 
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
 
 public interface ChangePasswordUseCase {
     /**
