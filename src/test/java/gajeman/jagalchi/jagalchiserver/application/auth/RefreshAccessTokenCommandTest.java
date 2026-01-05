@@ -2,6 +2,7 @@ package gajeman.jagalchi.jagalchiserver.application.auth;
 
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.application.auth.service.RefreshAccessTokenCommand;
+import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.domain.exception.TokenNotEqualsException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -56,9 +57,7 @@ class RefreshAccessTokenCommandTest {
                 .willThrow(new IllegalArgumentException("유효하지 않은 토큰입니다."));
 
         // when & then
-        assertThatThrownBy(() ->
-                refreshAccessTokenCommand.refreshAccessToken(refreshToken))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 토큰입니다.");
+        assertThrows(TokenNotEqualsException.class,
+                () -> refreshAccessTokenCommand.refreshAccessToken(refreshToken));
     }
 }

@@ -3,6 +3,7 @@ package gajeman.jagalchi.jagalchiserver.application.follow;
 import gajeman.jagalchi.jagalchiserver.application.follow.service.GetFollowingListQuery;
 import gajeman.jagalchi.jagalchiserver.domain.follow.Follow;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,9 +79,7 @@ class GetFollowingListQueryTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() ->
-                getFollowingListQuery.getFollowingList("unknown"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유저 없음");
+        assertThrows(UserNotFoundException.class,
+                () -> getFollowingListQuery.getFollowingList("unknown"));
     }
 }

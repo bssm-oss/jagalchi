@@ -2,7 +2,9 @@ package gajeman.jagalchi.jagalchiserver.application.follow;
 
 import gajeman.jagalchi.jagalchiserver.application.follow.service.ToggleFollowCommand;
 import gajeman.jagalchi.jagalchiserver.domain.follow.Follow;
+import gajeman.jagalchi.jagalchiserver.domain.follow.exception.CantSelfFollowException;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,10 +111,8 @@ class ToggleFollowCommandTest {
         given(usersRepository.findById(1L)).willReturn(Optional.of(me));
         given(usersRepository.findByName("target")).willReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                toggleFollowCommand.toggleFollowing(1L, "target", true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유저가 존재하지 않습니다.");
+        assertThrows(UserNotFoundException.class,
+                () -> toggleFollowCommand.toggleFollowing(1L, "target", true));
     }
 
     @Test
@@ -123,9 +123,7 @@ class ToggleFollowCommandTest {
         given(usersRepository.findById(1L)).willReturn(Optional.of(me));
         given(usersRepository.findByName("me")).willReturn(Optional.of(me));
 
-        assertThatThrownBy(() ->
-                toggleFollowCommand.toggleFollowing(1L, "me", true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("자기 자신은 팔로우할 수 없습니다.");
+        assertThrows(CantSelfFollowException.class,
+                () -> toggleFollowCommand.toggleFollowing(1L, "me", true));
     }
 }

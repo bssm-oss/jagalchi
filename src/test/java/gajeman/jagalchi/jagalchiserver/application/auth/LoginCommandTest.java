@@ -3,6 +3,8 @@ package gajeman.jagalchi.jagalchiserver.application.auth;
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.application.auth.service.LoginCommand;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.WrongLoginException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
@@ -16,7 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -82,9 +84,8 @@ class LoginCommandTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> loginCommand.login(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유저를 찾을 수 없습니다.");
+        assertThrows(UserNotFoundException.class,
+                () -> loginCommand.login(request));
 
         verify(tokenService, never()).generateAccessToken(any());
         verify(tokenService, never()).generateRefreshToken(any());
@@ -107,9 +108,8 @@ class LoginCommandTest {
                 .willReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> loginCommand.login(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("비밀번호가 일치하지 않습니다.");
+        assertThrows(WrongLoginException.class,
+                () -> loginCommand.login(request));
 
         verify(tokenService, never()).generateAccessToken(any());
         verify(tokenService, never()).generateRefreshToken(any());

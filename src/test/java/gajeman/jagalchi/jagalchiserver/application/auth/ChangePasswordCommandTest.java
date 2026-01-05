@@ -2,8 +2,11 @@ package gajeman.jagalchi.jagalchiserver.application.auth;
 
 import gajeman.jagalchi.jagalchiserver.application.auth.service.ChangePasswordCommand;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
+import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.NotVerificationException;
+import gajeman.jagalchi.jagalchiserver.domain.verification.exception.VerificationNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
 import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
@@ -75,7 +78,7 @@ class ChangePasswordCommandTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(VerificationNotFoundException.class,
                 () -> changePasswordCommand.changePassword(request));
 
         verify(usersRepository, never()).findByEmail(any());
@@ -94,7 +97,7 @@ class ChangePasswordCommandTest {
                 .willReturn(Optional.of(verification));
 
         // when & then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotVerificationException.class,
                 () -> changePasswordCommand.changePassword(request));
 
         verify(usersRepository, never()).findByEmail(any());
@@ -115,7 +118,7 @@ class ChangePasswordCommandTest {
                 .willReturn(Optional.of(verification));
 
         // when & then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotVerificationException.class,
                 () -> changePasswordCommand.changePassword(request));
 
         verify(usersRepository, never()).findByEmail(any());
@@ -138,7 +141,7 @@ class ChangePasswordCommandTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(UserNotFoundException.class,
                 () -> changePasswordCommand.changePassword(request));
     }
 }
