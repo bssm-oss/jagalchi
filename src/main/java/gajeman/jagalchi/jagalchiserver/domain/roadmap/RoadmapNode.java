@@ -47,4 +47,8 @@ public class RoadmapNode {
         this.roadmapId = roadmapId;
         this.label = label;
     }
+
+    public void updateLabel(String label) {
+        this.label = label;
+    }
 }
