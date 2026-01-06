@@ -3,7 +3,7 @@ package gajeman.jagalchi.jagalchiserver.infrastructure.oauth2;
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.infrastructure.cookie.CookieUtil;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.LoginResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.LoginResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

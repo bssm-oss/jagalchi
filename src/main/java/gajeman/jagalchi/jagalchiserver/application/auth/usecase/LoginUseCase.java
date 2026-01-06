@@ -1,7 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.application.auth.usecase;
 
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
 
 public interface LoginUseCase {
     /**

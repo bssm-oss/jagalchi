@@ -1,4 +1,4 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user.dto.response;
+package gajeman.jagalchi.jagalchiserver.presentation.user.response;
 
 import java.util.List;
 

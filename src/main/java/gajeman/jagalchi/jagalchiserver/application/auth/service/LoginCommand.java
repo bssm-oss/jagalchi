@@ -7,7 +7,7 @@ import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundExcepti
 import gajeman.jagalchi.jagalchiserver.domain.user.exception.WrongLoginException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

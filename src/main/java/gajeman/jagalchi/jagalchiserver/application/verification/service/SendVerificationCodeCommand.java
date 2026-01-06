@@ -5,7 +5,7 @@ import gajeman.jagalchi.jagalchiserver.domain.verification.Verification;
 import gajeman.jagalchi.jagalchiserver.domain.verification.VerificationType;
 import gajeman.jagalchi.jagalchiserver.infrastructure.mail.MailUtil;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SendVerificationCodeRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SendVerificationCodeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
