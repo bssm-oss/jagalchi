@@ -1,6 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.controller.user;
 
 import gajeman.jagalchi.jagalchiserver.application.user.service.UpdateProfileCommand;
+import gajeman.jagalchi.jagalchiserver.application.user.usecase.QueryUserByNameUseCase;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.presentation.user.UserController;
 import gajeman.jagalchi.jagalchiserver.presentation.user.request.UpdateProfileDto;
@@ -45,6 +46,9 @@ public class UserControllerTest {
 
     @MockitoBean
     private UpdateProfileCommand updateProfileCommand;
+
+    @MockitoBean
+    private QueryUserByNameUseCase queryUserByNameUseCase;
 
     @Test
     @WithMockUser(username = "testUser")
