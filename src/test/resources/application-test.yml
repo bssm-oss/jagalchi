@@ -1,31 +1,23 @@
 spring:
-  application:
-    name: jagalchi-server-test
-
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
-    password:
-
+    password: 
+  
   jpa:
     hibernate:
-      ddl-auto: none
-    generate-ddl: false
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
+        dialect: org.hibernate.dialect.H2Dialect
+  
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
+    enabled: false
 
 logging:
   level:
-    org.springframework.test: DEBUG
-    liquibase: INFO
+    org.springframework.web: DEBUG
+    gajeman.jagalchi: DEBUG

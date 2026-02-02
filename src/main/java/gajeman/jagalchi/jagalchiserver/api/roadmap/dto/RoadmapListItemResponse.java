@@ -1,6 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap.dto;
 
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
+import gajeman.jagalchi.jagalchiserver.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,7 +25,7 @@ public class RoadmapListItemResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static RoadmapListItemResponse from(Roadmap roadmap) {
+    public static RoadmapListItemResponse from(Roadmap roadmap, User owner) {
         return RoadmapListItemResponse.builder()
                 .id(roadmap.getId())
                 .title(roadmap.getTitle())
@@ -34,7 +35,7 @@ public class RoadmapListItemResponse {
                 .viewCount(roadmap.getViewCount())
                 .forkCount(roadmap.getForkCount())
                 .tags(parseTags(roadmap.getTags()))
-                .owner(RoadmapOwnerResponse.from(roadmap.getOwnerId()))
+                .owner(RoadmapOwnerResponse.from(owner))
                 .createdAt(roadmap.getCreatedAt())
                 .updatedAt(roadmap.getUpdatedAt())
                 .build();

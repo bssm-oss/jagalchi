@@ -5,10 +5,12 @@ import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListItemResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapUpdateResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
+import gajeman.jagalchi.jagalchiserver.application.user.UserService;
 import gajeman.jagalchi.jagalchiserver.common.exception.ResourceNotFoundException;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.Roadmap;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapNodeRepository;
 import gajeman.jagalchi.jagalchiserver.domain.roadmap.RoadmapRepository;
+import gajeman.jagalchi.jagalchiserver.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
@@ -30,6 +34,7 @@ public class RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
     private final RoadmapNodeRepository roadmapNodeRepository;
+    private final UserService userService;
 
     @Transactional
     public RoadmapResponse create(CreateRoadmapRequest request, Long ownerId) {
@@ -60,9 +65,10 @@ public class RoadmapService {
             roadmap.incrementViewCount();
         }
 
+        User owner = userService.findById(roadmap.getOwnerId());
         long totalNodes = roadmapNodeRepository.countByRoadmapId(roadmapId);
         long totalEdges = Math.max(totalNodes - 1, 0);
-        return RoadmapDetailResponse.from(roadmap, totalNodes, totalEdges);
+        return RoadmapDetailResponse.from(roadmap, owner, totalNodes, totalEdges);
     }
 
     public RoadmapListResponse getList(Long requesterId, int page, int size, String sort,
@@ -82,7 +88,20 @@ public class RoadmapService {
 
         Page<Roadmap> roadmaps = roadmapRepository.findAll(specification, pageable);
 
-        return RoadmapListResponse.from(roadmaps.map(RoadmapListItemResponse::from));
+        // 모든 owner ID 수집
+        List<Long> ownerIds = roadmaps.getContent().stream()
+                .map(Roadmap::getOwnerId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 한 번에 모든 owner 정보 조회
+        Map<Long, User> ownerMap = userService.findByIds(ownerIds);
+
+        // RoadmapListItemResponse 생성 시 owner 정보 포함
+        Page<RoadmapListItemResponse> responseItems = roadmaps.map(roadmap -> 
+                RoadmapListItemResponse.from(roadmap, ownerMap.get(roadmap.getOwnerId())));
+
+        return RoadmapListResponse.from(responseItems);
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap.dto;
 
+import gajeman.jagalchi.jagalchiserver.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,9 +12,11 @@ public class RoadmapOwnerResponse {
     private String nickname;
     private String profileImageUrl;
 
-    public static RoadmapOwnerResponse from(Long ownerId) {
+    public static RoadmapOwnerResponse from(User user) {
         return RoadmapOwnerResponse.builder()
-                .id(ownerId)
+                .id(user.getId())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 }

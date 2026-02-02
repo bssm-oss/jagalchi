@@ -24,7 +24,7 @@ public class RoadmapDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static RoadmapDetailResponse from(Roadmap roadmap, long totalNodes, long totalEdges) {
+    public static RoadmapDetailResponse from(Roadmap roadmap, gajeman.jagalchi.jagalchiserver.domain.user.User owner, long totalNodes, long totalEdges) {
         return RoadmapDetailResponse.builder()
                 .id(roadmap.getId())
                 .title(roadmap.getTitle())
@@ -32,7 +32,7 @@ public class RoadmapDetailResponse {
                 .thumbnailUrl(roadmap.getThumbnailUrl())
                 .isPublic(roadmap.getIsPublic())
                 .viewCount(roadmap.getViewCount())
-                .owner(RoadmapOwnerResponse.from(roadmap.getOwnerId()))
+                .owner(RoadmapOwnerResponse.from(owner))
                 .stats(RoadmapStatsResponse.builder()
                         .totalNodes(totalNodes)
                         .totalEdges(totalEdges)
