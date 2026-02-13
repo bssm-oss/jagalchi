@@ -6,7 +6,6 @@ export { MultiSelectPanel } from './MultiSelectPanel';
 export { NodePropertiesPanel } from './NodePropertiesPanel';
 export { ResourceRecommendationModal } from './ResourceRecommendationModal';
 export { RoadmapAiModal } from './RoadmapAiModal';
-export { RoadmapCanvas } from './RoadmapCanvas';
 export { RoadmapGenerationForm } from './RoadmapGenerationForm';
 export { RoadmapModificationForm } from './RoadmapModificationForm';
 export { SectionPropertiesPanel } from './SectionPropertiesPanel';

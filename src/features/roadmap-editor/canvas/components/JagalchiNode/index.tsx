@@ -5,12 +5,13 @@ import { memo, useCallback } from 'react';
 import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { useSetAtom } from 'jotai';
 
-import { PlusButtonHandle } from '@/features/roadmap-editor/components/atoms';
 import { getNodeColors } from '@/features/roadmap-editor/constants/node-colors';
 import { nodesAtom } from '@/features/roadmap-editor/stores/editor-atoms';
 import type { JagalchiNodeData } from '@/features/roadmap-editor/types/editor.types';
 import { createJagalchiNode } from '@/features/roadmap-editor/utils/node-factory';
 import { cn } from '@/lib/utils';
+
+import { PlusButtonHandle } from '../PlusButtonHandle';
 
 interface JagalchiNodeProps {
   data: JagalchiNodeData;

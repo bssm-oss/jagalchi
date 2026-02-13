@@ -5,9 +5,6 @@ export { ToolbarButton } from './components/atoms/ToolbarButton';
 // Components - Molecules
 export { ColorPicker } from './components/molecules/ColorPicker';
 export { ColorSelector } from './components/molecules/ColorSelector';
-export { JagalchiNode } from './components/molecules/JagalchiNode';
-export { JagalchiSection } from './components/molecules/JagalchiSection';
-export { JagalchiText } from './components/molecules/JagalchiText';
 
 // Components - Organisms
 export { EditorHeader } from './components/organisms/EditorHeader';
@@ -18,7 +15,9 @@ export { SectionPropertiesPanel } from './components/organisms/SectionProperties
 export { TextPropertiesPanel } from './components/organisms/TextPropertiesPanel';
 export { EdgePropertiesPanel } from './components/organisms/EdgePropertiesPanel';
 export { MultiSelectPanel } from './components/organisms/MultiSelectPanel';
-export { RoadmapCanvas } from './components/organisms/RoadmapCanvas';
+
+// Canvas
+export { RoadmapCanvas, JagalchiNode, JagalchiSection, JagalchiText } from './canvas/components';
 
 // Components - Templates
 export { RoadmapEditor } from './components/templates/RoadmapEditor';

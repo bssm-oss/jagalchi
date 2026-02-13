@@ -32,10 +32,10 @@ import type { RoadmapNode } from '@/features/roadmap-editor/types/editor.types';
 import { createId } from '@/features/roadmap-editor/utils/node-factory';
 
 import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
-import { ConnectionLine } from '../../molecules/ConnectionLine';
-import { JagalchiNode } from '../../molecules/JagalchiNode';
-import { JagalchiSection } from '../../molecules/JagalchiSection';
-import { JagalchiText } from '../../molecules/JagalchiText';
+import { ConnectionLine } from '../ConnectionLine';
+import { JagalchiNode } from '../JagalchiNode';
+import { JagalchiSection } from '../JagalchiSection';
+import { JagalchiText } from '../JagalchiText';
 
 const nodeTypes: NodeTypes = {
   'jagalchi-node': JagalchiNode,
