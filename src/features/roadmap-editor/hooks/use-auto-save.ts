@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/use-debounce';
 
 import { parseRoadmaps } from '../schemas/roadmap.schema';
+import { STORAGE_KEY } from '../services/roadmap-storage';
 
 import type { RoadmapNode } from '../types/editor.types';
 import type { Roadmap } from '../types/roadmap.types';
@@ -16,7 +17,6 @@ interface UseAutoSaveProps {
   isEnabled?: boolean;
 }
 
-const STORAGE_KEY = 'jagalchi-roadmaps';
 const QUOTA_WARNING_THRESHOLD = 0.9; // Warn at 90% usage
 
 /**
