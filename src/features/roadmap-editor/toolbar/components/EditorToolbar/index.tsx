@@ -7,6 +7,7 @@ import { Square, Minus, RectangleHorizontal, Type } from 'lucide-react';
 
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
+import { EditorAiMenu } from '../../../components/molecules/EditorAiMenu';
 import { useCanvasCenter } from '../../../hooks/use-canvas-center';
 import { activeToolAtom, nodesAtom } from '../../../stores/editor-atoms';
 import {
@@ -14,8 +15,7 @@ import {
   createJagalchiSection,
   createJagalchiText,
 } from '../../../utils/node-factory';
-import { ToolbarButton } from '../../atoms/ToolbarButton';
-import { EditorAiMenu } from '../../molecules/EditorAiMenu';
+import { ToolbarButton } from '../ToolbarButton';
 
 export const EditorToolbar = memo(function EditorToolbar() {
   const [activeTool, setActiveTool] = useAtom(activeToolAtom);

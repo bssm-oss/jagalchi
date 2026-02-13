@@ -1,6 +1,5 @@
 export { EditorHeader } from './EditorHeader';
 export { EditorSidebar } from './EditorSidebar';
-export { EditorToolbar } from './EditorToolbar';
 export { MultiSelectPanel } from './MultiSelectPanel';
 export { ResourceRecommendationModal } from './ResourceRecommendationModal';
 export { RoadmapAiModal } from './RoadmapAiModal';

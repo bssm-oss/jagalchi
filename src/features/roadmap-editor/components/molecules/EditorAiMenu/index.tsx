@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
-import { ToolbarButton } from '../../atoms/ToolbarButton';
+import { ToolbarButton } from '../../../toolbar/components';
 import { RoadmapAiModal } from '../../organisms/RoadmapAiModal';
 
 export const EditorAiMenu = memo(function EditorAiMenu() {

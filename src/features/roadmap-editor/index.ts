@@ -1,11 +1,10 @@
-// Components - Atoms
-export { ToolbarButton } from './components/atoms/ToolbarButton';
-
 // Components - Organisms
 export { EditorHeader } from './components/organisms/EditorHeader';
-export { EditorToolbar } from './components/organisms/EditorToolbar';
 export { EditorSidebar } from './components/organisms/EditorSidebar';
 export { MultiSelectPanel } from './components/organisms/MultiSelectPanel';
+
+// Toolbar sub-feature
+export { EditorToolbar, ToolbarButton } from './toolbar/components';
 
 // Properties sub-feature
 export {

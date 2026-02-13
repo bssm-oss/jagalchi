@@ -4,9 +4,9 @@ import { ReactFlowProvider } from '@xyflow/react';
 
 import { RoadmapCanvas } from '../../../canvas/components';
 import { ColorPicker } from '../../../properties/components';
+import { EditorToolbar } from '../../../toolbar/components';
 import { EditorHeader } from '../../organisms/EditorHeader';
 import { EditorSidebar } from '../../organisms/EditorSidebar';
-import { EditorToolbar } from '../../organisms/EditorToolbar';
 
 interface EditorContentProps {
   onBack?: () => void;
