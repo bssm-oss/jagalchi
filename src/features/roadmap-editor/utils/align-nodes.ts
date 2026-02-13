@@ -16,7 +16,10 @@ export function alignNodes(
 ): RoadmapNode[] {
   if (selectedIds.length < 2) return nodes;
 
-  const selectedNodes = nodes.filter((node) => selectedIds.includes(node.id));
+  // Use Set for O(1) lookup instead of O(n) with includes
+  const selectedIdsSet = new Set(selectedIds);
+
+  const selectedNodes = nodes.filter((node) => selectedIdsSet.has(node.id));
 
   // Calculate target position based on direction
   let targetValue: number;
@@ -26,7 +29,7 @@ export function alignNodes(
       const minX = Math.min(...selectedNodes.map((node) => node.position.x));
       targetValue = minX;
       return nodes.map((node) =>
-        selectedIds.includes(node.id)
+        selectedIdsSet.has(node.id)
           ? { ...node, position: { ...node.position, x: targetValue } }
           : node,
       );
@@ -37,7 +40,7 @@ export function alignNodes(
         ...selectedNodes.map((node) => node.position.x + (node.measured?.width ?? 0)),
       );
       return nodes.map((node) => {
-        if (!selectedIds.includes(node.id)) return node;
+        if (!selectedIdsSet.has(node.id)) return node;
         const width = node.measured?.width ?? 0;
         return { ...node, position: { ...node.position, x: maxX - width } };
       });
@@ -53,7 +56,7 @@ export function alignNodes(
       const centerX = (minX + maxX) / 2;
 
       return nodes.map((node) => {
-        if (!selectedIds.includes(node.id)) return node;
+        if (!selectedIdsSet.has(node.id)) return node;
         const width = node.measured?.width ?? 0;
         return { ...node, position: { ...node.position, x: centerX - width / 2 } };
       });
@@ -63,7 +66,7 @@ export function alignNodes(
       const minY = Math.min(...selectedNodes.map((node) => node.position.y));
       targetValue = minY;
       return nodes.map((node) =>
-        selectedIds.includes(node.id)
+        selectedIdsSet.has(node.id)
           ? { ...node, position: { ...node.position, y: targetValue } }
           : node,
       );
@@ -74,7 +77,7 @@ export function alignNodes(
         ...selectedNodes.map((node) => node.position.y + (node.measured?.height ?? 0)),
       );
       return nodes.map((node) => {
-        if (!selectedIds.includes(node.id)) return node;
+        if (!selectedIdsSet.has(node.id)) return node;
         const height = node.measured?.height ?? 0;
         return { ...node, position: { ...node.position, y: maxY - height } };
       });
@@ -90,7 +93,7 @@ export function alignNodes(
       const centerY = (minY + maxY) / 2;
 
       return nodes.map((node) => {
-        if (!selectedIds.includes(node.id)) return node;
+        if (!selectedIdsSet.has(node.id)) return node;
         const height = node.measured?.height ?? 0;
         return { ...node, position: { ...node.position, y: centerY - height / 2 } };
       });
