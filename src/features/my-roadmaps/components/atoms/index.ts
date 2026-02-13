@@ -1,1 +1,1 @@
-export * from './RoadmapCard';
+export { RoadmapCard } from './RoadmapCard';

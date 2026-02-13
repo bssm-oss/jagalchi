@@ -1,1 +1,1 @@
-export * from './SelectLocationModal';
+export { SelectLocationModal } from './SelectLocationModal';
