@@ -1,8 +1,7 @@
 import { atom } from 'jotai';
 
-export type SortOrder = 'asc' | 'desc';
-export type SortBy = 'recent' | 'name' | 'size';
-export type FilterCategory = 'all' | 'roadmap' | 'directory';
+import type { SortOrder, SortBy, FilterCategory } from '@/types/sort.types';
+
 export type SidebarCategory = 'recent' | 'community' | 'my-roadmap' | 'shared' | 'favorites';
 
 export const sortOrderAtom = atom<SortOrder>('desc');

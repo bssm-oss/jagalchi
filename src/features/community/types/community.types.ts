@@ -1,6 +1,5 @@
-export type SortOrder = 'asc' | 'desc';
-export type SortBy = 'name' | 'recent' | 'size';
-export type FilterCategory = 'all' | 'roadmap' | 'directory';
+export type { SortOrder, SortBy, FilterCategory } from '@/types/sort.types';
+
 export type ActiveTab = 'popular' | 'latest' | 'saved';
 
 export interface CommunityItem {
