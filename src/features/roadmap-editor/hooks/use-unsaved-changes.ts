@@ -9,6 +9,7 @@ import {
   saveRoadmapToLocalStorage,
 } from '../services/roadmap-storage';
 import { nodesAtom, edgesAtom, roadmapTitleAtom } from '../stores/editor-atoms';
+import { hashNodes, hashEdges } from '../utils/fast-hash';
 
 import type { Roadmap } from '../types/roadmap.types';
 
@@ -47,12 +48,12 @@ export function useUnsavedChanges({
   const [savedEdges, setSavedEdges] = useState<string>('');
   const [savedTitle, setSavedTitle] = useState<string>('');
 
-  // Calculate hasChanges against initial state
+  // Calculate hasChanges against initial state (using fast hash for performance)
   const hasChanges = useMemo(() => {
     if (isLoading || !initialNodes) return false;
 
-    const currentNodes = JSON.stringify(nodes);
-    const currentEdges = JSON.stringify(edges);
+    const currentNodes = hashNodes(nodes);
+    const currentEdges = hashEdges(edges);
     const currentTitle = title;
 
     // Use saved state if available (after manual save), otherwise use initial state
@@ -113,9 +114,9 @@ export function useUnsavedChanges({
 
     saveRoadmapToLocalStorage(updated);
 
-    // Update saved state
-    setSavedNodes(JSON.stringify(nodes));
-    setSavedEdges(JSON.stringify(edges));
+    // Update saved state (using fast hash)
+    setSavedNodes(hashNodes(nodes));
+    setSavedEdges(hashEdges(edges));
     setSavedTitle(title);
   }, [roadmapId, nodes, edges, title]);
 

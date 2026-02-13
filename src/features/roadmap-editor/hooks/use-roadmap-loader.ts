@@ -11,6 +11,7 @@ import {
   saveRoadmapToLocalStorage,
 } from '../services/roadmap-storage';
 import { nodesAtom, edgesAtom, roadmapTitleAtom } from '../stores/editor-atoms';
+import { hashNodes, hashEdges } from '../utils/fast-hash';
 
 interface UseRoadmapLoaderProps {
   roadmapId: string;
@@ -67,9 +68,9 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
         setEdges(roadmap.edges);
         setTitle(roadmap.title);
 
-        // Store initial state for change detection
-        setInitialNodes(JSON.stringify(roadmap.nodes));
-        setInitialEdges(JSON.stringify(roadmap.edges));
+        // Store initial state for change detection (using fast hash)
+        setInitialNodes(hashNodes(roadmap.nodes));
+        setInitialEdges(hashEdges(roadmap.edges));
         setInitialTitle(roadmap.title);
 
         setIsLoading(false);
@@ -92,8 +93,8 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
       setNodes(roadmap.nodes);
       setEdges(roadmap.edges);
       setTitle(roadmap.title);
-      setInitialNodes(JSON.stringify(roadmap.nodes));
-      setInitialEdges(JSON.stringify(roadmap.edges));
+      setInitialNodes(hashNodes(roadmap.nodes));
+      setInitialEdges(hashEdges(roadmap.edges));
       setInitialTitle(roadmap.title);
       setIsLoading(false);
     } else {
