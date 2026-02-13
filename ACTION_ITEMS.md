@@ -446,18 +446,18 @@ roadmap-editor/
 
 ### 이번 주 끝나기 전
 
-- [ ] P0-1: fastArrayHash 수정
-- [ ] P0-2: JSON.parse 검증
-- [ ] P0-3: Clipboard 검증
-- [ ] P0-4: Copy/Paste edges
-- [ ] P0-5: Wildcard exports
-- [ ] P0-6: URL Sanitizer
-- [ ] P0-7: defaultEdgeOptions
-- [ ] P0-8: align-nodes Set
+- [x] P0-1: fastArrayHash 수정
+- [x] P0-2: JSON.parse 검증
+- [x] P0-3: Clipboard 검증
+- [x] P0-4: Copy/Paste edges
+- [x] P0-5: Wildcard exports
+- [x] P0-6: URL Sanitizer
+- [x] P0-7: defaultEdgeOptions
+- [x] P0-8: align-nodes Set
 
 ### 다음 주
 
-- [ ] H1: RoadmapEditorPage 훅 분해
+- [x] H1: RoadmapEditorPage 훅 분해
 - [ ] H2-H3: 중복 컴포넌트/훅 통합
 - [ ] H4-H5: Property panel 중복 제거
 - [ ] H6: localStorage 단일 서비스
