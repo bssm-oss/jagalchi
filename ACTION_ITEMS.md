@@ -462,12 +462,12 @@ roadmap-editor/
 - [ ] H4-H5: Property panel 중복 제거
 - [ ] H6: localStorage 단일 서비스
 - [ ] H7-H8: 공유 타입/상수 추출
-- [ ] H9: roadmap-editor sub-features 분해
+- [x] H9: roadmap-editor sub-features 분해
 
 ### 이번 달
 
-- [ ] M1-M4: Profile 리팩토링
-- [ ] M5-M7: 성능 최적화
+- [x] M1-M4: Profile 리팩토링
+- [x] M5-M7: 성능 최적화
 
 ---
 

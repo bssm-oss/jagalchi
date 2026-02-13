@@ -118,14 +118,18 @@ export function useKeyboardShortcuts() {
         const currentSelectedEdgeIds = selectedEdgeIdsRef.current;
 
         if (currentSelectedNodeIds.length > 0 || currentSelectedEdgeIds.length > 0) {
-          setNodes((nds) => nds.filter((node) => !currentSelectedNodeIds.includes(node.id)));
+          // Convert to Set for O(1) lookups instead of O(n)
+          const selectedNodeIdsSet = new Set(currentSelectedNodeIds);
+          const selectedEdgeIdsSet = new Set(currentSelectedEdgeIds);
+
+          setNodes((nds) => nds.filter((node) => !selectedNodeIdsSet.has(node.id)));
           // Remove selected edges AND orphaned edges connected to deleted nodes
           setEdges((eds) =>
             eds.filter(
               (edge) =>
-                !currentSelectedEdgeIds.includes(edge.id) &&
-                !currentSelectedNodeIds.includes(edge.source) &&
-                !currentSelectedNodeIds.includes(edge.target),
+                !selectedEdgeIdsSet.has(edge.id) &&
+                !selectedNodeIdsSet.has(edge.source) &&
+                !selectedNodeIdsSet.has(edge.target),
             ),
           );
           setSelectedNodeIds([]);
@@ -172,15 +176,17 @@ export function useKeyboardShortcuts() {
       // Ctrl+C - 복사
       if (event.key === 'c') {
         event.preventDefault();
+        // Convert to Set for O(1) lookups
+        const selectedNodeIdsSet = new Set(selectedNodeIdsRef.current);
+
         const selectedNodes = nodesRef.current.filter((node: RoadmapNode) =>
-          selectedNodeIdsRef.current.includes(node.id),
+          selectedNodeIdsSet.has(node.id),
         );
 
         // 선택된 노드들을 연결하는 엣지도 복사
         const selectedEdges = edgesRef.current.filter(
           (edge: Edge) =>
-            selectedNodeIdsRef.current.includes(edge.source) &&
-            selectedNodeIdsRef.current.includes(edge.target),
+            selectedNodeIdsSet.has(edge.source) && selectedNodeIdsSet.has(edge.target),
         );
 
         if (selectedNodes.length > 0) {
@@ -250,8 +256,11 @@ export function useKeyboardShortcuts() {
       // Ctrl+D - 복제
       if (event.key === 'd') {
         event.preventDefault();
+        // Convert to Set for O(1) lookups
+        const selectedNodeIdsSet = new Set(selectedNodeIdsRef.current);
+
         const selectedNodes = nodesRef.current.filter((node: RoadmapNode) =>
-          selectedNodeIdsRef.current.includes(node.id),
+          selectedNodeIdsSet.has(node.id),
         );
         if (selectedNodes.length > 0) {
           const duplicatedNodes = selectedNodes.map((node: RoadmapNode) => ({
