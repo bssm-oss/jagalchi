@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid';
 import { UnsavedChangesDialog } from '../components/organisms/UnsavedChangesDialog';
 import { RoadmapEditor } from '../components/templates/RoadmapEditor';
 import { useAutoSave } from '../hooks/use-auto-save';
+import { parseRoadmaps } from '../schemas/roadmap.schema';
 import { nodesAtom, edgesAtom, roadmapTitleAtom } from '../stores/editor-atoms';
 
 import { ErrorFallback } from './ErrorFallback';
@@ -223,7 +224,7 @@ function loadRoadmapFromLocalStorage(id: string): Roadmap | null {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
 
-    const roadmaps: Roadmap[] = JSON.parse(stored);
+    const roadmaps = parseRoadmaps(stored) as Roadmap[];
     return roadmaps.find((r) => r.id === id) || null;
   } catch {
     return null;
@@ -235,7 +236,7 @@ function saveRoadmapToLocalStorage(roadmap: Roadmap): void {
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    let roadmaps: Roadmap[] = stored ? JSON.parse(stored) : [];
+    const roadmaps = stored ? (parseRoadmaps(stored) as Roadmap[]) : [];
 
     // Update or add roadmap
     const index = roadmaps.findIndex((r) => r.id === roadmap.id);

@@ -20,17 +20,6 @@ const STORAGE_KEY = 'jagalchi-roadmaps';
 const QUOTA_WARNING_THRESHOLD = 0.9; // Warn at 90% usage
 
 /**
- * Fast hash function for array comparison (faster than JSON.stringify)
- * Uses array length + item count + sample IDs for quick change detection
- */
-function fastArrayHash(arr: unknown[]): string {
-  if (!arr.length) return '0';
-  const first = arr[0] as { id?: string };
-  const last = arr[arr.length - 1] as { id?: string };
-  return `${arr.length}-${first.id ?? ''}-${last.id ?? ''}`;
-}
-
-/**
  * Check localStorage quota and return usage percentage
  * Returns null if quota check is not supported
  */
@@ -71,9 +60,9 @@ export function useAutoSave({
   useEffect(() => {
     if (!isEnabled || typeof window === 'undefined') return;
 
-    // Use fast hash instead of expensive JSON.stringify for comparison
-    const currentNodesHash = fastArrayHash(debouncedNodes);
-    const currentEdgesHash = fastArrayHash(debouncedEdges);
+    // Use JSON.stringify for accurate change detection (debounced, so performance is fine)
+    const currentNodesHash = JSON.stringify(debouncedNodes);
+    const currentEdgesHash = JSON.stringify(debouncedEdges);
     const currentTitle = debouncedTitle;
 
     // Detect changes
