@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
@@ -32,25 +32,31 @@ export const MultiSelectPanel = memo(function MultiSelectPanel() {
   const setNodes = useSetAtom(nodesAtom);
   const selectedIds = useAtomValue(selectedNodeIdsAtom);
 
-  const handleAlign = (direction: AlignDirection) => {
-    setNodes((prev) => alignNodes(prev, selectedIds, direction));
-  };
+  const handleAlign = useCallback(
+    (direction: AlignDirection) => {
+      setNodes((prev) => alignNodes(prev, selectedIds, direction));
+    },
+    [setNodes, selectedIds],
+  );
 
-  const handleBulkColorChange = (variant: NodeColorVariant) => {
-    setNodes((prev) =>
-      prev.map((node) => {
-        if (!selectedIds.includes(node.id)) return node;
-        // Only update nodes and sections (not text)
-        if (node.type === 'jagalchi-node') {
-          return { ...node, data: { ...node.data, variant } } as typeof node;
-        }
-        if (node.type === 'jagalchi-section') {
-          return { ...node, data: { ...node.data, variant } } as typeof node;
-        }
-        return node;
-      }),
-    );
-  };
+  const handleBulkColorChange = useCallback(
+    (variant: NodeColorVariant) => {
+      setNodes((prev) =>
+        prev.map((node) => {
+          if (!selectedIds.includes(node.id)) return node;
+          // Only update nodes and sections (not text)
+          if (node.type === 'jagalchi-node') {
+            return { ...node, data: { ...node.data, variant } } as typeof node;
+          }
+          if (node.type === 'jagalchi-section') {
+            return { ...node, data: { ...node.data, variant } } as typeof node;
+          }
+          return node;
+        }),
+      );
+    },
+    [setNodes, selectedIds],
+  );
 
   return (
     <div className="h-full w-full space-y-4 p-4">
