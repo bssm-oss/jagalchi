@@ -2,15 +2,13 @@
 
 import { memo } from 'react';
 
-import { useSetAtom } from 'jotai';
-import { Lock, Unlock } from 'lucide-react';
-
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
-import { nodesAtom } from '../../../stores/editor-atoms';
+import { useUpdateNode } from '../../../hooks/use-update-node';
 import { EditorInput } from '../../atoms/EditorInput';
 import { ColorSelector } from '../../molecules/ColorSelector';
+import { PanelHeader } from '../../molecules/PanelHeader';
 
 import type { JagalchiSectionType, NodeColorVariant } from '../../../types/editor.types';
 
@@ -29,15 +27,7 @@ interface SectionPropertiesPanelProps {
 export const SectionPropertiesPanel = memo(function SectionPropertiesPanel({
   node,
 }: SectionPropertiesPanelProps) {
-  const setNodes = useSetAtom(nodesAtom);
-
-  const updateNode = (updates: Partial<JagalchiSectionType['data']>) => {
-    setNodes((prev) =>
-      prev.map((n) =>
-        n.id === node.id ? ({ ...n, data: { ...n.data, ...updates } } as JagalchiSectionType) : n,
-      ),
-    );
-  };
+  const { updateNode } = useUpdateNode(node.id);
 
   const toggleLock = () => {
     updateNode({ isLocked: !node.data.isLocked });
@@ -45,25 +35,12 @@ export const SectionPropertiesPanel = memo(function SectionPropertiesPanel({
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-4">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-base font-semibold text-slate-900">{node.id}</h3>
-          <p className="text-xs text-slate-600">섹션</p>
-        </div>
-        <button
-          type="button"
-          onClick={toggleLock}
-          className="rounded-md p-1 transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none"
-          aria-label={node.data.isLocked ? '잠금 해제' : '잠금'}
-        >
-          {node.data.isLocked ? (
-            <Lock className="h-4 w-4 text-slate-700" />
-          ) : (
-            <Unlock className="h-4 w-4 text-slate-500" />
-          )}
-        </button>
-      </div>
+      <PanelHeader
+        title={node.id}
+        subtitle="섹션"
+        isLocked={node.data.isLocked}
+        onToggleLock={toggleLock}
+      />
 
       {/* Content */}
       <div className="flex-1 space-y-4 overflow-y-auto p-4">

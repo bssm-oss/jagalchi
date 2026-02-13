@@ -20,9 +20,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
-import { useClickOutside } from '../../../hooks/use-click-outside';
 import { AddDirectoryModal } from '../AddDirectoryModal';
 import { AddRoadmapModal } from '../AddRoadmapModal';
 import { MyRoadmapsFilter } from '../MyRoadmapsFilter';

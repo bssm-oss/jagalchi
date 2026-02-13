@@ -2,14 +2,12 @@
 
 import { memo, useState } from 'react';
 
-import { useSetAtom } from 'jotai';
-import { Lock, Unlock } from 'lucide-react';
-
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
-import { edgesAtom } from '../../../stores/editor-atoms';
+import { useUpdateEdge } from '../../../hooks/use-update-node';
 import { ColorSelector } from '../../molecules/ColorSelector';
+import { PanelHeader } from '../../molecules/PanelHeader';
 
 import type { NodeColorVariant } from '../../../types/editor.types';
 import type { Edge } from '@xyflow/react';
@@ -31,16 +29,12 @@ type LineStyle = 'solid' | 'dashed' | 'dotted';
 export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
   edge,
 }: EdgePropertiesPanelProps) {
-  const setEdges = useSetAtom(edgesAtom);
+  const { updateEdge } = useUpdateEdge(edge.id);
   const [isLocked, setIsLocked] = useState(false);
 
   // Get current edge data
   const currentStyle = (edge.style?.strokeDasharray ? 'dashed' : 'solid') as LineStyle;
   const currentColor = (edge.style?.stroke as string) || NODE_PRESET_COLORS[0].hex;
-
-  const updateEdge = (updates: Partial<Edge>) => {
-    setEdges((prev) => prev.map((e) => (e.id === edge.id ? { ...e, ...updates } : e)));
-  };
 
   const toggleLock = () => {
     setIsLocked(!isLocked);
@@ -74,25 +68,7 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-4">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-base font-semibold text-slate-900">선</h3>
-          <p className="text-xs text-slate-600">연결선</p>
-        </div>
-        <button
-          type="button"
-          onClick={toggleLock}
-          className="rounded-md p-1 transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none"
-          aria-label={isLocked ? '잠금 해제' : '잠금'}
-        >
-          {isLocked ? (
-            <Lock className="h-4 w-4 text-slate-700" />
-          ) : (
-            <Unlock className="h-4 w-4 text-slate-500" />
-          )}
-        </button>
-      </div>
+      <PanelHeader title="선" subtitle="연결선" isLocked={isLocked} onToggleLock={toggleLock} />
 
       {/* Content */}
       <div className="flex-1 space-y-0 overflow-y-auto p-4">

@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
-import { useClickOutside } from '../../../hooks/use-click-outside';
 import {
   activeTabAtom,
   filterCategoryAtom,
