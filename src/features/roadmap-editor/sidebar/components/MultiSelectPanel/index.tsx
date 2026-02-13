@@ -41,9 +41,10 @@ export const MultiSelectPanel = memo(function MultiSelectPanel() {
 
   const handleBulkColorChange = useCallback(
     (variant: NodeColorVariant) => {
+      const selectedIdsSet = new Set(selectedIds);
       setNodes((prev) =>
         prev.map((node) => {
-          if (!selectedIds.includes(node.id)) return node;
+          if (!selectedIdsSet.has(node.id)) return node;
           // Only update nodes and sections (not text)
           if (node.type === 'jagalchi-node') {
             return { ...node, data: { ...node.data, variant } } as typeof node;
