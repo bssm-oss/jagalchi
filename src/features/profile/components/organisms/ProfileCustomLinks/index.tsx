@@ -7,6 +7,7 @@ import { ArrowUpRight, Link as LinkIcon, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { sanitizeUrl } from '@/lib/url-validation';
 
 import { profileModeAtom } from '../../../stores/profile-atoms';
 import { ProfileLinkAddButton } from '../../atoms/ProfileLinkAddButton';
@@ -99,7 +100,7 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
       {links.map((link, index) => (
         <a
           key={link.id || index}
-          href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
+          href={sanitizeUrl(link.url)}
           target="_blank"
           rel="noopener noreferrer"
           className="border-border hover:bg-accent flex h-[54px] items-center gap-4 rounded-md border px-4 transition-colors"
