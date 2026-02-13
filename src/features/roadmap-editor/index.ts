@@ -1,7 +1,8 @@
 // Components - Organisms
 export { EditorHeader } from './components/organisms/EditorHeader';
-export { EditorSidebar } from './components/organisms/EditorSidebar';
-export { MultiSelectPanel } from './components/organisms/MultiSelectPanel';
+
+// Sidebar sub-feature
+export { EditorSidebar, MultiSelectPanel } from './sidebar/components';
 
 // Toolbar sub-feature
 export { EditorToolbar, ToolbarButton } from './toolbar/components';
