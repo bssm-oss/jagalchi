@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 import { useAtom, useSetAtom } from 'jotai';
+import { z } from 'zod';
 
 import {
   nodesAtom,
@@ -16,6 +17,47 @@ import { createId } from '../utils/node-factory';
 
 import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
+
+// Clipboard validation schema
+const roadmapNodeDataSchema = z.object({
+  label: z.string(),
+  description: z.string().optional(),
+  resources: z.array(z.string()).optional(),
+  variant: z.string().optional(),
+  isLocked: z.boolean().optional(),
+  title: z.string().optional(),
+  content: z.string().optional(),
+  fontSize: z.number().optional(),
+  fontWeight: z.string().optional(),
+});
+
+const roadmapNodeSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  data: roadmapNodeDataSchema,
+  style: z.record(z.unknown()).optional(),
+});
+
+const edgeSchema = z.object({
+  id: z.string(),
+  source: z.string(),
+  target: z.string(),
+  sourceHandle: z.string().nullable().optional(),
+  targetHandle: z.string().nullable().optional(),
+  type: z.string().optional(),
+  animated: z.boolean().optional(),
+  style: z.record(z.unknown()).optional(),
+  data: z.record(z.unknown()).optional(),
+});
+
+const clipboardSchema = z.object({
+  nodes: z.array(roadmapNodeSchema),
+  edges: z.array(edgeSchema).optional(),
+});
 
 /**
  * 키보드 단축키 핸들러
@@ -133,9 +175,23 @@ export function useKeyboardShortcuts() {
         const selectedNodes = nodesRef.current.filter((node: RoadmapNode) =>
           selectedNodeIdsRef.current.includes(node.id),
         );
+
+        // 선택된 노드들을 연결하는 엣지도 복사
+        const selectedEdges = edgesRef.current.filter(
+          (edge: Edge) =>
+            selectedNodeIdsRef.current.includes(edge.source) &&
+            selectedNodeIdsRef.current.includes(edge.target),
+        );
+
         if (selectedNodes.length > 0) {
-          // localStorage에 복사된 노드 저장
-          localStorage.setItem('jagalchi-clipboard', JSON.stringify(selectedNodes));
+          // 노드와 엣지를 함께 저장
+          localStorage.setItem(
+            'jagalchi-clipboard',
+            JSON.stringify({
+              nodes: selectedNodes,
+              edges: selectedEdges,
+            }),
+          );
         }
         return;
       }
@@ -146,19 +202,46 @@ export function useKeyboardShortcuts() {
         const clipboard = localStorage.getItem('jagalchi-clipboard');
         if (clipboard) {
           try {
-            const copiedNodes = JSON.parse(clipboard) as RoadmapNode[];
-            const newNodes = copiedNodes.map((node: RoadmapNode) => ({
-              ...node,
+            const parsed = JSON.parse(clipboard);
+            const result = clipboardSchema.safeParse(parsed);
+
+            if (!result.success) {
+              // eslint-disable-next-line no-console
+              console.warn('Invalid clipboard data:', result.error);
+              return;
+            }
+
+            const { nodes: copiedNodes, edges: copiedEdges = [] } = result.data;
+
+            // ID 매핑 생성 (old ID -> new ID)
+            const idMap = new Map<string, string>();
+            const newNodes = copiedNodes.map((node) => {
+              const newId = createId();
+              idMap.set(node.id, newId);
+              return {
+                ...node,
+                id: newId,
+                position: {
+                  x: node.position.x + 50,
+                  y: node.position.y + 50,
+                },
+              } as RoadmapNode;
+            });
+
+            // Edges ID 리매핑
+            const newEdges = copiedEdges.map((edge) => ({
+              ...edge,
               id: createId(),
-              position: {
-                x: node.position.x + 50,
-                y: node.position.y + 50,
-              },
-            }));
+              source: idMap.get(edge.source) || edge.source,
+              target: idMap.get(edge.target) || edge.target,
+            })) as Edge[];
+
             setNodes((nds) => [...nds, ...newNodes]);
-            setSelectedNodeIds(newNodes.map((node: RoadmapNode) => node.id));
-          } catch {
-            // JSON parse 실패 시 무시
+            setEdges((eds) => [...eds, ...newEdges]);
+            setSelectedNodeIds(newNodes.map((node) => node.id));
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('Paste error:', error);
           }
         }
         return;
