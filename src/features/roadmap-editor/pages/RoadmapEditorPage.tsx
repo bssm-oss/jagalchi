@@ -3,7 +3,7 @@
 import { useAtomValue } from 'jotai';
 
 import { UnsavedChangesDialog } from '../components/organisms/UnsavedChangesDialog';
-import { RoadmapEditor } from '../components/templates/RoadmapEditor';
+import { RoadmapEditor } from '../core/components';
 import { useAutoSave } from '../hooks/use-auto-save';
 import { useRoadmapLoader } from '../hooks/use-roadmap-loader';
 import { useUnsavedChanges } from '../hooks/use-unsaved-changes';

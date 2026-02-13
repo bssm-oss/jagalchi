@@ -1,11 +1,5 @@
-// Components - Organisms
-export { EditorHeader } from './components/organisms/EditorHeader';
-
-// Sidebar sub-feature
-export { EditorSidebar, MultiSelectPanel } from './sidebar/components';
-
-// Toolbar sub-feature
-export { EditorToolbar, ToolbarButton } from './toolbar/components';
+// Canvas sub-feature
+export { RoadmapCanvas, JagalchiNode, JagalchiSection, JagalchiText } from './canvas/components';
 
 // Properties sub-feature
 export {
@@ -18,11 +12,14 @@ export {
   ColorPresetButton,
 } from './properties/components';
 
-// Canvas
-export { RoadmapCanvas, JagalchiNode, JagalchiSection, JagalchiText } from './canvas/components';
+// Sidebar sub-feature
+export { EditorSidebar, MultiSelectPanel } from './sidebar/components';
 
-// Components - Templates
-export { RoadmapEditor } from './components/templates/RoadmapEditor';
+// Toolbar sub-feature
+export { EditorToolbar, ToolbarButton } from './toolbar/components';
+
+// Core sub-feature
+export { EditorHeader, RoadmapEditor } from './core/components';
 
 // Hooks
 export { useCanvasCenter } from './hooks/use-canvas-center';

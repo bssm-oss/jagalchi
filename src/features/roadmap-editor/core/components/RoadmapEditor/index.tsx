@@ -6,7 +6,7 @@ import { RoadmapCanvas } from '../../../canvas/components';
 import { ColorPicker } from '../../../properties/components';
 import { EditorSidebar } from '../../../sidebar/components';
 import { EditorToolbar } from '../../../toolbar/components';
-import { EditorHeader } from '../../organisms/EditorHeader';
+import { EditorHeader } from '../EditorHeader';
 
 interface EditorContentProps {
   onBack?: () => void;

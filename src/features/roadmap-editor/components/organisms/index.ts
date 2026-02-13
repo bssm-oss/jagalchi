@@ -1,4 +1,3 @@
-export { EditorHeader } from './EditorHeader';
 export { ResourceRecommendationModal } from './ResourceRecommendationModal';
 export { RoadmapAiModal } from './RoadmapAiModal';
 export { RoadmapGenerationForm } from './RoadmapGenerationForm';
