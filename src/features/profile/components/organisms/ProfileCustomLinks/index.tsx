@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { ArrowUpRight, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,42 +26,44 @@ interface ProfileCustomLinksProps {
 
 export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCustomLinksProps) {
   const mode = useAtomValue(profileModeAtom);
-  const [links, setLinks] = useState<LinkItem[]>(initialLinks);
 
+  const { control, register, reset, watch } = useForm({
+    defaultValues: {
+      links: initialLinks,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'links',
+  });
+
+  const links = watch('links');
+
+  // Update form when props change
   useEffect(() => {
-    setLinks(initialLinks);
-  }, [initialLinks]);
+    reset({ links: initialLinks });
+  }, [initialLinks, reset]);
 
-  const handleUpdateLink = (index: number, key: keyof LinkItem, value: string) => {
-    const next = [...links];
-    next[index] = { ...next[index], [key]: value };
-    setLinks(next);
-    onChange?.(next);
-  };
+  // Notify parent of changes
+  useEffect(() => {
+    onChange?.(links);
+  }, [links, onChange]);
 
   const handleAddLink = () => {
-    const next = [...links, { id: crypto.randomUUID(), name: '', url: '' }];
-    setLinks(next);
-    onChange?.(next);
-  };
-
-  const handleDeleteLink = (index: number) => {
-    const next = links.filter((_, i) => i !== index);
-    setLinks(next);
-    onChange?.(next);
+    append({ id: crypto.randomUUID(), name: '', url: '' });
   };
 
   if (mode === 'edit') {
     return (
       <div className="flex w-full flex-col gap-2">
-        {links.map((link, index) => (
-          <div key={link.id || index} className="flex w-full items-center gap-2">
+        {fields.map((field, index) => (
+          <div key={field.id} className="flex w-full items-center gap-2">
             <div className="flex flex-1 gap-4">
               <Input
                 className="w-[120px]"
                 placeholder="링크 이름"
-                value={link.name}
-                onChange={(e) => handleUpdateLink(index, 'name', e.target.value)}
+                {...register(`links.${index}.name` as const)}
               />
 
               <div className="relative flex-1">
@@ -71,8 +74,7 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
                 <Input
                   className="truncate pl-9"
                   placeholder="https://"
-                  value={link.url}
-                  onChange={(e) => handleUpdateLink(index, 'url', e.target.value)}
+                  {...register(`links.${index}.url` as const)}
                 />
               </div>
             </div>
@@ -80,7 +82,7 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteLink(index)}
+              onClick={() => remove(index)}
               className="text-muted-foreground hover:text-destructive h-8 w-8"
               title="링크 삭제"
             >
@@ -88,7 +90,7 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
             </Button>
           </div>
         ))}
-        <ProfileLinkAddButton currentCount={links.length} maxCount={5} onClick={handleAddLink} />
+        <ProfileLinkAddButton currentCount={fields.length} maxCount={5} onClick={handleAddLink} />
       </div>
     );
   }

@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { Building2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
 
@@ -19,17 +20,24 @@ export function ProfileCustomOrganization({
   onChange,
 }: ProfileCustomOrganizationProps) {
   const mode = useAtomValue(profileModeAtom);
-  const [value, setValue] = useState(initialValue);
 
+  const { register, reset, watch } = useForm({
+    defaultValues: {
+      organization: initialValue,
+    },
+  });
+
+  const value = watch('organization');
+
+  // Update form when prop changes
   useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+    reset({ organization: initialValue });
+  }, [initialValue, reset]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    onChange?.(newValue);
-  };
+  // Notify parent of changes
+  useEffect(() => {
+    onChange?.(value);
+  }, [value, onChange]);
 
   if (mode === 'edit') {
     return (
@@ -39,12 +47,7 @@ export function ProfileCustomOrganization({
             size={16}
             className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
           />
-          <Input
-            className="pl-9"
-            placeholder="소속을 입력해주세요"
-            value={value}
-            onChange={handleChange}
-          />
+          <Input className="pl-9" placeholder="소속을 입력해주세요" {...register('organization')} />
         </div>
       </div>
     );

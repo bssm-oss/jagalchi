@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,15 +21,28 @@ interface ProfileBioProps {
 
 export function ProfileBio({ bio, onChange }: ProfileBioProps) {
   const mode = useAtomValue(profileModeAtom);
-  const [userBio, setUserBio] = useState(bio);
+
+  const { register, reset, watch } = useForm({
+    defaultValues: {
+      bio,
+    },
+  });
+
+  const userBio = watch('bio');
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const bioRef = useRef<HTMLParagraphElement>(null);
 
+  // Update form when prop changes
   useEffect(() => {
-    setUserBio(bio);
-  }, [bio]);
+    reset({ bio });
+  }, [bio, reset]);
+
+  // Notify parent of changes
+  useEffect(() => {
+    onChange?.(userBio);
+  }, [userBio, onChange]);
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -42,21 +56,11 @@ export function ProfileBio({ bio, onChange }: ProfileBioProps) {
     return () => window.removeEventListener('resize', checkOverflow);
   }, [userBio]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setUserBio(newValue);
-    onChange?.(newValue);
-  };
-
   if (mode === 'edit') {
     return (
       <div className="flex flex-col gap-4">
         <p className="text-muted-foreground text-sm font-semibold">{PROFILE_MESSAGES.BIO_TITLE}</p>
-        <Textarea
-          className="h-[280px] w-full resize-none"
-          value={userBio}
-          onChange={handleChange}
-        />
+        <Textarea className="h-[280px] w-full resize-none" {...register('bio')} />
       </div>
     );
   }

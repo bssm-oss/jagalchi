@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useAtom } from 'jotai';
+import { useForm } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
 
@@ -39,28 +40,29 @@ export function ProfileInfoForm({
     setMode((prev) => (prev === 'show' ? 'edit' : 'show'));
   };
 
-  const [userName, setUserName] = useState(name);
-  const [userEmail, setUserEmail] = useState(email);
+  const { register, reset, watch } = useForm({
+    defaultValues: {
+      name,
+      email,
+    },
+  });
+
+  const userName = watch('name');
+  const userEmail = watch('email');
+
+  // Update form when props change
+  useEffect(() => {
+    reset({ name, email });
+  }, [name, email, reset]);
+
+  // Notify parent of changes
+  useEffect(() => {
+    onNameChange?.(userName);
+  }, [userName, onNameChange]);
 
   useEffect(() => {
-    setUserName(name);
-  }, [name]);
-
-  useEffect(() => {
-    setUserEmail(email);
-  }, [email]);
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setUserName(newValue);
-    onNameChange?.(newValue);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setUserEmail(newValue);
-    onEmailChange?.(newValue);
-  };
+    onEmailChange?.(userEmail);
+  }, [userEmail, onEmailChange]);
 
   return (
     <div>
@@ -92,13 +94,8 @@ export function ProfileInfoForm({
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Input type="text" value={userName} onChange={handleNameChange} aria-label="이름" />
-              <Input
-                type="email"
-                value={userEmail}
-                onChange={handleEmailChange}
-                aria-label="이메일"
-              />
+              <Input type="text" {...register('name')} aria-label="이름" />
+              <Input type="email" {...register('email')} aria-label="이메일" />
             </div>
 
             <div className="flex flex-row gap-2 sm:gap-4">
