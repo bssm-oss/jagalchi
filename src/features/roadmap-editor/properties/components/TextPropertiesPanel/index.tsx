@@ -4,9 +4,9 @@ import { memo } from 'react';
 
 import { TEXT_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateNode } from '../../../hooks/use-update-node';
-import { EditorInput } from '../../atoms/EditorInput';
-import { ColorSelector } from '../../molecules/ColorSelector';
-import { PanelHeader } from '../../molecules/PanelHeader';
+import { ColorSelector } from '../ColorSelector';
+import { EditorInput } from '../EditorInput';
+import { PanelHeader } from '../PanelHeader';
 
 import type { JagalchiTextType, TextColorVariant } from '../../../types/editor.types';
 

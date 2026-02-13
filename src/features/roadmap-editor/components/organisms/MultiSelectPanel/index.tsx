@@ -21,9 +21,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
+import { ColorSelector } from '../../../properties/components';
 import { nodesAtom, selectedNodeIdsAtom } from '../../../stores/editor-atoms';
 import { alignNodes } from '../../../utils/align-nodes';
-import { ColorSelector } from '../../molecules/ColorSelector';
 
 import type { NodeColorVariant } from '../../../types/editor.types';
 import type { AlignDirection } from '../../../utils/align-nodes';

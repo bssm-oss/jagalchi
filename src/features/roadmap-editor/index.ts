@@ -1,20 +1,22 @@
 // Components - Atoms
-export { ColorPresetButton } from './components/atoms/ColorPresetButton';
 export { ToolbarButton } from './components/atoms/ToolbarButton';
-
-// Components - Molecules
-export { ColorPicker } from './components/molecules/ColorPicker';
-export { ColorSelector } from './components/molecules/ColorSelector';
 
 // Components - Organisms
 export { EditorHeader } from './components/organisms/EditorHeader';
 export { EditorToolbar } from './components/organisms/EditorToolbar';
 export { EditorSidebar } from './components/organisms/EditorSidebar';
-export { NodePropertiesPanel } from './components/organisms/NodePropertiesPanel';
-export { SectionPropertiesPanel } from './components/organisms/SectionPropertiesPanel';
-export { TextPropertiesPanel } from './components/organisms/TextPropertiesPanel';
-export { EdgePropertiesPanel } from './components/organisms/EdgePropertiesPanel';
 export { MultiSelectPanel } from './components/organisms/MultiSelectPanel';
+
+// Properties sub-feature
+export {
+  NodePropertiesPanel,
+  SectionPropertiesPanel,
+  TextPropertiesPanel,
+  EdgePropertiesPanel,
+  ColorPicker,
+  ColorSelector,
+  ColorPresetButton,
+} from './properties/components';
 
 // Canvas
 export { RoadmapCanvas, JagalchiNode, JagalchiSection, JagalchiText } from './canvas/components';

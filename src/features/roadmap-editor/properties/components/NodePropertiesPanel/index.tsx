@@ -7,9 +7,9 @@ import { EDITOR_MESSAGES } from '@/constants/messages';
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateNode } from '../../../hooks/use-update-node';
 import { validateUrl } from '../../../utils/url-validation';
-import { EditorInput } from '../../atoms/EditorInput';
-import { ColorSelector } from '../../molecules/ColorSelector';
-import { PanelHeader } from '../../molecules/PanelHeader';
+import { ColorSelector } from '../ColorSelector';
+import { EditorInput } from '../EditorInput';
+import { PanelHeader } from '../PanelHeader';
 
 import type { JagalchiNodeType, NodeColorVariant } from '../../../types/editor.types';
 

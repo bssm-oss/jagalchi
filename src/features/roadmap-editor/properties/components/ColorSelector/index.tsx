@@ -8,7 +8,7 @@ import { Palette } from 'lucide-react';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { isColorPickerOpenAtom, colorPickerTargetAtom } from '../../../stores/editor-atoms';
-import { ColorPresetButton } from '../../atoms/ColorPresetButton';
+import { ColorPresetButton } from '../ColorPresetButton';
 
 import type { NodeColorVariant, TextColorVariant } from '../../../types/editor.types';
 

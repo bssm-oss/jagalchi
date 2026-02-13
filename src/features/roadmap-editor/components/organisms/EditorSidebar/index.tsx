@@ -7,15 +7,17 @@ import { useAtomValue } from 'jotai';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import {
+  EdgePropertiesPanel,
+  NodePropertiesPanel,
+  SectionPropertiesPanel,
+  TextPropertiesPanel,
+} from '../../../properties/components';
+import {
   singleSelectedNodeAtom,
   singleSelectedEdgeAtom,
   selectedNodeIdsAtom,
 } from '../../../stores/editor-atoms';
-import { EdgePropertiesPanel } from '../EdgePropertiesPanel';
 import { MultiSelectPanel } from '../MultiSelectPanel';
-import { NodePropertiesPanel } from '../NodePropertiesPanel';
-import { SectionPropertiesPanel } from '../SectionPropertiesPanel';
-import { TextPropertiesPanel } from '../TextPropertiesPanel';
 
 import type {
   JagalchiNodeType,

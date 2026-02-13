@@ -1,13 +1,9 @@
-export { EdgePropertiesPanel } from './EdgePropertiesPanel';
 export { EditorHeader } from './EditorHeader';
 export { EditorSidebar } from './EditorSidebar';
 export { EditorToolbar } from './EditorToolbar';
 export { MultiSelectPanel } from './MultiSelectPanel';
-export { NodePropertiesPanel } from './NodePropertiesPanel';
 export { ResourceRecommendationModal } from './ResourceRecommendationModal';
 export { RoadmapAiModal } from './RoadmapAiModal';
 export { RoadmapGenerationForm } from './RoadmapGenerationForm';
 export { RoadmapModificationForm } from './RoadmapModificationForm';
-export { SectionPropertiesPanel } from './SectionPropertiesPanel';
-export { TextPropertiesPanel } from './TextPropertiesPanel';
 export { UnsavedChangesDialog } from './UnsavedChangesDialog';

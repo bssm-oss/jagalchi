@@ -6,8 +6,8 @@ import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateEdge } from '../../../hooks/use-update-node';
-import { ColorSelector } from '../../molecules/ColorSelector';
-import { PanelHeader } from '../../molecules/PanelHeader';
+import { ColorSelector } from '../ColorSelector';
+import { PanelHeader } from '../PanelHeader';
 
 import type { NodeColorVariant } from '../../../types/editor.types';
 import type { Edge } from '@xyflow/react';

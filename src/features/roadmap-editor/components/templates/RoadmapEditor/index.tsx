@@ -3,7 +3,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 
 import { RoadmapCanvas } from '../../../canvas/components';
-import { ColorPicker } from '../../molecules/ColorPicker';
+import { ColorPicker } from '../../../properties/components';
 import { EditorHeader } from '../../organisms/EditorHeader';
 import { EditorSidebar } from '../../organisms/EditorSidebar';
 import { EditorToolbar } from '../../organisms/EditorToolbar';
