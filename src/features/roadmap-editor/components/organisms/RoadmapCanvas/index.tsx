@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
   ReactFlow,
@@ -126,6 +126,16 @@ export function RoadmapCanvas() {
     [screenToFlowPosition, setNodes, setEdges],
   );
 
+  const defaultEdgeOptions = useMemo(
+    () => ({
+      type: 'smoothstep',
+      label: '',
+      labelStyle: { fontSize: 12, fontWeight: 400 },
+      labelBgStyle: { fill: 'white', fillOpacity: 0.9 },
+    }),
+    [],
+  );
+
   return (
     <div className="h-full w-full">
       <ReactFlow
@@ -145,12 +155,7 @@ export function RoadmapCanvas() {
         panOnScroll
         fitView
         fitViewOptions={{ padding: 0.2 }}
-        defaultEdgeOptions={{
-          type: 'smoothstep',
-          label: '',
-          labelStyle: { fontSize: 12, fontWeight: 400 },
-          labelBgStyle: { fill: 'white', fillOpacity: 0.9 },
-        }}
+        defaultEdgeOptions={defaultEdgeOptions}
         connectionMode={ConnectionMode.Loose}
         snapToGrid
         snapGrid={[16, 16]}
