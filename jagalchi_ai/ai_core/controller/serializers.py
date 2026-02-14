@@ -367,7 +367,7 @@ class InitDataSerializer(serializers.Serializer):
 
 class InitDataCreateSerializer(serializers.Serializer):
     """Init 데이터 생성 요청 시리얼라이저."""
-    roadmap_id = serializers.CharField()
+    roadmap_id = serializers.CharField(required=False)
     content = serializers.CharField()
     data_type = serializers.ChoiceField(choices=["file", "text"], default="text")
     filename = serializers.CharField(required=False, allow_null=True)
@@ -403,5 +403,4 @@ class NodeDescriptionSerializer(serializers.Serializer):
     node_title = serializers.CharField()
     description = serializers.CharField()
     generated_at = serializers.DateTimeField()
-
 
