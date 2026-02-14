@@ -14,15 +14,20 @@ class FakeTavilyClient:
         """
         self.calls = 0
 
+    @property
     def available(self) -> bool:
         """
-        테스트 환경에서 사용 가능 여부를 반환합니다.
-
-        @returns {bool} 항상 True.
+        WebSearchService는 `client.available`(bool)을 확인합니다.
         """
         return True
 
-    def search(self, query: str, max_results: int = 5, include_raw_content: bool = False) -> list[TavilyResult]:
+    def search(
+        self,
+        query: str,
+        max_results: int = 5,
+        days: int | None = None,
+        include_raw_content: bool = False,
+    ) -> list[TavilyResult]:
         """
         테스트용 고정 검색 결과를 반환합니다.
 
@@ -44,15 +49,17 @@ class FakeTavilyClient:
 
 
 class DisabledTavilyClient:
+    @property
     def available(self) -> bool:
-        """
-        비활성 클라이언트 상태를 반환합니다.
-
-        @returns {bool} 항상 False.
-        """
         return False
 
-    def search(self, query: str, max_results: int = 5, include_raw_content: bool = False) -> list[TavilyResult]:
+    def search(
+        self,
+        query: str,
+        max_results: int = 5,
+        days: int | None = None,
+        include_raw_content: bool = False,
+    ) -> list[TavilyResult]:
         """
         호출되면 안 되는 검색 메서드입니다.
 
@@ -80,6 +87,12 @@ class FakeExaClient:
         @returns {bool} 항상 True.
         """
         return True
+
+    def search_with_options(self, query: str, options) -> list[ExaResult]:
+        """
+        WebSearchService는 recency 필터가 있을 때 search_with_options를 사용합니다.
+        """
+        return self.search(query, max_results=getattr(options, "num_results", 5))
 
     def search(self, query: str, max_results: int = 5) -> list[ExaResult]:
         """
@@ -109,6 +122,9 @@ class DisabledExaClient:
         @returns {bool} 항상 False.
         """
         return False
+
+    def search_with_options(self, query: str, options) -> list[ExaResult]:
+        raise AssertionError("검색이 호출되면 안 됩니다.")
 
     def search(self, query: str, max_results: int = 5) -> list[ExaResult]:
         """
