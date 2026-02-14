@@ -52,6 +52,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register('generateDevTokens', JavaExec) {
+    group = 'development'
+    description = 'Prints dev JWT tokens for local testing (.env friendly)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gajeman.jagalchi.jagalchiserver.tools.DevJwtTokenCli'
+}
+
 bootJar {
     mainClass = 'gajeman.jagalchi.jagalchiserver.JagalchiServerApplication'
 }
