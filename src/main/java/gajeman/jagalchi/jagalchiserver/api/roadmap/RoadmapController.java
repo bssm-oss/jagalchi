@@ -1,5 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.api.roadmap;
 
+import gajeman.jagalchi.jagalchiserver.common.auth.AuthPrincipal;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDeleteResponse;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,23 +35,23 @@ public class RoadmapController {
 
     @PostMapping
     public ResponseEntity<RoadmapResponse> create(
-            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal,
             @Valid @RequestBody CreateRoadmapRequest request) {
-        RoadmapResponse response = roadmapService.create(request, requireUserId(userId));
+        RoadmapResponse response = roadmapService.create(request, principal.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{roadmapId}")
     public ResponseEntity<RoadmapDetailResponse> getDetail(
             @PathVariable Long roadmapId,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-        RoadmapDetailResponse response = roadmapService.getDetail(roadmapId, userId);
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal) {
+        RoadmapDetailResponse response = roadmapService.getDetail(roadmapId, principal.userId());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<RoadmapListResponse> getList(
-            @RequestHeader(value = "X-User-Id", required = false) Long requesterId,
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "latest") String sort,
@@ -60,34 +61,27 @@ public class RoadmapController {
             @RequestParam(required = false) Boolean isPublic,
             @RequestParam(required = false) List<String> tags) {
         RoadmapListResponse response = roadmapService.getList(
-                requesterId, page, size, sort, query, userId, directoryId, isPublic, tags);
+                principal.userId(), page, size, sort, query, userId, directoryId, isPublic, tags);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{roadmapId}")
     public ResponseEntity<RoadmapUpdateResponse> update(
             @PathVariable Long roadmapId,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId,
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal,
             @Valid @RequestBody UpdateRoadmapRequest request) {
-        RoadmapUpdateResponse response = roadmapService.update(roadmapId, request, requireUserId(userId));
+        RoadmapUpdateResponse response = roadmapService.update(roadmapId, request, principal.userId());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{roadmapId}")
     public ResponseEntity<RoadmapDeleteResponse> delete(
             @PathVariable Long roadmapId,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-        roadmapService.delete(roadmapId, requireUserId(userId));
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal) {
+        roadmapService.delete(roadmapId, principal.userId());
         RoadmapDeleteResponse response = RoadmapDeleteResponse.builder()
                 .message("Roadmap " + roadmapId + " deleted successfully")
                 .build();
         return ResponseEntity.ok(response);
-    }
-
-    private Long requireUserId(Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("X-User-Id header is required");
-        }
-        return userId;
     }
 }
