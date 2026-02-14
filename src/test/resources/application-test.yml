@@ -21,3 +21,8 @@ logging:
   level:
     org.springframework.web: DEBUG
     gajeman.jagalchi: DEBUG
+
+jagalchi:
+  auth:
+    jwt:
+      secret: test-secret
