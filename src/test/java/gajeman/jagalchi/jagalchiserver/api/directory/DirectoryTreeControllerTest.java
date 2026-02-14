@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,7 +57,7 @@ class DirectoryTreeControllerTest {
         roadmapRepository.save(roadmap);
 
         mockMvc.perform(get("/directories/tree")
-                        .header("X-User-Id", "1"))
+                        .header("Authorization", bearerEditToken(1L)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Root"))
                 .andExpect(jsonPath("$[0].path").value("/"))
@@ -66,9 +67,9 @@ class DirectoryTreeControllerTest {
     }
 
     @Test
-    void when_헤더가_없으면_400이_반환된다() throws Exception {
+    void when_토큰이_없으면_401이_반환된다() throws Exception {
         mockMvc.perform(get("/directories/tree"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error.code").value("BAD_REQUEST"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
     }
 }

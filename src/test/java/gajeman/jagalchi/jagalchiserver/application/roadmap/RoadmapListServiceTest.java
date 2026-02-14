@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -154,7 +155,7 @@ class RoadmapListServiceTest {
     @Test
     void when_페이지가_음수면_0으로_보정한다() {
         // given
-        Page<Roadmap> emptyPage = new PageImpl<>(List.of());
+        Page<Roadmap> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
         when(roadmapRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
         when(userService.findByIds(anyList())).thenReturn(Map.of());
 
@@ -169,7 +170,7 @@ class RoadmapListServiceTest {
     @Test
     void when_사이즈가_1미만이면_10으로_보정한다() {
         // given
-        Page<Roadmap> emptyPage = new PageImpl<>(List.of());
+        Page<Roadmap> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
         when(roadmapRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
         when(userService.findByIds(anyList())).thenReturn(Map.of());
 

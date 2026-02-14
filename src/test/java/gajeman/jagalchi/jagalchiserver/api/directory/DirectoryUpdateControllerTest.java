@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,7 +43,7 @@ class DirectoryUpdateControllerTest {
         UpdateDirectoryRequest request = new UpdateDirectoryRequest("New Name");
 
         mockMvc.perform(patch("/directories/{id}", directory.getId())
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -55,7 +56,7 @@ class DirectoryUpdateControllerTest {
         UpdateDirectoryRequest request = new UpdateDirectoryRequest("New Name");
 
         mockMvc.perform(patch("/directories/{id}", 999L)
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());

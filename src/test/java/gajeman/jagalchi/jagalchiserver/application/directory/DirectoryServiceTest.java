@@ -243,7 +243,6 @@ class DirectoryServiceTest {
 
         given(directoryRepository.findById(directoryId)).willReturn(Optional.of(directory));
         given(directoryRepository.findByOwnerIdAndParentId(userId, directoryId)).willReturn(List.of());
-        given(roadmapRepository.findByOwnerIdAndDirectoryId(userId, directoryId)).willReturn(List.of());
 
         // when
         directoryService.delete(directoryId, userId, "delete", null);
