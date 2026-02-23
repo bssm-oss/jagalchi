@@ -73,7 +73,7 @@ export function CommunityHero() {
           </div>
           <Input
             type="text"
-            placeholder="Type a roadmap name to find..."
+            placeholder="Type a command or search..."
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
             onKeyDown={handleKeyDown}

@@ -5,9 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 interface ContributorItemProps {
   name: string;
   avatarUrl?: string;
+  followerText?: string;
 }
 
-export function ContributorItem({ name, avatarUrl }: ContributorItemProps) {
+export function ContributorItem({
+  name,
+  avatarUrl,
+  followerText = 'Contributor',
+}: ContributorItemProps) {
   return (
     <div className="flex items-center gap-2">
       <Avatar className="h-[32px] w-[32px]">
@@ -18,7 +23,7 @@ export function ContributorItem({ name, avatarUrl }: ContributorItemProps) {
       </Avatar>
       <div className="flex flex-col">
         <span className="text-foreground text-[12px] leading-tight font-bold">{name}</span>
-        <span className="text-[10px] leading-none text-slate-400">Contributor</span>
+        <span className="text-[10px] leading-none text-slate-400">{followerText}</span>
       </div>
     </div>
   );
