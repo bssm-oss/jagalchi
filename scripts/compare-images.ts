@@ -35,27 +35,86 @@ interface ComparisonReport {
   results: ComparisonResult[];
 }
 
-const DIFF_THRESHOLD = 10; // 10% difference allowed
+interface FigmaVariant {
+  name: string;
+  nodeId: string;
+  storybookName: string;
+}
+
+interface FigmaManifestComponent {
+  componentName: string;
+  frameNodeId: string;
+  variants: FigmaVariant[];
+}
+
+interface FigmaNodeManifest {
+  components: FigmaManifestComponent[];
+}
+
+const MANIFEST_PATH = path.join(process.cwd(), 'scripts/figma-node-id-manifest.json');
+
+async function loadManifestTargetNames(): Promise<Set<string>> {
+  try {
+    const raw = await fs.readFile(MANIFEST_PATH, 'utf-8');
+    const manifest = JSON.parse(raw) as FigmaNodeManifest;
+    const targetNames = new Set<string>();
+
+    for (const component of manifest.components ?? []) {
+      for (const variant of component.variants ?? []) {
+        targetNames.add(`${variant.storybookName}.png`);
+      }
+    }
+
+    return targetNames;
+  } catch {
+    return new Set<string>();
+  }
+}
+
+const DIFF_THRESHOLD = 2; // 2% difference allowed
 
 async function loadPNG(filePath: string): Promise<PNG> {
   const buffer = await fs.readFile(filePath);
   return PNG.sync.read(buffer);
 }
 
-async function resizeImage(
-  imagePath: string,
+async function padOrCropImage(
+  imagePathOrBuffer: string | Buffer,
   targetWidth: number,
   targetHeight: number,
 ): Promise<PNG> {
-  const resizedBuffer = await sharp(imagePath)
-    .resize(targetWidth, targetHeight, {
-      fit: 'fill', // Stretch to exact dimensions
-      kernel: sharp.kernel.lanczos3,
+  const sourceBuffer = Buffer.isBuffer(imagePathOrBuffer)
+    ? imagePathOrBuffer
+    : await fs.readFile(imagePathOrBuffer);
+  const source = await sharp(sourceBuffer);
+  const metadata = await source.metadata();
+  const sourceWidth = metadata.width ?? targetWidth;
+  const sourceHeight = metadata.height ?? targetHeight;
+
+  const cropWidth = Math.min(sourceWidth, targetWidth);
+  const cropHeight = Math.min(sourceHeight, targetHeight);
+
+  const resizedBuffer = await source
+    .extract({ left: 0, top: 0, width: cropWidth, height: cropHeight })
+    .extend({
+      top: 0,
+      left: 0,
+      right: Math.max(0, targetWidth - cropWidth),
+      bottom: Math.max(0, targetHeight - cropHeight),
+      background: { r: 255, g: 255, b: 255, alpha: 1 },
     })
-    .png()
     .toBuffer();
 
   return PNG.sync.read(resizedBuffer);
+}
+
+async function flattenImageToWhite(imagePathOrBuffer: string | Buffer): Promise<PNG> {
+  const sourceBuffer = Buffer.isBuffer(imagePathOrBuffer)
+    ? imagePathOrBuffer
+    : await fs.readFile(imagePathOrBuffer);
+
+  const flattened = await sharp(sourceBuffer).flatten({ background: { r: 255, g: 255, b: 255 } }).png().toBuffer();
+  return PNG.sync.read(flattened);
 }
 
 async function compareImages(
@@ -66,22 +125,20 @@ async function compareImages(
   let figma = await loadPNG(figmaPath);
   let actual = await loadPNG(actualPath);
 
-  // Resize images if dimensions don't match
+  figma = await flattenImageToWhite(figmaPath);
+  actual = await flattenImageToWhite(actualPath);
+
+  // Normalize image sizes without distorting by stretching.
   if (figma.width !== actual.width || figma.height !== actual.height) {
     console.log(
       `  ⚠️  Size mismatch: Figma ${figma.width}x${figma.height} vs Actual ${actual.width}x${actual.height}`,
     );
-    console.log(`  📐 Resizing to smaller dimensions for comparison...`);
+    console.log(`  📐 Normalizing to Figma dimensions for comparison...`);
 
-    // Use the smaller dimensions
-    const targetWidth = Math.min(figma.width, actual.width);
-    const targetHeight = Math.min(figma.height, actual.height);
+    figma = await padOrCropImage(await fs.readFile(figmaPath), figma.width, figma.height);
+    actual = await padOrCropImage(await fs.readFile(actualPath), figma.width, figma.height);
 
-    // Resize both images to target dimensions
-    figma = await resizeImage(figmaPath, targetWidth, targetHeight);
-    actual = await resizeImage(actualPath, targetWidth, targetHeight);
-
-    console.log(`  ✓ Resized to ${targetWidth}x${targetHeight}\n`);
+    console.log(`  ✓ Normalized to ${figma.width}x${figma.height}\n`);
   }
 
   const { width, height } = figma;
@@ -110,8 +167,23 @@ async function main() {
 
   console.log('🔍 Comparing Figma exports with Storybook screenshots...\n');
 
-  // Get all PNG files from figma directory
-  const figmaFiles = (await fs.readdir(figmaDir)).filter((file) => file.endsWith('.png'));
+  const figmaManifestTargets = await loadManifestTargetNames();
+
+  // Prefer explicit manifest target files only.
+  const allPngFiles = (await fs.readdir(figmaDir)).filter((file) => file.endsWith('.png'));
+  const figmaFiles = allPngFiles.filter((file) =>
+    figmaManifestTargets.size === 0 || figmaManifestTargets.has(file),
+  );
+
+  const skippedOnManifest = allPngFiles.length - figmaFiles.length;
+  if (figmaManifestTargets.size > 0 && skippedOnManifest > 0) {
+    console.log(`ℹ️  Ignoring ${skippedOnManifest} stale Figma screenshots not in manifest`);
+  }
+
+  if (figmaManifestTargets.size > 0 && figmaFiles.length === 0) {
+    console.error('❌ figma-node-id-manifest.json did not match any files in visual-tests/figma/');
+    process.exit(1);
+  }
 
   if (figmaFiles.length === 0) {
     console.error('❌ No Figma exports found in visual-tests/figma/');
@@ -187,7 +259,7 @@ async function main() {
   console.log(`   Total: ${results.length}`);
   console.log(`   ✅ Passed: ${passed}`);
   console.log(`   ❌ Failed: ${failed}`);
-  console.log(`   Threshold: ${DIFF_THRESHOLD * 100}%`);
+  console.log(`   Threshold: ${DIFF_THRESHOLD}%`);
   console.log(`\n📄 Report saved to: ${reportPath}`);
 
   if (failed > 0) {

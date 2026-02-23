@@ -31,11 +31,18 @@ interface ComponentData {
   variants: FigmaVariant[];
 }
 
+interface FigmaNodeManifest {
+  components: ComponentData[];
+  fileKey: string;
+}
+
 interface SyncResult {
   timestamp: string;
   fileKey: string;
   components: ComponentData[];
 }
+
+const MANIFEST_PATH = path.join(process.cwd(), 'scripts/figma-node-id-manifest.json');
 
 /**
  * Fallback component mapping (used if figma-components.json doesn't exist)
@@ -99,6 +106,30 @@ const FALLBACK_FIGMA_COMPONENTS: Record<string, FigmaComponent> = {
  * Falls back to hardcoded mappings if file doesn't exist
  */
 async function loadComponentMappings(): Promise<Record<string, FigmaComponent>> {
+  try {
+    const manifestRaw = await fs.readFile(MANIFEST_PATH, 'utf-8');
+    const manifest = JSON.parse(manifestRaw) as FigmaNodeManifest;
+
+    const components: Record<string, FigmaComponent> = {};
+    for (const component of manifest.components ?? []) {
+      for (const variant of component.variants ?? []) {
+        components[variant.storybookName] = {
+          name: variant.name,
+          nodeId: variant.nodeId,
+          fileKey: manifest.fileKey || process.env.FIGMA_FILE_KEY || '',
+        };
+      }
+    }
+
+    if (Object.keys(components).length > 0) {
+      console.log(`📋 Loaded ${Object.keys(components).length} variants from figma-node-id-manifest.json`);
+      console.log('   (Preferred manifest over figma-components.json)\n');
+      return components;
+    }
+  } catch {
+    // fall back to figma-components.json
+  }
+
   const mappingPath = path.join(process.cwd(), 'scripts/figma-components.json');
 
   try {
@@ -138,6 +169,15 @@ interface FigmaImageResponse {
   images: Record<string, string>;
 }
 
+const MAX_RETRIES = 5;
+const RETRY_BASE_DELAY_MS = 1000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 async function exportFigmaImage(
   fileKey: string,
   nodeId: string,
@@ -148,30 +188,49 @@ async function exportFigmaImage(
     throw new Error('FIGMA_ACCESS_TOKEN environment variable is required');
   }
 
-  // Get image URL from Figma API
-  const imageUrl = `https://api.figma.com/v1/images/${fileKey}?ids=${nodeId}&format=png&scale=1`;
-  const response = await fetch(imageUrl, {
-    headers: {
-      'X-Figma-Token': token,
-    },
-  });
+  let imageDownloadUrl: string | null = null;
 
-  if (!response.ok) {
-    throw new Error(`Figma API error: ${response.status} ${response.statusText}`);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
+    const imageUrl = `https://api.figma.com/v1/images/${fileKey}?ids=${nodeId}&format=png&scale=1`;
+    const response = await fetch(imageUrl, {
+      headers: {
+        'X-Figma-Token': token,
+      },
+    });
+
+    if (response.status === 429) {
+      const retryAfter = Number.parseInt(response.headers.get('retry-after') ?? '', 10);
+      const delayMs = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : RETRY_BASE_DELAY_MS * attempt;
+      if (attempt === MAX_RETRIES) {
+        throw new Error(`Figma API error: ${response.status} ${response.statusText}`);
+      }
+      console.log(`⏳ Figma API rate limited (429). Retrying ${attempt}/${MAX_RETRIES} after ${delayMs}ms...`);
+      await sleep(delayMs);
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Figma API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as FigmaImageResponse;
+
+    if (data.err) {
+      throw new Error(`Figma API error: ${data.err}`);
+    }
+
+    imageDownloadUrl = data.images[nodeId];
+    if (!imageDownloadUrl) {
+      throw new Error(`No image URL returned for node ${nodeId}`);
+    }
+
+    break;
   }
 
-  const data = (await response.json()) as FigmaImageResponse;
-
-  if (data.err) {
-    throw new Error(`Figma API error: ${data.err}`);
-  }
-
-  const imageDownloadUrl = data.images[nodeId];
   if (!imageDownloadUrl) {
     throw new Error(`No image URL returned for node ${nodeId}`);
   }
 
-  // Download image
   const imageResponse = await fetch(imageDownloadUrl);
   if (!imageResponse.ok) {
     throw new Error(`Failed to download image: ${imageResponse.statusText}`);
@@ -188,6 +247,9 @@ async function main() {
 
   // Ensure output directory exists
   await fs.mkdir(outputDir, { recursive: true });
+  // Keep only current target outputs to avoid stale files inflating compare counts
+  const existingFiles = await fs.readdir(outputDir);
+  await Promise.all(existingFiles.map((file) => fs.unlink(path.join(outputDir, file)).catch(() => {})));
 
   const fileKey = process.env.FIGMA_FILE_KEY;
   if (!fileKey) {
@@ -208,6 +270,7 @@ async function main() {
 
   for (const [storybookName, component] of Object.entries(FIGMA_COMPONENTS)) {
     try {
+      await sleep(250);
       if (!component.nodeId || component.nodeId === '1-1' || component.nodeId === 'PLACEHOLDER') {
         console.log(`⚠ Skipped: ${storybookName} (no Figma node ID configured)`);
         skipped++;

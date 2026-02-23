@@ -216,7 +216,7 @@ function generateHTML(report: ComparisonReport): string {
       </div>
       <div class="summary-card">
         <h3>Threshold</h3>
-        <div class="value">${report.threshold * 100}%</div>
+      <div class="value">${report.threshold}%</div>
       </div>
     </div>
 
