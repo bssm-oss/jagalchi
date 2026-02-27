@@ -1,20 +1,42 @@
-const HEADER_MENU_ITEMS = ['로드맵 통계', '다크모드 전환', '내보내기', '이미지로 저장'] as const;
+'use client';
 
-const HEADER_MENU_ITEM_CLASS =
-  'flex h-[44px] w-[160px] items-center px-[12px] text-left text-[12px] font-medium text-slate-700';
+import { BarChart3, Moon, Download, Camera, Settings } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { VIEWER_MESSAGES } from '@/constants/messages';
 
 export function HeaderMenu() {
   return (
-    <div className="inline-block min-h-[44px] rounded-md border border-white/10 bg-[#020617] p-1 shadow-[0_1px_0_rgba(15,23,42,0.35)]">
-      {HEADER_MENU_ITEMS.map((label, index) => (
-        <button
-          type="button"
-          key={label}
-          className={`${HEADER_MENU_ITEM_CLASS}${index < HEADER_MENU_ITEMS.length - 1 ? 'border-b border-white/10' : ''} text-slate-100`}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Settings className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem>
+          <BarChart3 className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.MENU_STATISTICS}
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Moon className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.MENU_DARK_MODE}
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Download className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.MENU_EXPORT}
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Camera className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.MENU_SAVE_IMAGE}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

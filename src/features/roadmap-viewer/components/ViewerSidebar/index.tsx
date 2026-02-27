@@ -1,110 +1,147 @@
-import type { ReactElement } from 'react';
+'use client';
 
-import { ChevronDown, ChevronRight, Layers, Search, SlidersHorizontal, X } from 'lucide-react';
+import { useState } from 'react';
 
-interface ViewerSidebarItem {
-  level: number;
-  label: string;
-  children?: ViewerSidebarItem[];
+import { useAtom, useAtomValue } from 'jotai';
+import { Search, X } from 'lucide-react';
+
+import { VIEWER_MESSAGES } from '@/constants/messages';
+import type { JagalchiNodeData } from '@/types/roadmap.types';
+
+import {
+  selectedViewerNodeAtom,
+  selectedViewerNodeIdAtom,
+  viewerNodesAtom,
+} from '../../stores/viewer-atoms';
+
+interface ViewerSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-const ITEMS: ViewerSidebarItem[] = [
-  {
-    level: 0,
-    label: '전체 트리',
-    children: [
-      { level: 1, label: 'Frontend Roadmap' },
-      { level: 1, label: 'Backend Roadmap' },
-      { level: 1, label: 'DevOps Foundation' },
-    ],
-  },
-  {
-    level: 0,
-    label: '노드 타입',
-    children: [
-      { level: 1, label: '학습 노드 (9)' },
-      { level: 1, label: '실전 프로젝트 (5)' },
-      { level: 1, label: '참고 링크 (4)' },
-    ],
-  },
-  {
-    level: 0,
-    label: '메모',
-    children: [
-      { level: 1, label: '폴더: 주차별' },
-      { level: 1, label: '우선순위 메모' },
-    ],
-  },
-];
+export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
+  const nodes = useAtomValue(viewerNodesAtom);
+  const selectedNode = useAtomValue(selectedViewerNodeAtom);
+  const [selectedNodeId, setSelectedNodeId] = useAtom(selectedViewerNodeIdAtom);
+  const [searchQuery, setSearchQuery] = useState('');
 
-const renderNode = (item: ViewerSidebarItem): ReactElement => {
-  const hasChildren = Boolean(item.children?.length);
+  // Filter only jagalchi-node type nodes
+  const nodeItems = nodes.filter((n) => n.type === 'jagalchi-node');
+
+  // Apply search filter
+  const filteredNodes = searchQuery
+    ? nodeItems.filter((n) => {
+        const data = n.data as JagalchiNodeData;
+        return data.label.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+    : nodeItems;
+
+  if (!isOpen) return null;
 
   return (
-    <li key={`${item.label}-${item.level}`}>
-      <button
-        type="button"
-        className={`${
-          item.level === 0 ? 'font-semibold text-slate-200' : 'font-medium text-slate-300'
-        } flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12px] hover:text-white`}
-      >
-        {hasChildren ? (
-          item.level === 0 ? (
-            <ChevronDown className="h-3.5 w-3.5 text-slate-500" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          )
-        ) : (
-          item.level > 0 && <Layers className="h-3.5 w-3.5 text-slate-400" />
-        )}
-        <span className="truncate text-[12px] text-slate-200">{item.label}</span>
-      </button>
-      {hasChildren ? (
-        <ul className="ml-4 border-l border-white/15 pl-2">
-          {item.children?.map((child) => renderNode(child))}
-        </ul>
-      ) : null}
-    </li>
-  );
-};
-
-export function ViewerSidebar() {
-  return (
-    <aside className="flex h-full w-[320px] flex-col border-l border-white/10 bg-[#020617] text-slate-100">
-      <div className="border-b border-white/10 bg-black/20 px-3 py-3">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-semibold text-slate-200">레이어 패널</p>
-          <button type="button" className="rounded p-1 text-slate-500 hover:bg-slate-100">
-            <X className="h-3.5 w-3.5" />
+    <aside className="bg-card flex h-full w-[320px] shrink-0 flex-col rounded-xl border">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b px-4 py-3">
+        <h2 className="text-sm font-semibold">{VIEWER_MESSAGES.SIDEBAR_TITLE}</h2>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-muted-foreground hover:bg-muted rounded p-1"
+          >
+            <X className="h-4 w-4" />
           </button>
-        </div>
+        )}
+      </div>
 
+      {/* Search */}
+      <div className="border-b px-4 py-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="레이어 검색"
-            className="h-7 w-full rounded-md border border-white/15 bg-[#111827] pr-2 pl-7 text-[12px] text-slate-100 outline-none placeholder:text-slate-500"
+            placeholder={VIEWER_MESSAGES.SIDEBAR_SEARCH_PLACEHOLDER}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-background placeholder:text-muted-foreground focus:ring-ring h-9 w-full rounded-md border pr-3 pl-9 text-sm outline-none focus:ring-2"
           />
         </div>
       </div>
 
-      <div className="border-b border-white/10 px-3 py-2">
-        <button
-          type="button"
-          className="inline-flex h-7 items-center gap-1 rounded-md border border-white/15 px-2 text-[11px] text-slate-300"
-        >
-          <SlidersHorizontal className="h-3.5 w-3.5" />
-          필터
-        </button>
+      {/* Node list */}
+      <div className="flex-1 overflow-y-auto">
+        {filteredNodes.length === 0 ? (
+          <p className="text-muted-foreground p-4 text-center text-sm">
+            {VIEWER_MESSAGES.SIDEBAR_EMPTY}
+          </p>
+        ) : (
+          <ul className="p-2">
+            {filteredNodes.map((node) => {
+              const data = node.data as JagalchiNodeData;
+              const isSelected = node.id === selectedNodeId;
+              return (
+                <li key={node.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedNodeId(node.id)}
+                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                      isSelected
+                        ? 'bg-accent text-accent-foreground font-medium'
+                        : 'text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    {data.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {/* Detail panel */}
+        {selectedNode && selectedNode.type === 'jagalchi-node' && (
+          <div className="border-t p-4">
+            <h3 className="text-sm font-semibold">
+              {(selectedNode.data as JagalchiNodeData).label}
+            </h3>
+            {(selectedNode.data as JagalchiNodeData).description && (
+              <div className="mt-3">
+                <p className="text-muted-foreground text-xs font-medium">
+                  {VIEWER_MESSAGES.SIDEBAR_DETAIL_DESCRIPTION}
+                </p>
+                <p className="mt-1 text-sm">
+                  {(selectedNode.data as JagalchiNodeData).description}
+                </p>
+              </div>
+            )}
+            {(selectedNode.data as JagalchiNodeData).resources?.length > 0 && (
+              <div className="mt-3">
+                <p className="text-muted-foreground text-xs font-medium">
+                  {VIEWER_MESSAGES.SIDEBAR_DETAIL_RESOURCES}
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {(selectedNode.data as JagalchiNodeData).resources.map((url) => (
+                    <li key={url}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary block truncate text-sm hover:underline"
+                      >
+                        {url}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <ul className="scrollbar-thin flex-1 space-y-1 overflow-y-auto p-3 text-left">
-        {ITEMS.map((item) => renderNode(item))}
-      </ul>
-
-      <div className="border-t border-white/10 px-3 py-2 text-[11px] text-slate-400">
-        총 18개 항목
+      {/* Footer */}
+      <div className="text-muted-foreground border-t px-4 py-2 text-xs">
+        {VIEWER_MESSAGES.SIDEBAR_TOTAL_COUNT.replace('{count}', String(nodeItems.length))}
       </div>
     </aside>
   );

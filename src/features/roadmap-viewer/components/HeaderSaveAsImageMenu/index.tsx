@@ -1,20 +1,39 @@
-import { Camera } from 'lucide-react';
+'use client';
 
-const SAVE_AS_IMAGE_ITEMS = ['PNG', 'JPG', 'SVG'] as const;
+import { Camera, Image } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { VIEWER_MESSAGES } from '@/constants/messages';
 
 export function HeaderSaveAsImageMenu() {
   return (
-    <div className="inline-block min-h-[36px] rounded-md border border-white/10 bg-[#020617] shadow-[0_1px_0_rgba(15,23,42,0.35)]">
-      {SAVE_AS_IMAGE_ITEMS.map((label, index) => (
-        <button
-          type="button"
-          key={label}
-          className={`inline-flex h-[36px] w-[160px] items-center gap-2 px-3 text-[12px] font-medium text-slate-100${index < SAVE_AS_IMAGE_ITEMS.length - 1 ? 'border-b border-white/10' : ''}`}
-        >
-          <Camera className="h-3.5 w-3.5 text-slate-300" strokeWidth={2} />
-          {label}
-        </button>
-      ))}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Camera className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.MENU_SAVE_IMAGE}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem>
+          <Image className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.IMAGE_PNG}
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Image className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.IMAGE_JPG}
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Image className="mr-2 h-4 w-4" />
+          {VIEWER_MESSAGES.IMAGE_SVG}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

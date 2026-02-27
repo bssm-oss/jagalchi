@@ -5,6 +5,34 @@ export const PROFILE_MESSAGES = {
   MADE_ROADMAP: '만든 로드맵',
 } as const;
 
+export const VIEWER_MESSAGES = {
+  // Header menus
+  MENU_STATISTICS: '로드맵 통계',
+  MENU_DARK_MODE: '다크모드 전환',
+  MENU_EXPORT: '내보내기',
+  MENU_SAVE_IMAGE: '이미지로 저장',
+  EXPORT_MARKDOWN: '마크다운',
+  EXPORT_PDF: 'PDF',
+  EXPORT_JSON: 'JSON',
+  IMAGE_PNG: 'PNG',
+  IMAGE_JPG: 'JPG',
+  IMAGE_SVG: 'SVG',
+  // Sidebar
+  SIDEBAR_TITLE: '노드 목록',
+  SIDEBAR_SEARCH_PLACEHOLDER: '노드 검색',
+  SIDEBAR_EMPTY: '노드가 없습니다',
+  SIDEBAR_DETAIL_DESCRIPTION: '설명',
+  SIDEBAR_DETAIL_RESOURCES: '첨부 자료',
+  SIDEBAR_TOTAL_COUNT: '총 {count}개 노드',
+  // Loading/Error
+  LOADING: '로드맵을 불러오는 중...',
+  ERROR_NOT_FOUND: '로드맵을 찾을 수 없습니다',
+  ERROR_LOAD_FAILED: '로드맵을 불러오는데 실패했습니다',
+  // View mode
+  VIEW_CANVAS: '캔버스',
+  VIEW_CARDS: '카드',
+} as const;
+
 export const EDITOR_MESSAGES = {
   SAVE_SUCCESS: '저장됨',
   SAVE_FAILED: '저장 실패',
