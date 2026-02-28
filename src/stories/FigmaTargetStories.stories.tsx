@@ -9,7 +9,6 @@ import {
   Wand2,
   X,
 } from 'lucide-react';
-import { useMemo } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Provider as JotaiProvider } from 'jotai';
@@ -17,59 +16,21 @@ import { useHydrateAtoms } from 'jotai/utils';
 import type { Edge } from '@xyflow/react';
 import { ReactFlowProvider } from '@xyflow/react';
 
-import { colors, semanticColors } from '@/constants/colors';
-import { typography } from '@/constants/typography';
-import { AuthCard, FindPasswordForm, GoogleAuthButton, LoginForm, RegisterForm } from '@/features/auth';
+import { MyRoadmapsSidebar as MyRoadmapsSidebarComponent } from '@/features/my-roadmaps/components/organisms';
+import { CommunityHero } from '@/features/community';
 import {
-  MyRoadmapsFilter as MyRoadmapsFilterComponent,
-} from '@/features/my-roadmaps/components/molecules/MyRoadmapsFilter';
-import { AddDirectoryModal } from '@/features/my-roadmaps/components/molecules/AddDirectoryModal';
-import { AddRoadmapModal } from '@/features/my-roadmaps/components/molecules/AddRoadmapModal';
-import { MyRoadmapsToolbar } from '@/features/my-roadmaps/components/molecules';
-import {
-  MyRoadmapsGrid,
-  MyRoadmapsHeader as MyRoadmapsHeaderComponent,
-  MyRoadmapsSidebar as MyRoadmapsSidebarComponent,
-} from '@/features/my-roadmaps/components/organisms';
-import { SelectLocationModal } from '@/features/my-roadmaps/components/molecules/SelectLocationModal';
-import type { RoadmapData } from '@/features/my-roadmaps/types/my-roadmaps.types';
-import { RoadmapCard as MyRoadmapCard } from '@/features/my-roadmaps/components/atoms/RoadmapCard';
-import {
-  ContributorItem,
-  CommunityFilter,
-  CommunityHero,
-  RoadmapCard as CommunityRoadmapCard,
-  RoadmapDetail,
-} from '@/features/community';
-import {
-  Profile,
   ProfileBio,
   ProfileHeader,
   ProfileInfoForm,
-  ProfileStreak as ProfileStreakComponent,
   ProfileCustomLinks,
   ProfileCustomOrganization,
   ContributionGraph,
-  ProfileCustomBoxArea,
-  MadeRoadmapList,
 } from '@/features/profile/components';
 import {
   MadeRoadmapList as ProfileMadeRoadmapList,
   ProfileThirdBox as ProfileThirdBoxComponent,
 } from '@/features/profile/components/organisms';
-import {
-  RoadmapGenerationForm,
-  RoadmapModificationForm,
-  RoadmapAiModal,
-} from '@/features/roadmap-editor/components/organisms';
-import {
-  EdgePropertiesPanel,
-  NodePropertiesPanel,
-  SectionPropertiesPanel,
-  TextPropertiesPanel,
-} from '@/features/roadmap-editor/properties/components';
 import { ToolbarButton } from '@/features/roadmap-editor/toolbar/components/ToolbarButton';
-import { EditorAiMenu as StoryEditorAiMenu } from '@/features/roadmap-editor/components/molecules/EditorAiMenu';
 import { RoadmapCanvas } from '@/features/roadmap-editor/canvas/components';
 import { EditorToolbar } from '@/features/roadmap-editor/toolbar/components';
 import { EditorSidebar } from '@/features/roadmap-editor/sidebar/components';
@@ -78,18 +39,9 @@ import {
   type JagalchiNodeType,
   type JagalchiSectionType,
   type JagalchiTextType,
+  RoadmapNode,
 } from '@/features/roadmap-editor/types/editor.types';
 import { nodesAtom, edgesAtom } from '@/features/roadmap-editor/stores/editor-atoms';
-import type { RoadmapNode } from '@/features/roadmap-editor/types/editor.types';
-import {
-  HeaderExportMenu as ViewerHeaderExportMenu,
-  HeaderMenu as ViewerHeaderMenu,
-  HeaderSaveAsImageMenu as ViewerHeaderSaveAsImageMenu,
-  RoadmapHeader as ViewerRoadmapHeader,
-  RoadmapViewer,
-  ViewerSidebar as ViewerSidebarComponent,
-  ZoomButtonGroup as ZoomButtonGroupComponent,
-} from '@/features/roadmap-viewer';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -145,12 +97,6 @@ const FIGMA_FRAME = ({
   >
     {children}
   </div>
-);
-
-const FigmaPlaceholder = ({ label }: { label: string }) => (
-  <Card className="border-muted/60 bg-muted/20 text-muted-foreground rounded-xl border border-dashed p-10 text-sm">
-    TODO: {label}
-  </Card>
 );
 
 const FIGMA_REFERENCE = {
@@ -212,150 +158,6 @@ const FigmaReferenceImage = ({ storyName }: { storyName: keyof typeof FIGMA_REFE
     />
   );
 };
-
-const FigmaColorPreview = () => {
-  const swatches = useMemo(() => ({ ...colors }), []);
-
-  return (
-    <div className="space-y-6 p-6">
-      <h3 className="text-2xl font-bold">Colors</h3>
-      <div className="space-y-4">
-        {Object.entries(swatches).map(([name, palette]) => (
-          <section key={name} className="space-y-2">
-            <div className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
-              {name}
-            </div>
-            <div className="grid grid-cols-11 gap-2">
-              {(Object.entries(palette as Record<string, string>) as [string, string][])
-                .filter(([, value]) => Boolean(value))
-                .map(([shade, value]) => (
-                  <div key={`${name}-${shade}`} className="space-y-1">
-                    <div className="h-14 w-14 rounded-md border border-slate-200" style={{ backgroundColor: value }} />
-                    <div className="text-[10px] text-slate-600">{name}-{shade}</div>
-                    <div className="text-[10px] text-slate-500">{value}</div>
-                  </div>
-                ))}
-            </div>
-          </section>
-        ))}
-      </div>
-      <div className="grid gap-2">
-        <div className="h-4 rounded bg-gradient-to-r from-white to-slate-100" />
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded bg-green-100 px-3 py-2 text-xs">Success</div>
-          <div className="rounded bg-amber-100 px-3 py-2 text-xs">Warning</div>
-          <div className="rounded bg-rose-100 px-3 py-2 text-xs">Error</div>
-        </div>
-        <pre className="rounded border border-slate-200 bg-slate-50 p-3 text-xs">
-          {`semanticColors = ${JSON.stringify(semanticColors, null, 2)}`}
-        </pre>
-      </div>
-    </div>
-  );
-};
-
-const FigmaMiniSelectStory = ({
-  buttonLabel,
-  rows,
-  open,
-  openHeight = 87,
-}: {
-  buttonLabel: string;
-  rows: string[];
-  open?: boolean;
-  openHeight?: number;
-}) => {
-  const isOpen = !!open;
-  return (
-    <div className="flex items-start justify-center rounded-md border bg-white p-1">
-      <button
-        type="button"
-        className="h-9 w-[124px] rounded border border-slate-200 bg-[#F8FAFC] px-3 text-left text-xs font-semibold text-slate-900"
-      >
-        {buttonLabel}
-      </button>
-      {isOpen && (
-        <div
-          className="ml-px mt-1 w-[124px] rounded border border-slate-200 bg-white p-1"
-          style={{ maxHeight: openHeight }}
-        >
-          {rows.map((row) => (
-            <div
-              key={row}
-              className="text-slate-700 border-b border-slate-100 px-2 py-1 text-[11px] last:border-0"
-            >
-              {row}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const FigmaFileTreePreview = () => (
-  <div className="h-full w-full border-border bg-white p-2">
-    <div className="space-y-1">
-      <div className="flex items-center gap-1 text-xs text-slate-700">
-        <span className="inline-block h-2 w-2 rounded-full bg-slate-900" />
-        <span>전체</span>
-      </div>
-      <div className="ml-3 space-y-1 border-l border-slate-200 pl-2">
-        <div className="flex items-center gap-1 text-xs text-slate-600">
-          <span className="inline-block h-2 w-2 rounded-full bg-slate-300" />
-          <span>Front-end</span>
-        </div>
-        <div className="ml-3 flex items-center gap-1 text-[11px] text-slate-500">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300" />
-          <span>Roadmap A</span>
-        </div>
-        <div className="ml-3 flex items-center gap-1 text-[11px] text-slate-500">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300" />
-          <span>Roadmap B</span>
-        </div>
-      </div>
-      <div className="ml-3 space-y-1 border-l border-slate-200 pl-2">
-        <div className="flex items-center gap-1 text-xs text-slate-600">
-          <span className="inline-block h-2 w-2 rounded-full bg-slate-300" />
-          <span>Back-end</span>
-        </div>
-        <div className="ml-3 flex items-center gap-1 text-[11px] text-slate-500">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300" />
-          <span>Roadmap C</span>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const mockRoadmaps: RoadmapData[] = [
-  {
-    id: '1',
-    title: 'Frontend Roadmap',
-    author: '홍길동',
-    type: 'Roadmap',
-    updatedAt: '2025-01-01T00:00:00.000Z',
-    isFavorite: true,
-    category: 'my-roadmap',
-  },
-  {
-    id: '2',
-    title: 'Backend Roadmap',
-    author: '김개발',
-    type: 'Roadmap',
-    updatedAt: '2024-12-22T00:00:00.000Z',
-    category: 'community',
-  },
-  {
-    id: '3',
-    title: 'Team Folder',
-    type: 'Directory',
-    author: 'Team',
-    updatedAt: '2024-10-20T00:00:00.000Z',
-    category: 'community',
-    fileCount: 8,
-  },
-];
 
 const mockNode: JagalchiNodeType = {
   id: 'node-1',
@@ -450,11 +252,16 @@ export const Icons: Story = {
   render: () => (
     <FIGMA_SCREEN_WRAPPER>
       <div className="grid w-full max-w-4xl grid-cols-6 gap-4">
-        {[Search, Settings, Sparkles, Wand2, X, Type, ArrowDownWideNarrow, Map, Clock].map((Icon, idx) => (
-          <Card key={idx} className="flex h-20 items-center justify-center gap-2 border border-dashed">
-            <Icon className="text-slate-700" size={22} />
-          </Card>
-        ))}
+        {[Search, Settings, Sparkles, Wand2, X, Type, ArrowDownWideNarrow, Map, Clock].map(
+          (Icon, idx) => (
+            <Card
+              key={idx}
+              className="flex h-20 items-center justify-center gap-2 border border-dashed"
+            >
+              <Icon className="text-slate-700" size={22} />
+            </Card>
+          ),
+        )}
       </div>
     </FIGMA_SCREEN_WRAPPER>
   ),
@@ -573,7 +380,12 @@ export const ProfileComponents: Story = {
           ]}
         />
         <ContributionGraph data={[]} />
-        <ProfileInfoForm name="홍길동" email="hong@example.com" followerCount={12} followingCount={3} />
+        <ProfileInfoForm
+          name="홍길동"
+          email="hong@example.com"
+          followerCount={12}
+          followingCount={3}
+        />
         <ProfileMadeRoadmapList />
         <ProfileThirdBoxComponent />
       </div>
@@ -593,7 +405,7 @@ export const EditorComponents: Story = {
   render: () => (
     <FIGMA_SCREEN_WRAPPER className="min-h-[900px] p-0">
       <FigmaEditorCanvas>
-        <div className="absolute left-0 top-0 z-10">
+        <div className="absolute top-0 left-0 z-10">
           <div className="m-6 flex items-center gap-2 rounded-lg border bg-white p-2 shadow-sm">
             <h3 className="text-sm font-semibold">Editor Components</h3>
           </div>
@@ -611,20 +423,20 @@ export const MenusComponents: Story = {
   render: () => (
     <FIGMA_SCREEN_WRAPPER className="min-h-[900px] p-0">
       <FigmaEditorCanvas>
-      <div className="flex w-full flex-wrap items-center gap-3">
-        <EditorToolbar />
-        <EditorSidebar />
-        <div className="border-border ml-6 rounded-md border bg-white/90 px-4 py-2 text-xs text-slate-500">
-          Editor Header
+        <div className="flex w-full flex-wrap items-center gap-3">
+          <EditorToolbar />
+          <EditorSidebar />
+          <div className="border-border ml-6 rounded-md border bg-white/90 px-4 py-2 text-xs text-slate-500">
+            Editor Header
+          </div>
+          <ToolbarButton icon={<Settings />} label="Settings" isActive={false} onClick={() => {}} />
+          <LoadingButton isLoading={false}>버튼</LoadingButton>
+          <Button size="sm">Button</Button>
+          <Button variant="outline" size="sm">
+            Outline
+          </Button>
         </div>
-        <ToolbarButton icon={<Settings />} label="Settings" isActive={false} onClick={() => {}} />
-        <LoadingButton isLoading={false}>버튼</LoadingButton>
-        <Button size="sm">Button</Button>
-        <Button variant="outline" size="sm">
-          Outline
-        </Button>
-      </div>
-      <Separator className="mt-6" />
+        <Separator className="mt-6" />
       </FigmaEditorCanvas>
     </FIGMA_SCREEN_WRAPPER>
   ),
