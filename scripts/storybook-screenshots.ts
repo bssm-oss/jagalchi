@@ -223,7 +223,9 @@ async function captureStoryScreenshot(
   try {
     await page.goto(url, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(500);
-    await page.waitForSelector(CAPTURE_CANDIDATE_SELECTORS, { timeout: 1200 }).catch(() => undefined);
+    await page
+      .waitForSelector(CAPTURE_CANDIDATE_SELECTORS, { timeout: 1200 })
+      .catch(() => undefined);
 
     const captureTargets = page.locator(CAPTURE_CANDIDATE_SELECTORS);
     const captureTargetCount = await captureTargets.count().catch(() => 0);
@@ -231,9 +233,7 @@ async function captureStoryScreenshot(
 
     for (let i = 0; i < captureTargetCount; i += 1) {
       const candidate = captureTargets.nth(i);
-      const candidateBox = await candidate
-        .boundingBox()
-        .catch(() => null);
+      const candidateBox = await candidate.boundingBox().catch(() => null);
 
       if (!candidateBox || candidateBox.width <= 0 || candidateBox.height <= 0) {
         continue;
@@ -294,22 +294,24 @@ async function captureStoryScreenshot(
 
     const storyRoot = page.locator('#storybook-root');
     const storyHasChild = await storyRoot
-      .evaluate((el: Element) => Array.from(el.children).some((child: Element) => child.getClientRects().length > 0))
+      .evaluate((el: Element) =>
+        Array.from(el.children).some((child: Element) => child.getClientRects().length > 0),
+      )
       .catch(() => false);
 
-      if (storyHasChild) {
-        const firstChild = storyRoot.locator(':scope > *').first();
-        const childVisible = await firstChild.isVisible().catch(() => false);
+    if (storyHasChild) {
+      const firstChild = storyRoot.locator(':scope > *').first();
+      const childVisible = await firstChild.isVisible().catch(() => false);
 
-        if (childVisible) {
-          await firstChild.screenshot({
-            path: outputPath,
-            animations: 'disabled',
-            omitBackground: true,
-          });
-          console.log(`✓ Captured: ${path.basename(outputPath)}`);
-          return;
-        }
+      if (childVisible) {
+        await firstChild.screenshot({
+          path: outputPath,
+          animations: 'disabled',
+          omitBackground: true,
+        });
+        console.log(`✓ Captured: ${path.basename(outputPath)}`);
+        return;
+      }
 
       await storyRoot.screenshot({
         path: outputPath,

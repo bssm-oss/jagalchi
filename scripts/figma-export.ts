@@ -122,7 +122,9 @@ async function loadComponentMappings(): Promise<Record<string, FigmaComponent>> 
     }
 
     if (Object.keys(components).length > 0) {
-      console.log(`📋 Loaded ${Object.keys(components).length} variants from figma-node-id-manifest.json`);
+      console.log(
+        `📋 Loaded ${Object.keys(components).length} variants from figma-node-id-manifest.json`,
+      );
       console.log('   (Preferred manifest over figma-components.json)\n');
       return components;
     }
@@ -200,11 +202,16 @@ async function exportFigmaImage(
 
     if (response.status === 429) {
       const retryAfter = Number.parseInt(response.headers.get('retry-after') ?? '', 10);
-      const delayMs = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : RETRY_BASE_DELAY_MS * attempt;
+      const delayMs =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? retryAfter * 1000
+          : RETRY_BASE_DELAY_MS * attempt;
       if (attempt === MAX_RETRIES) {
         throw new Error(`Figma API error: ${response.status} ${response.statusText}`);
       }
-      console.log(`⏳ Figma API rate limited (429). Retrying ${attempt}/${MAX_RETRIES} after ${delayMs}ms...`);
+      console.log(
+        `⏳ Figma API rate limited (429). Retrying ${attempt}/${MAX_RETRIES} after ${delayMs}ms...`,
+      );
       await sleep(delayMs);
       continue;
     }
@@ -249,7 +256,9 @@ async function main() {
   await fs.mkdir(outputDir, { recursive: true });
   // Keep only current target outputs to avoid stale files inflating compare counts
   const existingFiles = await fs.readdir(outputDir);
-  await Promise.all(existingFiles.map((file) => fs.unlink(path.join(outputDir, file)).catch(() => {})));
+  await Promise.all(
+    existingFiles.map((file) => fs.unlink(path.join(outputDir, file)).catch(() => {})),
+  );
 
   const fileKey = process.env.FIGMA_FILE_KEY;
   if (!fileKey) {

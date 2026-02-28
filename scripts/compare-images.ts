@@ -113,7 +113,10 @@ async function flattenImageToWhite(imagePathOrBuffer: string | Buffer): Promise<
     ? imagePathOrBuffer
     : await fs.readFile(imagePathOrBuffer);
 
-  const flattened = await sharp(sourceBuffer).flatten({ background: { r: 255, g: 255, b: 255 } }).png().toBuffer();
+  const flattened = await sharp(sourceBuffer)
+    .flatten({ background: { r: 255, g: 255, b: 255 } })
+    .png()
+    .toBuffer();
   return PNG.sync.read(flattened);
 }
 
@@ -171,8 +174,8 @@ async function main() {
 
   // Prefer explicit manifest target files only.
   const allPngFiles = (await fs.readdir(figmaDir)).filter((file) => file.endsWith('.png'));
-  const figmaFiles = allPngFiles.filter((file) =>
-    figmaManifestTargets.size === 0 || figmaManifestTargets.has(file),
+  const figmaFiles = allPngFiles.filter(
+    (file) => figmaManifestTargets.size === 0 || figmaManifestTargets.has(file),
   );
 
   const skippedOnManifest = allPngFiles.length - figmaFiles.length;
