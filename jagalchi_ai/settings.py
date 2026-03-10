@@ -74,6 +74,15 @@ class EnvSettings(BaseSettings):
     AI_DEFAULT_MODEL: str = "gemini-2.5-flash"
     AI_TIMEOUT: int = 30
     AI_MAX_RETRIES: int = 3
+    
+    # AI API 인증 (JWT)
+    AI_AUTH_ENABLED: bool = True
+    AI_AUTH_JWT_SECRET: SecretStr = Field(
+        default="ai-jwt-secret-dev-only-do-not-use-in-production",
+        description="AI API JWT 서명/검증용 시크릿 (HS256). 운영에서는 반드시 교체하세요.",
+    )
+    AI_AUTH_JWT_ALGORITHM: str = "HS256"
+    AI_AUTH_JWT_LEEWAY_SECONDS: int = 30
 
     # 캐시 (Redis) 설정
     REDIS_URL: Optional[str] = None
@@ -238,6 +247,12 @@ CORS_ALLOW_HEADERS = [
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "UNICODE_JSON": True,  # 한글 깨짐 방지
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "jagalchi_ai.ai_core.controller.auth.AIAccessTokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "jagalchi_ai.ai_core.controller.auth.HasAIAccess",
+    ],
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
@@ -347,6 +362,14 @@ AI_DISABLE_EXTERNAL = env.AI_DISABLE_EXTERNAL
 AI_DEFAULT_MODEL = env.AI_DEFAULT_MODEL
 AI_TIMEOUT = env.AI_TIMEOUT
 AI_MAX_RETRIES = env.AI_MAX_RETRIES
+
+# -----------------------------------------------------------------------------
+# AI API 인증 설정 (전역 변수로 노출)
+# -----------------------------------------------------------------------------
+AI_AUTH_ENABLED = env.AI_AUTH_ENABLED
+AI_AUTH_JWT_SECRET = env.AI_AUTH_JWT_SECRET.get_secret_value()
+AI_AUTH_JWT_ALGORITHM = env.AI_AUTH_JWT_ALGORITHM
+AI_AUTH_JWT_LEEWAY_SECONDS = env.AI_AUTH_JWT_LEEWAY_SECONDS
 
 # -----------------------------------------------------------------------------
 # 운영 환경 보안 설정

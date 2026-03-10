@@ -9,6 +9,7 @@ from drf_spectacular.utils import OpenApiExample, OpenApiParameter, OpenApiTypes
 
 from jagalchi_ai.ai_core.domain.learning_record import LearningRecord
 from jagalchi_ai.ai_core.repository import mock_data
+from jagalchi_ai.ai_core.controller.auth import get_ai_user, resolve_scoped_param
 from jagalchi_ai.ai_core.service.analytics.learning_analytics import LearningPatternService
 from jagalchi_ai.ai_core.service.comments.comment_intelligence import CommentIntelligenceService
 from jagalchi_ai.ai_core.service.coach.learning_coach import LearningCoachService
@@ -115,9 +116,22 @@ class DemoAIAPIView(APIView):
         @param request DRF 요청 객체 (쿼리 파라미터로 데모 입력을 받는다).
         @returns 모든 AI 기능 결과를 합친 데모 응답 JSON.
         """
-        roadmap_id = request.GET.get("roadmap_id") or "rm_frontend"
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
         tech_slug = request.GET.get("tech_slug") or "react"
-        user_id = request.GET.get("user_id") or "user_1"
+        user_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("user_id"),
+            token_value=token_user.sub if token_user else None,
+            field_name="user_id",
+            default="user_1",
+        )
         question = request.GET.get("question") or "React useEffect 에러 해결 방법"
         goal = request.GET.get("goal") or "프론트엔드 심화"
         target_role = request.GET.get("target_role") or "frontend_dev"
@@ -203,7 +217,15 @@ class RecordCoachAPIView(APIView):
         @param request DRF 요청 객체 (roadmap_id/node_id/compose_level 사용).
         @returns Record Coach 결과 JSON.
         """
-        roadmap = _resolve_roadmap(request.GET.get("roadmap_id") or "rm_frontend")
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
+        roadmap = _resolve_roadmap(roadmap_id)
         node = _resolve_node(roadmap, request.GET.get("node_id"))
         compose_level = request.GET.get("compose_level") or "quick"
         record = _build_record(node, roadmap)
@@ -232,7 +254,14 @@ class RelatedRoadmapsAPIView(APIView):
         @param request DRF 요청 객체 (roadmap_id 사용).
         @returns 연관 로드맵 추천 JSON.
         """
-        roadmap_id = request.GET.get("roadmap_id") or "rm_frontend"
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
         payload = _related_roadmaps(roadmap_id)
         return _serialize(RelatedRoadmapsSerializer, payload)
 
@@ -292,7 +321,15 @@ class TechFingerprintAPIView(APIView):
         @param request DRF 요청 객체 (roadmap_id/include_rationale 사용).
         @returns 로드맵 기술 지문 JSON.
         """
-        roadmap = _resolve_roadmap(request.GET.get("roadmap_id") or "rm_frontend")
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
+        roadmap = _resolve_roadmap(roadmap_id)
         include_rationale = request.GET.get("include_rationale") == "true"
         payload = _tech_fingerprint(roadmap, include_rationale)
         return _serialize(TechFingerprintSerializer, payload)
@@ -321,7 +358,14 @@ class CommentDigestAPIView(APIView):
         @param request DRF 요청 객체 (roadmap_id/period_days 사용).
         @returns 코멘트 다이제스트 JSON.
         """
-        roadmap_id = request.GET.get("roadmap_id") or "rm_frontend"
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
         period_days = int(request.GET.get("period_days") or 14)
         service = CommentIntelligenceService()
         payload = service.comment_digest(roadmap_id, period_days=period_days)
@@ -351,7 +395,14 @@ class CommentDuplicateAPIView(APIView):
         @param request DRF 요청 객체 (roadmap_id/query/top_k 사용).
         @returns 중복 질문 후보 배열 JSON.
         """
-        roadmap_id = request.GET.get("roadmap_id") or "rm_frontend"
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default="rm_frontend",
+        )
         query = request.GET.get("query") or "React useEffect 에러 해결 방법"
         top_k = int(request.GET.get("top_k") or 3)
         service = CommentIntelligenceService()
@@ -427,7 +478,14 @@ class LearningPatternAPIView(APIView):
         @param request DRF 요청 객체 (user_id/days 사용).
         @returns 학습 패턴 분석 JSON.
         """
-        user_id = request.GET.get("user_id") or "user_1"
+        token_user = get_ai_user(request)
+        user_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("user_id"),
+            token_value=token_user.sub if token_user else None,
+            field_name="user_id",
+            default="user_1",
+        )
         days = int(request.GET.get("days") or 30)
         payload = LearningPatternService().analyze(user_id, days=days)
         return _serialize(LearningPatternSerializer, payload)
@@ -542,7 +600,14 @@ class LearningCoachAPIView(APIView):
         @param request DRF 요청 객체 (user_id/question/compose_level 사용).
         @returns 학습 코치 응답 JSON.
         """
-        user_id = request.GET.get("user_id") or "user_1"
+        token_user = get_ai_user(request)
+        user_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("user_id"),
+            token_value=token_user.sub if token_user else None,
+            field_name="user_id",
+            default="user_1",
+        )
         question = request.GET.get("question") or "React useEffect 에러 해결 방법"
         compose_level = request.GET.get("compose_level") or "quick"
         graph_rag = GraphRAGService(mock_data.ROADMAPS)
@@ -575,7 +640,14 @@ class RoadmapRecommendationAPIView(APIView):
         @returns 그래프 기반 로드맵 추천 JSON.
         """
         target_role = request.GET.get("target_role") or "frontend_dev"
-        user_id = request.GET.get("user_id") or "user_1"
+        token_user = get_ai_user(request)
+        user_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("user_id"),
+            token_value=token_user.sub if token_user else None,
+            field_name="user_id",
+            default="user_1",
+        )
         payload = _roadmap_recommendation(target_role, user_id)
         return _serialize(RoadmapRecommendationSerializer, payload)
 
@@ -635,7 +707,8 @@ def _related_roadmaps(roadmap_id: str):
     @param roadmap_id 기준 로드맵 ID.
     @returns 연관 로드맵 추천 JSON.
     """
-    return RelatedRoadmapsService(mock_data.ROADMAPS).generate_snapshot(roadmap_id)
+    resolved = _resolve_roadmap(roadmap_id)
+    return RelatedRoadmapsService(mock_data.ROADMAPS).generate_snapshot(resolved.roadmap_id)
 
 
 def _tech_card(tech_slug: str):
@@ -1073,11 +1146,25 @@ class InitDataListCreateAPIView(APIView):
 
     @extend_schema(
         summary="Init Data 목록 조회",
-        parameters=[OpenApiParameter("roadmap_id", OpenApiTypes.STR, required=True, description="로드맵 ID")],
+        parameters=[
+            OpenApiParameter(
+                "roadmap_id",
+                OpenApiTypes.STR,
+                required=False,
+                description="로드맵 ID (미지정 시 토큰의 roadmapId 사용)",
+            )
+        ],
         responses={200: InitDataSerializer(many=True)},
     )
     def get(self, request) -> Response:
-        roadmap_id = request.GET.get("roadmap_id")
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default=None,
+        )
         if not roadmap_id:
             return Response({"error": "roadmap_id required"}, status=400)
         
@@ -1091,11 +1178,25 @@ class InitDataListCreateAPIView(APIView):
         responses={201: InitDataSerializer},
     )
     def post(self, request) -> Response:
+        token_user = get_ai_user(request)
         serializer = InitDataCreateSerializer(data=request.data)
         if serializer.is_valid():
+            validated = dict(serializer.validated_data)
+            roadmap_id = resolve_scoped_param(
+                request,
+                param_value=validated.get("roadmap_id"),
+                token_value=token_user.roadmap_id if token_user else None,
+                field_name="roadmap_id",
+                default=None,
+            )
+            if not roadmap_id:
+                return Response({"error": "roadmap_id required"}, status=400)
+            validated["roadmap_id"] = roadmap_id
             service = InitDataService()
-            result = service.create_init_data(**serializer.validated_data)
-            return _serialize(InitDataSerializer, result)
+            result = service.create_init_data(**validated)
+            resp = _serialize(InitDataSerializer, result)
+            resp.status_code = 201
+            return resp
         return Response(serializer.errors, status=400)
 
 
@@ -1186,13 +1287,27 @@ class NodeResourceRecommendationAPIView(APIView):
         summary="노드 주제 기반 자료 추천",
         parameters=[
             OpenApiParameter("node_id", OpenApiTypes.STR, required=True),
-            OpenApiParameter("roadmap_id", OpenApiTypes.STR, required=True),
+            OpenApiParameter(
+                "roadmap_id",
+                OpenApiTypes.STR,
+                required=False,
+                description="로드맵 ID (미지정 시 토큰의 roadmapId 사용)",
+            ),
         ],
         responses={200: ResourceRecommendationSerializer},
     )
     def get(self, request) -> Response:
         node_id = request.GET.get("node_id")
-        roadmap_id = request.GET.get("roadmap_id")
+        token_user = get_ai_user(request)
+        roadmap_id = resolve_scoped_param(
+            request,
+            param_value=request.GET.get("roadmap_id"),
+            token_value=token_user.roadmap_id if token_user else None,
+            field_name="roadmap_id",
+            default=None,
+        )
+        if not roadmap_id:
+            return Response({"error": "roadmap_id required"}, status=400)
         
         service = NodeContentService()
         result = service.recommend_resources_for_node(node_id, roadmap_id)
@@ -1214,4 +1329,3 @@ class NodeResourceSaveAPIView(APIView):
             result = service.save_resource_to_node(**serializer.validated_data)
             return Response(_serialize(NodeResourceSerializer, result).data, status=201)
         return Response(serializer.errors, status=400)
-
