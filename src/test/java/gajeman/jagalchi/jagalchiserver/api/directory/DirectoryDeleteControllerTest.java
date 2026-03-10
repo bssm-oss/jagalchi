@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,7 +69,7 @@ class DirectoryDeleteControllerTest {
         mockMvc.perform(delete("/directories/{id}", savedTarget.getId())
                         .param("mode", "move")
                         .param("targetDirectoryId", String.valueOf(savedParent.getId()))
-                        .header("X-User-Id", "1"))
+                        .header("Authorization", bearerEditToken(1L)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Directory deleted successfully"));
 
@@ -93,7 +94,7 @@ class DirectoryDeleteControllerTest {
 
         mockMvc.perform(delete("/directories/{id}", savedTarget.getId())
                         .param("mode", "delete")
-                        .header("X-User-Id", "1"))
+                        .header("Authorization", bearerEditToken(1L)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("RESOURCE_NOT_FOUND"));
     }

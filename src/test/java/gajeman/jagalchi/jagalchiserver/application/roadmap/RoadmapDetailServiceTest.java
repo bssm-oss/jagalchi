@@ -57,6 +57,7 @@ class RoadmapDetailServiceTest {
                 .email("owner@example.com")
                 .profileImageUrl("profile.jpg")
                 .build();
+        ReflectionTestUtils.setField(owner, "id", ownerId);
 
         when(roadmapRepository.findById(roadmapId)).thenReturn(Optional.of(roadmap));
         when(roadmapNodeRepository.countByRoadmapId(roadmapId)).thenReturn(2L);

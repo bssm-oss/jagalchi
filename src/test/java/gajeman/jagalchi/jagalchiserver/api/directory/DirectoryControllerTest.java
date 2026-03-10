@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.nullValue;
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,7 +38,7 @@ class DirectoryControllerTest {
         CreateDirectoryRequest request = new CreateDirectoryRequest("학습자료", null);
 
         mockMvc.perform(post("/directories")
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -60,7 +61,7 @@ class DirectoryControllerTest {
         CreateDirectoryRequest request = new CreateDirectoryRequest("내폴더", saved.getId());
 
         mockMvc.perform(post("/directories")
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())

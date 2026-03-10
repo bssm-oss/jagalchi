@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,7 +70,7 @@ class ProgressCompleteControllerTest {
         CompleteNodeRequest request = new CompleteNodeRequest(true, null);
 
         mockMvc.perform(post("/roadmaps/{roadmapId}/nodes/{nodeId}/complete", savedRoadmap.getId(), savedNode.getId())
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -114,7 +115,7 @@ class ProgressCompleteControllerTest {
         CompleteNodeRequest request = new CompleteNodeRequest(true, null);
 
         mockMvc.perform(post("/roadmaps/{roadmapId}/nodes/{nodeId}/complete", savedRoadmap.getId(), savedNode.getId())
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())

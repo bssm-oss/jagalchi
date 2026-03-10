@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,7 +54,7 @@ class RoadmapUpdateControllerTest {
                 List.of("spring", "jpa"));
 
         mockMvc.perform(patch("/roadmaps/{id}", saved.getId())
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -80,7 +81,7 @@ class RoadmapUpdateControllerTest {
                 null);
 
         mockMvc.perform(patch("/roadmaps/{id}", saved.getId())
-                        .header("X-User-Id", "1")
+                        .header("Authorization", bearerEditToken(1L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())

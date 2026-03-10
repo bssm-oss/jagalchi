@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gajeman.jagalchi.jagalchiserver.support.TestJwtTokens.bearerEditToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,7 +68,7 @@ class ProgressUserControllerTest {
         progressRepository.save(progress);
 
         mockMvc.perform(get("/roadmaps/{roadmapId}/users/{userId}/progress", savedRoadmap.getId(), 2L)
-                        .header("X-User-Id", "1"))
+                        .header("Authorization", bearerEditToken(1L)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roadmapId").value(savedRoadmap.getId()))
                 .andExpect(jsonPath("$.totalNodes").value(2))
@@ -90,7 +91,7 @@ class ProgressUserControllerTest {
         Roadmap savedRoadmap = roadmapRepository.save(roadmap);
 
         mockMvc.perform(get("/roadmaps/{roadmapId}/users/{userId}/progress", savedRoadmap.getId(), 2L)
-                        .header("X-User-Id", "1"))
+                        .header("Authorization", bearerEditToken(1L)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("RESOURCE_NOT_FOUND"));
     }
