@@ -5,6 +5,7 @@ import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
+import gajeman.jagalchi.jagalchiserver.infrastructure.rabbitmq.ActivityService;
 import gajeman.jagalchi.jagalchiserver.presentation.user.response.QueryUserResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,13 +40,15 @@ public class QueryUserByNameCommandTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private ActivityService activityService;
+
     @Test
     void 이름으로_사용자를_성공적으로_조회한다() throws Exception {
         // given
         Users targetUser = Users.from("target@test.com", "pw", "타겟유저");
         Users currentUser = Users.from("current@test.com", "pw", "현재유저");
 
-        // externalLinks를 JSON 문자열로 설정
         String externalLinksJson = "{\"github\":\"https://github.com/target\"}";
         targetUser.updateProfile(null, null, externalLinksJson);
 

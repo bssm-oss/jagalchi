@@ -5,7 +5,9 @@ import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
+import gajeman.jagalchi.jagalchiserver.infrastructure.rabbitmq.ActivityService;
 import gajeman.jagalchi.jagalchiserver.presentation.user.response.QueryUserResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.StreakResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class QueryUserByNameCommand implements QueryUserByNameUseCase {
 
     private final UsersRepository userRepository;
     private final FollowRepository followRepository;
+    private final ActivityService activityService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -37,12 +40,15 @@ public class QueryUserByNameCommand implements QueryUserByNameUseCase {
 
         Map<String, String> externalLinks = parseExternalLinks(targetUser.getExternalLinks());
 
+        StreakResponseDto streak = activityService.getOneYearStreak(targetUser);
+
         return QueryUserResponse.from(
                 targetUser,
                 isFollowed,
                 followerCount,
                 followingCount,
-                externalLinks
+                externalLinks,
+                streak
         );
     }
 
