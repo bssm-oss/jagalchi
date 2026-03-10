@@ -1,15 +1,15 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user;
+package gajeman.jagalchi.jagalchiserver.presentation.auth;
 
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.application.auth.service.*;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.infrastructure.cookie.CookieUtil;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.RefreshTokenRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SignUpRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.LoginResponse;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.SignUpResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.RefreshTokenRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SignUpRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.LoginResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.SignUpResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

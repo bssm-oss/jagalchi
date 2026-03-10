@@ -5,12 +5,12 @@
     import gajeman.jagalchi.jagalchiserver.application.verification.service.SendVerificationCodeCommand;
     import gajeman.jagalchi.jagalchiserver.infrastructure.cookie.CookieUtil;
     import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.verification.VerificationRepository;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.AuthController;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.ChangePasswordRequest;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.LoginRequest;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.RefreshTokenRequest;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SignUpRequest;
-    import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.SignUpResponse;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.AuthController;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.RefreshTokenRequest;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SignUpRequest;
+    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.SignUpResponse;
     import org.junit.jupiter.api.Test;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration;

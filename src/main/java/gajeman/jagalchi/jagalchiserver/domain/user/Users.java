@@ -14,7 +14,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tbl_users")
+@Table(
+        name = "tbl_users",
+        indexes = {
+                @Index(name = "idx_user_name", columnList = "name"),
+                @Index(name = "idx_user_is_active", columnList = "isActive")
+        }
+        )
 public class Users {
 
     @Id
@@ -34,9 +40,9 @@ public class Users {
     @Column(nullable = false)
     private UserRole role;
 
-    private String profileUrl;
+    private String profileImageUrl;
 
-    private String text;
+    private String bio;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -45,6 +51,9 @@ public class Users {
     private LocalDateTime updatedAt;
 
     private boolean isActive = false;
+
+    @Column(columnDefinition = "json")
+    private String externalLinks;
 
     @Builder
     private Users(String email, String name, String password) {
@@ -68,6 +77,12 @@ public class Users {
 
     public void changeActive(){
         this.isActive = !this.isActive;
+    }
+
+    public void updateProfile(String profileImage, String bio, String externalLinks) {
+        this.profileImageUrl = profileImage;
+        this.bio = bio;
+        this.externalLinks = externalLinks;
     }
 
 }

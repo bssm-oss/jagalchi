@@ -4,8 +4,8 @@ import gajeman.jagalchi.jagalchiserver.application.follow.service.GetFollowerLis
 import gajeman.jagalchi.jagalchiserver.application.follow.service.GetFollowingListQuery;
 import gajeman.jagalchi.jagalchiserver.application.follow.service.ToggleFollowCommand;
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.FollowToggleRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.request.FollowToggleRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

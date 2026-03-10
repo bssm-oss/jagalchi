@@ -6,8 +6,8 @@ import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.domain.user.exception.UserNotFoundException;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.follow.FollowRepository;
 import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRepository;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowUserResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowListResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

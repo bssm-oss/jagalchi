@@ -1,7 +1,7 @@
 package gajeman.jagalchi.jagalchiserver.application.auth.usecase;
 
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.SignUpRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.SignUpResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SignUpRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.SignUpResponse;
 
 public interface SignUpUseCase {
     /**

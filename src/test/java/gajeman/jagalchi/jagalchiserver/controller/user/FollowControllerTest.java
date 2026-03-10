@@ -4,9 +4,9 @@ import gajeman.jagalchi.jagalchiserver.application.follow.service.GetFollowerLis
 import gajeman.jagalchi.jagalchiserver.application.follow.service.GetFollowingListQuery;
 import gajeman.jagalchi.jagalchiserver.application.follow.service.ToggleFollowCommand;
 import gajeman.jagalchi.jagalchiserver.presentation.user.FollowController;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.request.FollowToggleRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowUserResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.request.FollowToggleRequest;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowListResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowUserResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration;

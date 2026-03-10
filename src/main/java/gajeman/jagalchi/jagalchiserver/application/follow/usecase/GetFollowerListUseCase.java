@@ -1,6 +1,6 @@
 package gajeman.jagalchi.jagalchiserver.application.follow.usecase;
 
-import gajeman.jagalchi.jagalchiserver.presentation.user.dto.response.FollowListResponse;
+import gajeman.jagalchi.jagalchiserver.presentation.user.response.FollowListResponse;
 
 public interface GetFollowerListUseCase {
     /**

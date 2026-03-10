@@ -1,4 +1,4 @@
-package gajeman.jagalchi.jagalchiserver.presentation.user.dto.response;
+package gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response;
 
 import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 
