@@ -8,4 +8,5 @@ public interface ChangePasswordUseCase {
      * @param request 이메일, 신규비밀번호를 담은 DTO
      */
     void changePassword(ChangePasswordRequest request);
+    //좆같은 깃
 }
