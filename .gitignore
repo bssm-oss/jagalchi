@@ -51,3 +51,4 @@ visual-tests/
 # Local Netlify folder
 .netlify
 .playwright-mcp/
+.mcp.json
