@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { ImagePlus } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -42,13 +40,6 @@ export function AddDirectoryModal({ isOpen, onClose, onConfirm }: AddDirectoryMo
           <DialogTitle className="text-lg font-bold text-[#020617]">디렉토리 추가</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
-          <Button
-            variant="outline"
-            className="flex h-9 w-fit items-center gap-2 rounded-lg border-slate-200 px-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            <ImagePlus className="h-4 w-4" />
-            아이콘 추가
-          </Button>
           <Input
             value={directoryName}
             onChange={(e) => setDirectoryName(e.target.value)}

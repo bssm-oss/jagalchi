@@ -12,7 +12,6 @@ describe('AddDirectoryModal', () => {
   it('renders correctly when open', () => {
     render(<AddDirectoryModal {...defaultProps} />);
     expect(screen.getByText('디렉토리 추가')).toBeInTheDocument();
-    expect(screen.getByText('아이콘 추가')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('디렉토리 이름을 입력하세요')).toBeInTheDocument();
   });
 
