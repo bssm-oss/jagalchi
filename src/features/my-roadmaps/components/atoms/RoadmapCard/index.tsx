@@ -1,8 +1,15 @@
 import Image from 'next/image';
 
-import { Ellipsis, SquareDashed } from 'lucide-react';
+import { Ellipsis, FolderInput, Pencil, SquareDashed, Star, Trash2 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 interface RoadmapCardProps {
@@ -12,7 +19,12 @@ interface RoadmapCardProps {
   author?: string;
   fileCount?: number;
   imageUrl?: string;
+  isFavorite?: boolean;
   className?: string;
+  onFavorite?: () => void;
+  onRename?: () => void;
+  onMove?: () => void;
+  onDelete?: () => void;
 }
 
 export function RoadmapCard({
@@ -21,7 +33,12 @@ export function RoadmapCard({
   author,
   fileCount,
   imageUrl,
+  isFavorite,
   className,
+  onFavorite,
+  onRename,
+  onMove,
+  onDelete,
 }: RoadmapCardProps) {
   const isDirectory = type === 'Directory';
 
@@ -61,13 +78,66 @@ export function RoadmapCard({
             {isDirectory ? `${fileCount ?? 0}개의 파일` : `By ${author ?? '홍길동'}`}
           </p>
         </div>
-        <button
-          type="button"
-          aria-label="더 보기"
-          className="text-muted-foreground/60 hover:text-foreground shrink-0 p-1 transition-colors"
-        >
-          <Ellipsis className="h-4 w-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label="더 보기"
+              className="text-muted-foreground/60 hover:text-foreground shrink-0 p-1 transition-colors"
+            >
+              <Ellipsis className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[72px] min-w-0 p-[10px]">
+            {!isDirectory && (
+              <>
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2 text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onFavorite?.();
+                  }}
+                >
+                  <Star className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
+                  즐겨찾기
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem
+              className="cursor-pointer gap-2 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRename?.();
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              이름수정
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer gap-2 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMove?.();
+              }}
+            >
+              <FolderInput className="h-3.5 w-3.5" />
+              파일이동
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer gap-2 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.();
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              삭제
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </Card>
   );
