@@ -4,18 +4,10 @@ import { useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useSetAtom } from 'jotai';
-import { ListFilter, Plus, Search } from 'lucide-react';
+import { useAtom, useSetAtom } from 'jotai';
+import { ChevronRight, ListFilter, Plus, Search } from 'lucide-react';
 import { nanoid } from 'nanoid';
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -27,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
-import { myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
+import { breadcrumbPathAtom, myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
 import { AddDirectoryModal } from '../AddDirectoryModal';
 import { AddRoadmapModal } from '../AddRoadmapModal';
 import { MyRoadmapsFilter } from '../MyRoadmapsFilter';
@@ -37,6 +29,7 @@ import type { RoadmapData } from '../../../types/my-roadmaps.types';
 export function MyRoadmapsToolbar() {
   const router = useRouter();
   const setItems = useSetAtom(myRoadmapItemsAtom);
+  const [breadcrumbPath, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState(false);
@@ -72,21 +65,40 @@ export function MyRoadmapsToolbar() {
 
   return (
     <div className="flex w-full items-center justify-between py-6">
-      <Breadcrumb className="flex h-9 items-center">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Components</BreadcrumbPage>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      {breadcrumbPath.length === 0 ? (
+        <div className="flex h-9 items-center px-3">
+          <span className="text-sm font-semibold">내 전체 로드맵</span>
+        </div>
+      ) : (
+        <div className="flex h-9 items-center">
+          <button
+            type="button"
+            className="text-foreground text-xl font-semibold transition-colors hover:opacity-70"
+            onClick={() => setBreadcrumbPath([])}
+          >
+            내 전체 로드맵
+          </button>
+          {breadcrumbPath.map((segment, index) => {
+            const isLast = index === breadcrumbPath.length - 1;
+            return (
+              <div key={segment.id} className="flex items-center">
+                <ChevronRight className="text-muted-foreground mx-1 h-5 w-5" />
+                {isLast ? (
+                  <span className="text-base font-semibold text-blue-700">{segment.name}</span>
+                ) : (
+                  <button
+                    type="button"
+                    className="text-foreground text-base font-semibold transition-colors hover:opacity-70"
+                    onClick={() => setBreadcrumbPath(breadcrumbPath.slice(0, index + 1))}
+                  >
+                    {segment.name}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
       <div className="flex items-center gap-[10px]">
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />

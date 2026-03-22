@@ -14,11 +14,9 @@ const renderWithProvider = (ui: React.ReactElement) => {
 };
 
 describe('MyRoadmapsToolbar', () => {
-  it('renders breadcrumbs correctly', () => {
+  it('renders root breadcrumb when no path', () => {
     renderWithProvider(<MyRoadmapsToolbar />);
-    expect(screen.getByText('Home')).toBeDefined();
-    expect(screen.getByText('Components')).toBeDefined();
-    expect(screen.getByText('Breadcrumb')).toBeDefined();
+    expect(screen.getByText('내 전체 로드맵')).toBeDefined();
   });
 
   it('renders search input', () => {

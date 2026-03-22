@@ -9,6 +9,13 @@ import type { RoadmapData } from '../types/my-roadmaps.types';
 
 export type SidebarCategory = 'recent' | 'community' | 'my-roadmap' | 'shared' | 'favorites';
 
+export interface BreadcrumbSegment {
+  id: string;
+  name: string;
+}
+
+export const breadcrumbPathAtom = atom<BreadcrumbSegment[]>([]);
+
 export const sortOrderAtom = atom<SortOrder>('desc');
 export const sortByAtom = atom<SortBy>('recent');
 export const filterCategoryAtom = atom<FilterCategory>('all');
