@@ -1,4 +1,5 @@
 export { AuthCard } from './components/templates/AuthCard';
+export { GitHubAuthButton } from './components/atoms/GitHubAuthButton';
 export { GoogleAuthButton } from './components/atoms/GoogleAuthButton';
 export { PasswordInput } from './components/molecules/PasswordInput';
 export { VerificationCodeInput } from './components/molecules/VerificationCodeInput';

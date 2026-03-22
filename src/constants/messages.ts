@@ -1,3 +1,9 @@
+export const AUTH_MESSAGES = {
+  LOGIN_EMAIL_NOT_FOUND: '존재하지 않는 이메일입니다',
+  LOGIN_PASSWORD_MISMATCH: '비밀번호가 일치하지 않습니다',
+  LOGIN_FAILED: '로그인에 실패했습니다',
+} as const;
+
 export const COMMUNITY_MESSAGES = {
   NOT_FOUND: '로드맵을 찾을 수 없습니다.',
   VIEW_ROADMAP: '로드맵 보기',

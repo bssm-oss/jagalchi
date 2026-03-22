@@ -15,8 +15,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 import { loginSchema, type LoginSchema } from '../../../schemas/auth.schema';
+import { GitHubAuthButton } from '../../atoms/GitHubAuthButton';
 import { GoogleAuthButton } from '../../atoms/GoogleAuthButton';
 import { PasswordInput } from '../../molecules/PasswordInput';
 
@@ -35,6 +37,10 @@ export function LoginForm() {
 
   const handleGoogleLogin = () => {
     // TODO: Google OAuth
+  };
+
+  const handleGitHubLogin = () => {
+    // TODO: GitHub OAuth
   };
 
   return (
@@ -80,7 +86,9 @@ export function LoginForm() {
           <Button type="submit" className="w-full">
             로그인
           </Button>
+          <Separator className="my-1" />
           <GoogleAuthButton variant="login" onClick={handleGoogleLogin} />
+          <GitHubAuthButton variant="login" onClick={handleGitHubLogin} />
         </div>
       </form>
     </Form>
