@@ -43,6 +43,10 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
     // TODO: Google OAuth
   };
 
+  const handleGitHubRegister = () => {
+    // TODO: GitHub OAuth
+  };
+
   if (step === 3) {
     return <RegisterStep3Form onSubmit={handleStep3Submit} onSkip={handleSkip} />;
   }
@@ -51,5 +55,11 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
     return <RegisterStep2Form onSubmit={handleStep2Submit} />;
   }
 
-  return <RegisterStep1Form onSubmit={handleStep1Submit} onGoogleRegister={handleGoogleRegister} />;
+  return (
+    <RegisterStep1Form
+      onSubmit={handleStep1Submit}
+      onGoogleRegister={handleGoogleRegister}
+      onGitHubRegister={handleGitHubRegister}
+    />
+  );
 }

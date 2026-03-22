@@ -32,3 +32,5 @@ export const viewerLayoutAtom = atom<'page' | 'cards'>('page');
 export const viewerLoadingAtom = atom<boolean>(true);
 
 export const viewerErrorAtom = atom<string | null>(null);
+
+export const viewerSidebarOpenAtom = atom<boolean>(true);

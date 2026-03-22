@@ -3,11 +3,13 @@
 import { useState } from 'react';
 
 import NextImage from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { Heart, FilePlus2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { COMMUNITY_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 import { MOCK_COMMUNITY_DATA } from '../../../constants/community.mock';
@@ -18,6 +20,7 @@ interface RoadmapDetailProps {
 }
 
 export function RoadmapDetail({ id }: RoadmapDetailProps) {
+  const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const item = MOCK_COMMUNITY_DATA.find((i) => i.id === id);
 
@@ -63,14 +66,17 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
               <Button
                 variant="default"
                 className="bg-primary hover:bg-primary/90 h-[32px] rounded-[6px] px-[12px] py-[6px] text-[14px] font-bold text-white"
+                onClick={() => router.push(`/viewer/${id}`)}
               >
-                로드맵 보기
+                {COMMUNITY_MESSAGES.VIEW_ROADMAP}
               </Button>
               <Button
                 variant="outline"
                 className="border-border bg-background text-foreground h-[32px] items-center gap-[8px] rounded-[6px] px-[12px] py-[6px] text-[14px] font-bold hover:bg-slate-50"
+                onClick={() => window.alert(COMMUNITY_MESSAGES.LOGIN_REQUIRED)}
               >
-                <FilePlus2 className="h-4 w-4" />내 로드맵에 추가
+                <FilePlus2 className="h-4 w-4" />
+                {COMMUNITY_MESSAGES.ADD_TO_MY_ROADMAPS}
               </Button>
             </div>
           </div>

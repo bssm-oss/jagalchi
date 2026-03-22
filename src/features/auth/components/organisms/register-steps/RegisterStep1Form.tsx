@@ -13,9 +13,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 import { useVerificationCode } from '../../../hooks/use-verification-code';
 import { registerStep1Schema, type RegisterStep1Schema } from '../../../schemas/auth.schema';
+import { GitHubAuthButton } from '../../atoms/GitHubAuthButton';
 import { GoogleAuthButton } from '../../atoms/GoogleAuthButton';
 import { PasswordInput } from '../../molecules/PasswordInput';
 import { VerificationCodeInput } from '../../molecules/VerificationCodeInput';
@@ -23,9 +25,14 @@ import { VerificationCodeInput } from '../../molecules/VerificationCodeInput';
 interface RegisterStep1FormProps {
   onSubmit: (data: RegisterStep1Schema) => void;
   onGoogleRegister: () => void;
+  onGitHubRegister?: () => void;
 }
 
-export function RegisterStep1Form({ onSubmit, onGoogleRegister }: RegisterStep1FormProps) {
+export function RegisterStep1Form({
+  onSubmit,
+  onGoogleRegister,
+  onGitHubRegister,
+}: RegisterStep1FormProps) {
   const { isCodeSent, handleSendCode } = useVerificationCode();
 
   const form = useForm<RegisterStep1Schema>({
@@ -106,7 +113,9 @@ export function RegisterStep1Form({ onSubmit, onGoogleRegister }: RegisterStep1F
               인증번호 전송
             </Button>
           )}
+          <Separator className="my-1" />
           <GoogleAuthButton variant="register" onClick={onGoogleRegister} />
+          <GitHubAuthButton variant="register" onClick={onGitHubRegister} />
         </div>
       </form>
     </Form>

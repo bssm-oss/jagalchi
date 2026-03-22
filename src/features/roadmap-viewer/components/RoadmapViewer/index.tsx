@@ -5,10 +5,15 @@ import { useAtom, useAtomValue } from 'jotai';
 import { LayoutGrid, Map } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { VIEWER_MESSAGES } from '@/constants/messages';
+import { MY_ROADMAPS_MESSAGES, VIEWER_MESSAGES } from '@/constants/messages';
 
 import { useViewerRoadmapLoader } from '../../hooks/use-viewer-roadmap-loader';
-import { viewerErrorAtom, viewerLayoutAtom, viewerLoadingAtom } from '../../stores/viewer-atoms';
+import {
+  viewerErrorAtom,
+  viewerLayoutAtom,
+  viewerLoadingAtom,
+  viewerSidebarOpenAtom,
+} from '../../stores/viewer-atoms';
 import { CardListMode } from '../CardListMode';
 import { HeaderExportMenu } from '../HeaderExportMenu';
 import { HeaderMenu } from '../HeaderMenu';
@@ -28,6 +33,20 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   const isLoading = useAtomValue(viewerLoadingAtom);
   const error = useAtomValue(viewerErrorAtom);
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
+  const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      window.alert(MY_ROADMAPS_MESSAGES.SHARE_COPIED);
+    } catch {
+      window.alert(MY_ROADMAPS_MESSAGES.SHARE_FAILED);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -47,7 +66,11 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
   return (
     <div className="bg-background min-h-screen">
-      <RoadmapHeader roadmapTitle={`Roadmap · ${roadmapId}`} />
+      <RoadmapHeader
+        roadmapTitle={`Roadmap · ${roadmapId}`}
+        onInfo={handleToggleSidebar}
+        onShare={handleShare}
+      />
 
       <div className="mx-auto flex w-full max-w-[2011px] gap-4 px-4 py-4">
         <div className="relative flex-1">
@@ -80,7 +103,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
           {layout === 'cards' ? <CardListMode /> : <ViewerCanvas />}
         </div>
 
-        <ViewerSidebar />
+        <ViewerSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       </div>
 
       {layout === 'page' && <ViewerZoomControls />}

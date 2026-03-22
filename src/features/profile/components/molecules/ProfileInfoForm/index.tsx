@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { profileModeAtom } from '../../../stores/profile-atoms';
@@ -111,7 +112,20 @@ export function ProfileInfoForm({
           </div>
 
           <div className="flex flex-row gap-2">
-            <ProfileEditButton variant="edit" onClick={toggleMode} />
+            <Button
+              type="button"
+              variant="outline"
+              className="font-semibold"
+              onClick={() => {
+                reset({ name, email });
+                setMode('show');
+              }}
+            >
+              취소
+            </Button>
+            <Button type="button" className="font-semibold" onClick={() => setMode('show')}>
+              저장
+            </Button>
           </div>
         </div>
       )}

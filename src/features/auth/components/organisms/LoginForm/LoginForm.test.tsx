@@ -29,6 +29,16 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: /Google로 로그인/i })).toBeInTheDocument();
   });
 
+  it('GitHub 로그인 버튼을 렌더링한다', () => {
+    render(<LoginForm />);
+    expect(screen.getByRole('button', { name: /GitHub로 로그인/i })).toBeInTheDocument();
+  });
+
+  it('로그인 버튼과 소셜 버튼 사이에 구분선이 있다', () => {
+    render(<LoginForm />);
+    expect(document.querySelector('[data-slot="separator"]')).toBeInTheDocument();
+  });
+
   it('이메일이 비어있으면 에러 메시지를 표시한다', async () => {
     const user = userEvent.setup();
     render(<LoginForm />);
