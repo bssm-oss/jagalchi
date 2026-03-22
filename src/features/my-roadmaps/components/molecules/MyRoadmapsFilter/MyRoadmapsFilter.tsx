@@ -5,12 +5,14 @@ import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
   ALargeSmall,
+  CircleSmall,
   TimerReset,
   Maximize,
   Map as MapIcon,
   Folder,
 } from 'lucide-react';
 
+import { Separator } from '@/components/ui/separator';
 import {
   filterCategoryAtom,
   sortByAtom,
@@ -30,18 +32,11 @@ function FilterDropdownItem({ label, isActive, onClick, icon }: FilterItemProps)
     <button
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium transition-colors',
-        isActive ? 'bg-[#E2E8F0] text-[#020617]' : 'text-slate-600 hover:bg-slate-50',
+        'flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm transition-colors',
+        isActive ? 'bg-[#e2e8f0] text-[#020617]' : 'text-[#020617] hover:bg-slate-50',
       )}
     >
-      <div
-        className={cn(
-          'flex h-4 w-4 items-center justify-center',
-          isActive ? 'text-[#020617]' : 'text-slate-500',
-        )}
-      >
-        {icon}
-      </div>
+      <div className="flex h-5 w-5 items-center justify-center">{icon}</div>
       {label}
     </button>
   );
@@ -53,80 +48,67 @@ export function MyRoadmapsFilter() {
   const [filterCategory, setFilterCategory] = useAtom(filterCategoryAtom);
 
   return (
-    <div className="animate-in fade-in zoom-in-95 border-border bg-background absolute top-[44px] right-0 z-50 flex min-w-[400px] gap-6 rounded-xl border p-4 shadow-lg duration-100">
-      <div className="flex flex-1 flex-col gap-1">
-        <h3 className="mb-1 px-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-          정렬순서
-        </h3>
-        <div className="mb-1 h-[1px] w-full bg-slate-100" />
+    <div className="animate-in fade-in zoom-in-95 absolute top-[44px] right-0 z-50 flex gap-2 rounded-lg border border-[#e2e8f0] bg-white p-4 shadow-lg duration-100">
+      <div className="flex w-[124px] flex-col gap-1">
+        <p className="text-xs font-medium text-black">정렬순서</p>
+        <Separator className="my-1" />
         <FilterDropdownItem
           label="내림차순"
           isActive={sortOrder === 'desc'}
           onClick={() => setSortOrder('desc')}
-          icon={<ArrowDownWideNarrow className="h-4 w-4" />}
+          icon={<ArrowDownWideNarrow className="h-5 w-5" />}
         />
         <FilterDropdownItem
           label="오름차순"
           isActive={sortOrder === 'asc'}
           onClick={() => setSortOrder('asc')}
-          icon={<ArrowUpNarrowWide className="h-4 w-4" />}
+          icon={<ArrowUpNarrowWide className="h-5 w-5" />}
         />
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 border-l border-slate-100 pl-4">
-        <h3 className="mb-1 px-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-          정렬기준
-        </h3>
-        <div className="mb-1 h-[1px] w-full bg-slate-100" />
+      <div className="flex w-[130px] flex-col gap-1">
+        <p className="text-xs font-medium text-black">정렬기준</p>
+        <Separator className="my-1" />
         <FilterDropdownItem
           label="글자순"
           isActive={sortBy === 'name'}
           onClick={() => setSortBy('name')}
-          icon={<ALargeSmall className="h-4 w-4" />}
+          icon={<ALargeSmall className="h-5 w-5" />}
         />
         <FilterDropdownItem
           label="최신순"
           isActive={sortBy === 'recent'}
           onClick={() => setSortBy('recent')}
-          icon={<TimerReset className="h-4 w-4" />}
+          icon={<TimerReset className="h-5 w-5" />}
         />
         <FilterDropdownItem
           label="크기순"
           isActive={sortBy === 'size'}
           onClick={() => setSortBy('size')}
-          icon={<Maximize className="h-4 w-4" />}
+          icon={<Maximize className="h-5 w-5" />}
         />
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 border-l border-slate-100 pl-4">
-        <h3 className="mb-1 px-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-          필터링
-        </h3>
-        <div className="mb-1 h-[1px] w-full bg-slate-100" />
+      <div className="flex w-[132px] flex-col gap-1">
+        <p className="text-xs font-medium text-black">필터링</p>
+        <Separator className="my-1" />
         <FilterDropdownItem
           label="전체"
           isActive={filterCategory === 'all'}
           onClick={() => setFilterCategory('all')}
-          icon={
-            <div
-              className={cn(
-                'h-2 w-2 rounded-full border border-current',
-                filterCategory === 'all' ? 'bg-current' : 'bg-transparent',
-              )}
-            />
-          }
+          icon={<CircleSmall className="h-5 w-5" />}
         />
         <FilterDropdownItem
           label="로드맵"
           isActive={filterCategory === 'roadmap'}
           onClick={() => setFilterCategory('roadmap')}
-          icon={<MapIcon className="h-4 w-4" />}
+          icon={<MapIcon className="h-5 w-5" />}
         />
         <FilterDropdownItem
           label="디렉토리"
           isActive={filterCategory === 'directory'}
           onClick={() => setFilterCategory('directory')}
-          icon={<Folder className="h-4 w-4" />}
+          icon={<Folder className="h-5 w-5" />}
         />
       </div>
     </div>

@@ -85,7 +85,7 @@ export function AddRoadmapModal({ isOpen, onClose, onConfirm }: AddRoadmapModalP
               <Button
                 onClick={handleConfirm}
                 disabled={!roadmapName.trim()}
-                className="h-9 rounded-lg bg-[#64748B] px-4 text-sm font-semibold text-white hover:bg-[#475569] disabled:opacity-50"
+                className="h-9 rounded-lg bg-[#0f172a] px-4 text-sm font-semibold text-white hover:bg-[#1e293b] disabled:opacity-50"
               >
                 확인
               </Button>

@@ -127,27 +127,27 @@ export function MyRoadmapsToolbar() {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="h-9 rounded-md bg-[#2563EB] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1D4ED8]">
+            <Button className="h-9 rounded-md bg-[#1d4ed8] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1e40af]">
               New
               <Plus className="ml-1.5 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-[140px] rounded-xl border-[#E5E7EB] bg-white p-1.5 shadow-xl"
+            className="w-[140px] rounded-lg border-[#e2e8f0] bg-white p-1.5 shadow-lg"
           >
             <DropdownMenuItem
               className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
               onClick={() => setIsRoadmapModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#374151]">로드맵</span>
+              <span className="text-[13px] font-semibold text-[#020617]">로드맵</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
               onClick={() => setIsDirectoryModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#374151]">디렉토리</span>
+              <span className="text-[13px] font-semibold text-[#020617]">디렉토리</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

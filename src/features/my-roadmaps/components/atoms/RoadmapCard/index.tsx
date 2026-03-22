@@ -50,7 +50,7 @@ export function RoadmapCard({
       )}
     >
       {/* Thumbnail Area (180px) */}
-      <div className="relative h-[180px] w-full bg-[#F3F5F7]">
+      <div className="relative h-[180px] w-full bg-[#f1f5f9]">
         {isDirectory ? (
           <div className="relative h-full w-full">
             {/* Folder shape */}
@@ -73,7 +73,7 @@ export function RoadmapCard({
       {/* Info Area (54px) */}
       <div className="border-border/40 flex h-[54px] items-center justify-between border-t bg-white px-3 py-2">
         <div className="flex min-w-0 flex-col justify-center">
-          <p className="truncate text-[14px] leading-tight font-semibold text-[#1F2937]">{title}</p>
+          <p className="truncate text-[14px] leading-tight font-semibold text-[#020617]">{title}</p>
           <p className="text-muted-foreground mt-0.5 text-[11px] leading-tight font-medium">
             {isDirectory ? `${fileCount ?? 0}개의 파일` : `By ${author ?? '홍길동'}`}
           </p>
