@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { Ellipsis, FolderInput, Pencil, SquareDashed, Star, Trash2 } from 'lucide-react';
+import { Ellipsis, SquareDashed } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import {
@@ -33,7 +33,7 @@ export function RoadmapCard({
   author,
   fileCount,
   imageUrl,
-  isFavorite,
+  isFavorite: _isFavorite,
   className,
   onFavorite,
   onRename,
@@ -88,52 +88,48 @@ export function RoadmapCard({
               <Ellipsis className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[72px] min-w-0 p-[10px]">
+          <DropdownMenuContent align="end" className="min-w-[72px] p-[10px]">
             {!isDirectory && (
               <>
                 <DropdownMenuItem
-                  className="cursor-pointer gap-2 text-sm"
+                  className="cursor-pointer justify-center text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     onFavorite?.();
                   }}
                 >
-                  <Star className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
                   즐겨찾기
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
             )}
             <DropdownMenuItem
-              className="cursor-pointer gap-2 text-sm"
+              className="cursor-pointer justify-center text-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onRename?.();
               }}
             >
-              <Pencil className="h-3.5 w-3.5" />
               이름수정
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="cursor-pointer gap-2 text-sm"
+              className="cursor-pointer justify-center text-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onMove?.();
               }}
             >
-              <FolderInput className="h-3.5 w-3.5" />
               파일이동
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-destructive cursor-pointer gap-2 text-sm"
+              className="text-destructive cursor-pointer justify-center text-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete?.();
               }}
             >
-              <Trash2 className="h-3.5 w-3.5" />
               삭제
             </DropdownMenuItem>
           </DropdownMenuContent>
