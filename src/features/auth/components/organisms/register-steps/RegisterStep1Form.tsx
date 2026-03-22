@@ -113,7 +113,7 @@ export function RegisterStep1Form({
               인증번호 전송
             </Button>
           )}
-          <Separator className="my-1" />
+          <Separator className="my-2" />
           <GoogleAuthButton variant="register" onClick={onGoogleRegister} />
           <GitHubAuthButton variant="register" onClick={onGitHubRegister} />
         </div>
