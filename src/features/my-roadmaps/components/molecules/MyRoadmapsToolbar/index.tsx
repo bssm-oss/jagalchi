@@ -2,7 +2,11 @@
 
 import { useRef, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
+import { useSetAtom } from 'jotai';
 import { ListFilter, Plus, Search } from 'lucide-react';
+import { nanoid } from 'nanoid';
 
 import {
   Breadcrumb,
@@ -23,11 +27,16 @@ import { Input } from '@/components/ui/input';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
+import { myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
 import { AddDirectoryModal } from '../AddDirectoryModal';
 import { AddRoadmapModal } from '../AddRoadmapModal';
 import { MyRoadmapsFilter } from '../MyRoadmapsFilter';
 
+import type { RoadmapData } from '../../../types/my-roadmaps.types';
+
 export function MyRoadmapsToolbar() {
+  const router = useRouter();
+  const setItems = useSetAtom(myRoadmapItemsAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState(false);
@@ -35,12 +44,30 @@ export function MyRoadmapsToolbar() {
 
   useClickOutside(filterRef, () => setIsFilterOpen(false));
 
-  const handleAddRoadmap = (_name: string, _locationId?: string | null) => {
-    // TODO: Implement actual roadmap creation logic
+  const handleAddRoadmap = (name: string, _locationId?: string | null) => {
+    const id = nanoid();
+    const newItem: RoadmapData = {
+      id,
+      title: name,
+      type: 'Roadmap',
+      updatedAt: new Date().toISOString(),
+      category: 'my-roadmap',
+    };
+    setItems((prev) => [newItem, ...prev]);
+    router.push(`/editor/${id}`);
   };
 
-  const handleAddDirectory = (_name: string) => {
-    // TODO: Implement actual directory creation logic
+  const handleAddDirectory = (name: string) => {
+    const id = nanoid();
+    const newItem: RoadmapData = {
+      id,
+      title: name,
+      type: 'Directory',
+      fileCount: 0,
+      updatedAt: new Date().toISOString(),
+      category: 'my-roadmap',
+    };
+    setItems((prev) => [newItem, ...prev]);
   };
 
   return (

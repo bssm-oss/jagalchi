@@ -1,4 +1,4 @@
-import { MyRoadmapsSidebar } from '../organisms/MyRoadmapsSidebar';
+import { MyRoadmapsSidebar } from '../../organisms/MyRoadmapsSidebar';
 
 interface MyRoadmapsLayoutProps {
   children: React.ReactNode;
