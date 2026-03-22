@@ -1,3 +1,22 @@
+export const COMMUNITY_MESSAGES = {
+  NOT_FOUND: '로드맵을 찾을 수 없습니다.',
+  VIEW_ROADMAP: '로드맵 보기',
+  ADD_TO_MY_ROADMAPS: '내 로드맵에 추가',
+  LOGIN_REQUIRED: '로그인 후 이용 가능합니다',
+  LIKE: '좋아요',
+  ABOUT: 'About',
+  MADE_BY: 'Made by',
+  LAST_UPDATED: '마지막 업데이트',
+} as const;
+
+export const MY_ROADMAPS_MESSAGES = {
+  SEARCH_PLACEHOLDER: '로드맵 검색',
+  NEW_ROADMAP: '로드맵',
+  NEW_DIRECTORY: '디렉토리',
+  SHARE_COPIED: '링크가 클립보드에 복사되었습니다',
+  SHARE_FAILED: '링크 복사에 실패했습니다',
+} as const;
+
 export const PROFILE_MESSAGES = {
   BIO_TITLE: '자기소개',
   COMPLETED_ROADMAP: '완주한 로드맵',
