@@ -25,9 +25,9 @@ describe('MyRoadmapsSidebar', () => {
 
     const recentButton = screen.getByText('최근').closest('button')!;
     await user.click(recentButton);
-    expect(recentButton).toHaveClass('bg-[#E5E7EB]');
+    expect(recentButton).toHaveClass('bg-[#e2e8f0]');
 
     const myRoadmapButton = screen.getByText('내 로드맵').closest('button')!;
-    expect(myRoadmapButton).not.toHaveClass('bg-[#E5E7EB]');
+    expect(myRoadmapButton).not.toHaveClass('bg-[#e2e8f0]');
   });
 });

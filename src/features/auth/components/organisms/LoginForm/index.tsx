@@ -86,7 +86,7 @@ export function LoginForm() {
           <Button type="submit" className="w-full">
             로그인
           </Button>
-          <Separator className="my-1" />
+          <Separator className="my-2" />
           <GoogleAuthButton variant="login" onClick={handleGoogleLogin} />
           <GitHubAuthButton variant="login" onClick={handleGitHubLogin} />
         </div>
