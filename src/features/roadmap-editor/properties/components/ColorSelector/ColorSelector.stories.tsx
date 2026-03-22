@@ -37,7 +37,7 @@ const nodeColorPresets = [
 ];
 
 const textColorPresets = [
-  { variant: 'gray' as TextColorVariant, hex: '#64748b', label: 'Gray' },
+  { variant: 'white' as TextColorVariant, hex: '#ffffff', label: 'White' },
   { variant: 'black' as TextColorVariant, hex: '#000000', label: 'Black' },
   { variant: 'blue' as TextColorVariant, hex: '#155dfc', label: 'Blue' },
   { variant: 'purple' as TextColorVariant, hex: '#9810fa', label: 'Purple' },
@@ -89,12 +89,12 @@ export const NodePurple: Story = {
   },
 };
 
-// Text type with gray preset selected
-export const TextGray: Story = {
+// Text type with white preset selected
+export const TextWhite: Story = {
   args: {
     type: 'text',
     nodeId: 'text-1',
-    currentVariant: 'gray',
+    currentVariant: 'white',
     presets: textColorPresets,
     onPresetSelect: (variant) => console.log('Selected preset:', variant),
   },
@@ -141,7 +141,7 @@ export const Interactive: Story = {
 
 // Interactive story component for text type
 function InteractiveTextColorSelector(args: React.ComponentProps<typeof ColorSelector>) {
-  const [currentVariant, setCurrentVariant] = useState<TextColorVariant>('gray');
+  const [currentVariant, setCurrentVariant] = useState<TextColorVariant>('white');
 
   return (
     <ColorSelector
@@ -161,7 +161,7 @@ export const InteractiveText: Story = {
   args: {
     type: 'text',
     nodeId: 'text-1',
-    currentVariant: 'gray',
+    currentVariant: 'white',
     presets: textColorPresets,
     onPresetSelect: (variant) => console.log('Selected preset:', variant),
   },

@@ -17,7 +17,7 @@ export interface ToolbarButtonProps {
  * 툴바 버튼 컴포넌트
  *
  * Figma EditorHeader (4472:2494)의 툴바 버튼 디자인
- * - 크기: 40px x 40px
+ * - 크기: 32px x 32px
  * - Active: 파란색 배경, 흰색 아이콘
  * - Inactive: 투명 배경, 회색 아이콘
  */
@@ -35,8 +35,8 @@ export const ToolbarButton = memo(
                 aria-label={label}
                 aria-pressed={isActive}
                 className={cn(
-                  // 크기 및 레이아웃 (Figma: 40px x 40px, 8px radius)
-                  'inline-flex h-10 w-10 items-center justify-center',
+                  // 크기 및 레이아웃 (Figma: 32px x 32px, 8px radius)
+                  'inline-flex h-8 w-8 items-center justify-center p-[7px]',
                   'rounded-lg',
                   // 기본 스타일
                   'transition-colors',

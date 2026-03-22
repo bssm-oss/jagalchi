@@ -3,7 +3,7 @@
 import { memo } from 'react';
 
 import { useAtom, useSetAtom } from 'jotai';
-import { Square, Minus, RectangleHorizontal, Type } from 'lucide-react';
+import { SquarePlus, Spline, Frame, Type } from 'lucide-react';
 
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
@@ -50,33 +50,33 @@ export const EditorToolbar = memo(function EditorToolbar() {
 
   return (
     <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2">
-      <div className="bg-background flex items-center gap-2 rounded-lg border p-2 shadow-lg">
+      <div className="bg-background flex items-center gap-2 rounded-lg border p-2 shadow-md">
         <ToolbarButton
-          icon={<Square className="h-5 w-5" />}
+          icon={<SquarePlus className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_NODE_TOOLTIP}
           isActive={activeTool === 'node'}
           onClick={handleNodeAdd}
         />
         <ToolbarButton
-          icon={<Minus className="h-5 w-5" />}
+          icon={<Spline className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_LINE_TOOLTIP}
           isActive={activeTool === 'line'}
           onClick={handleLineAdd}
         />
         <ToolbarButton
-          icon={<RectangleHorizontal className="h-5 w-5" />}
+          icon={<Frame className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_SECTION_TOOLTIP}
           isActive={activeTool === 'section'}
           onClick={handleSectionAdd}
         />
         <ToolbarButton
-          icon={<Type className="h-5 w-5" />}
+          icon={<Type className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_TEXT_TOOLTIP}
           isActive={activeTool === 'text'}
           onClick={handleTextAdd}
         />
 
-        <div className="bg-border mx-1 h-6 w-px" />
+        <div className="bg-border mx-1 h-8 w-px" />
 
         <EditorAiMenu />
       </div>

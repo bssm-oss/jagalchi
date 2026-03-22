@@ -48,13 +48,13 @@ export const ColorSelector = memo(function ColorSelector({
   const currentColorHex = presets.find((p) => p.variant === currentVariant)?.hex ?? '#ffffff';
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* 기본 컬러 (Preset) */}
       <div>
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-[#020617]">
           {EDITOR_MESSAGES.SIDEBAR_COLOR_PRESET_LABEL}
         </label>
-        <div className="mt-2 flex gap-1">
+        <div className="mt-1.5 flex gap-1">
           {presets.map((preset) => (
             <ColorPresetButton
               key={preset.variant}
@@ -68,10 +68,10 @@ export const ColorSelector = memo(function ColorSelector({
 
       {/* 커스텀 색상 */}
       <div>
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-[#020617]">
           {EDITOR_MESSAGES.SIDEBAR_COLOR_CUSTOM_LABEL}
         </label>
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-1.5 flex items-center gap-2">
           {/* Palette 아이콘 버튼 */}
           <button
             type="button"
@@ -82,11 +82,11 @@ export const ColorSelector = memo(function ColorSelector({
             <Palette className="size-6" />
           </button>
 
-          {/* 현재 색상 프리뷰 버튼 (Figma 스펙: 36px 높이, 8px border-radius) */}
+          {/* 현재 색상 프리뷰 버튼 (32px 높이, 8px border-radius) */}
           <button
             type="button"
             onClick={handleCustomColorClick}
-            className="h-[36px] min-h-[36px] w-full flex-1 rounded-[8px] border border-slate-200 shadow-sm transition-all hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
+            className="h-8 min-h-[32px] w-full flex-1 rounded-[8px] border border-slate-200 shadow-sm transition-all hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
             style={{ backgroundColor: currentColorHex }}
             aria-label={`현재 색상: ${currentColorHex}`}
           />

@@ -32,8 +32,8 @@ describe('JagalchiText', () => {
   });
 
   it('renders with different color variants', () => {
-    const variants: Array<'gray' | 'black' | 'blue' | 'purple' | 'red' | 'orange'> = [
-      'gray',
+    const variants: Array<'white' | 'black' | 'blue' | 'purple' | 'red' | 'orange'> = [
+      'white',
       'black',
       'blue',
       'purple',

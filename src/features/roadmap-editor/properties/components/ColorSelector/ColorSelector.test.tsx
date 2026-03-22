@@ -174,7 +174,7 @@ describe('ColorSelector', () => {
   it('handles text type correctly', () => {
     const handlePresetSelect = vi.fn();
     const textPresets = [
-      { variant: 'gray' as const, hex: '#64748b', label: 'Gray' },
+      { variant: 'white' as const, hex: '#ffffff', label: 'White' },
       { variant: 'black' as const, hex: '#000000', label: 'Black' },
       { variant: 'blue' as const, hex: '#155dfc', label: 'Blue' },
     ];
@@ -184,7 +184,7 @@ describe('ColorSelector', () => {
         <ColorSelector
           type="text"
           nodeId="text-1"
-          currentVariant="gray"
+          currentVariant="white"
           presets={textPresets}
           onPresetSelect={handlePresetSelect}
         />
@@ -192,8 +192,8 @@ describe('ColorSelector', () => {
     );
 
     // 현재 색상 확인
-    const colorPreviewButton = screen.getByLabelText('현재 색상: #64748b');
-    expect(colorPreviewButton).toHaveStyle({ backgroundColor: '#64748b' });
+    const colorPreviewButton = screen.getByLabelText('현재 색상: #ffffff');
+    expect(colorPreviewButton).toHaveStyle({ backgroundColor: '#ffffff' });
   });
 
   it('renders with Figma design specs (36px height, 8px border-radius)', () => {
@@ -213,7 +213,7 @@ describe('ColorSelector', () => {
 
     // 현재 색상 프리뷰 버튼의 클래스 확인 (Figma 스펙)
     const colorPreviewButton = screen.getByLabelText('현재 색상: #155dfc');
-    expect(colorPreviewButton).toHaveClass('h-[36px]');
+    expect(colorPreviewButton).toHaveClass('h-8');
     expect(colorPreviewButton).toHaveClass('rounded-[8px]');
   });
 });

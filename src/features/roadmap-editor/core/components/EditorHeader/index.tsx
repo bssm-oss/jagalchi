@@ -5,7 +5,7 @@ import { memo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAtomValue } from 'jotai';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft, Ellipsis } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -28,18 +28,37 @@ export const EditorHeader = memo(function EditorHeader({ onBack }: EditorHeaderP
   };
 
   return (
-    <header className="absolute top-4 left-4 z-10 flex items-center gap-2 rounded-lg border bg-white px-3 py-2 shadow-sm">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-6 w-6"
-        onClick={handleBackClick}
-        aria-label="뒤로가기"
-      >
-        <ArrowLeft className="h-4 w-4" />
-      </Button>
+    <header className="absolute top-4 left-4 z-10 flex max-w-[320px] flex-col gap-4 rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-md">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          className="min-h-8 min-w-8 rounded-lg p-[7px]"
+          onClick={handleBackClick}
+          aria-label="뒤로가기"
+        >
+          <ChevronLeft className="h-[15px] w-[15px]" />
+        </Button>
 
-      <span className="text-sm font-medium">{title || 'Jagalchi Roadmap'}</span>
+        <span className="text-base leading-6 font-semibold text-[#020617]">
+          {title || 'Jagalchi Roadmap'}
+        </span>
+
+        <span className="text-xs leading-4 font-medium tracking-[0.18px] text-[#64748b]">
+          (수정중)
+        </span>
+
+        <button
+          type="button"
+          className="flex min-h-8 min-w-8 items-center justify-center rounded-lg p-[7px] hover:bg-slate-100"
+          aria-label="더보기"
+        >
+          <Ellipsis className="h-[15px] w-[15px] text-[#020617]" />
+        </button>
+      </div>
+
+      <Button className="h-8 w-full rounded-lg bg-[#0f172a] px-3 py-[5.5px] text-sm font-semibold text-white hover:bg-[#1e293b]">
+        Readme 수정
+      </Button>
     </header>
   );
 });

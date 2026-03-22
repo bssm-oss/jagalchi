@@ -67,7 +67,7 @@ export const Empty: Story = {
       position: { x: 0, y: 0 },
       data: {
         content: '',
-        variant: 'gray',
+        variant: 'white',
         fontSize: 16,
         fontWeight: 'normal',
         isLocked: false,
@@ -154,7 +154,7 @@ export const GrayText: Story = {
       data: {
         ...baseText.data,
         content: '참고',
-        variant: 'gray',
+        variant: 'white',
       },
     },
   },

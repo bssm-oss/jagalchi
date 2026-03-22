@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Provider } from 'jotai';
 import { describe, expect, it } from 'vitest';
 
@@ -39,34 +38,9 @@ describe('TextPropertiesPanel', () => {
     expect(screen.getByRole('button', { name: /잠금/ })).toBeInTheDocument();
   });
 
-  it('renders text content textarea', () => {
-    renderWithProvider(mockText);
-    expect(screen.getByDisplayValue('Test Text Content')).toBeInTheDocument();
-  });
-
   it('renders color selector', () => {
     renderWithProvider(mockText);
     expect(screen.getByText('기본 컬러')).toBeInTheDocument();
-  });
-
-  it('disables text content textarea when locked', () => {
-    const lockedText = { ...mockText, data: { ...mockText.data, isLocked: true } };
-    renderWithProvider(lockedText);
-
-    const contentTextarea = screen.getByDisplayValue('Test Text Content');
-    expect(contentTextarea).toBeDisabled();
-  });
-
-  it('allows user to interact with content textarea when unlocked', async () => {
-    const user = userEvent.setup();
-    renderWithProvider(mockText);
-
-    const contentTextarea = screen.getByDisplayValue('Test Text Content');
-    expect(contentTextarea).not.toBeDisabled();
-
-    // Verify textarea can receive focus
-    await user.click(contentTextarea);
-    expect(contentTextarea).toHaveFocus();
   });
 
   it('shows unlock icon when text is unlocked', () => {

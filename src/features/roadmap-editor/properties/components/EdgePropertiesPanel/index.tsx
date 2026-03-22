@@ -73,14 +73,14 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
       {/* Content */}
       <div className="flex-1 space-y-0 overflow-y-auto p-4">
         {/* 라벨 */}
-        <div className="border-b border-slate-200 pb-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-900">
+        <div className="border-b border-[#e2e8f0] pb-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[#020617]">
               {EDITOR_MESSAGES.SIDEBAR_EDGE_LABEL_LABEL}
             </label>
             <input
               type="text"
-              placeholder="Value"
+              placeholder="라벨 없음"
               disabled
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
             />
@@ -88,9 +88,9 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
         </div>
 
         {/* 라인 스타일 */}
-        <div className="border-b border-slate-200 py-4">
+        <div className="border-b border-[#e2e8f0] py-4">
           <div className="space-y-4">
-            <label className="text-sm font-medium text-slate-900">
+            <label className="text-sm font-medium text-[#020617]">
               {EDITOR_MESSAGES.SIDEBAR_EDGE_STYLE_LABEL}
             </label>
             <div className="space-y-4">
@@ -201,15 +201,15 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
         </div>
 
         {/* 두께 */}
-        <div className="border-b border-slate-200 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-900">
+        <div className="border-b border-[#e2e8f0] py-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[#020617]">
               {EDITOR_MESSAGES.SIDEBAR_EDGE_THICKNESS_LABEL}
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Value"
+                placeholder="1"
                 disabled
                 className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
               />
@@ -219,7 +219,7 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
         </div>
 
         {/* 기본 컬러 */}
-        <div className="border-b border-slate-200 py-4">
+        <div className="border-b border-[#e2e8f0] py-4">
           <ColorSelector
             type="node"
             nodeId={edge.id}

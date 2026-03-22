@@ -35,25 +35,25 @@ export const JagalchiNodeBase = memo(function JagalchiNodeBase({
         type="source"
         position={Position.Top}
         id="top"
-        className={cn('!border-background !h-1.5 !w-1.5 !rounded-full !border-2', colors.handle)}
+        className={cn('!border-background !h-1.5 !w-1.5 !rounded-[4px] !border-2', colors.handle)}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
-        className={cn('!border-background !h-1.5 !w-1.5 !rounded-full !border-2', colors.handle)}
+        className={cn('!border-background !h-1.5 !w-1.5 !rounded-[4px] !border-2', colors.handle)}
       />
       <Handle
         type="source"
         position={Position.Left}
         id="left"
-        className={cn('!border-background !h-1.5 !w-1.5 !rounded-full !border-2', colors.handle)}
+        className={cn('!border-background !h-1.5 !w-1.5 !rounded-[4px] !border-2', colors.handle)}
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
-        className={cn('!border-background !h-1.5 !w-1.5 !rounded-full !border-2', colors.handle)}
+        className={cn('!border-background !h-1.5 !w-1.5 !rounded-[4px] !border-2', colors.handle)}
       />
 
       <span className="truncate text-base font-medium">{data.label}</span>

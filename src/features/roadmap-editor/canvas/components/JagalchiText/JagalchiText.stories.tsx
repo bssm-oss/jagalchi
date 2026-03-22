@@ -62,9 +62,9 @@ export const Default: Story = {
   },
 };
 
-export const Gray: Story = {
+export const White: Story = {
   args: {
-    data: { ...defaultData, content: 'Gray Text', variant: 'gray' },
+    data: { ...defaultData, content: 'White Text', variant: 'white' },
   },
 };
 
