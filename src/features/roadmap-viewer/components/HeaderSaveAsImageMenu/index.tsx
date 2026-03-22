@@ -1,39 +1,21 @@
 'use client';
 
-import { Camera, Image } from 'lucide-react';
+// Image format handlers for use in HeaderMenu's 내보내기 submenu.
+// The standalone dropdown UI has been merged into HeaderMenu.
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { VIEWER_MESSAGES } from '@/constants/messages';
+export function handleSaveAsPng() {
+  // TODO: implement PNG export
+}
 
+export function handleSaveAsJpg() {
+  // TODO: implement JPG export
+}
+
+export function handleSaveAsSvg() {
+  // TODO: implement SVG export
+}
+
+// Re-export a no-op component for backward compatibility.
 export function HeaderSaveAsImageMenu() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Camera className="mr-2 h-4 w-4" />
-          {VIEWER_MESSAGES.MENU_SAVE_IMAGE}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        <DropdownMenuItem>
-          <Image className="mr-2 h-4 w-4" />
-          {VIEWER_MESSAGES.IMAGE_PNG}
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Image className="mr-2 h-4 w-4" />
-          {VIEWER_MESSAGES.IMAGE_JPG}
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Image className="mr-2 h-4 w-4" />
-          {VIEWER_MESSAGES.IMAGE_SVG}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  return null;
 }

@@ -5,7 +5,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { LayoutGrid, Map } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { MY_ROADMAPS_MESSAGES, VIEWER_MESSAGES } from '@/constants/messages';
+import { VIEWER_MESSAGES } from '@/constants/messages';
 
 import { useViewerRoadmapLoader } from '../../hooks/use-viewer-roadmap-loader';
 import {
@@ -35,19 +35,6 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
 
-  const handleToggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      window.alert(MY_ROADMAPS_MESSAGES.SHARE_COPIED);
-    } catch {
-      window.alert(MY_ROADMAPS_MESSAGES.SHARE_FAILED);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -66,11 +53,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
   return (
     <div className="bg-background min-h-screen">
-      <RoadmapHeader
-        roadmapTitle={`Roadmap · ${roadmapId}`}
-        onInfo={handleToggleSidebar}
-        onShare={handleShare}
-      />
+      <RoadmapHeader roadmapTitle={`Roadmap · ${roadmapId}`} />
 
       <div className="mx-auto flex w-full max-w-[2011px] gap-4 px-4 py-4">
         <div className="relative flex-1">

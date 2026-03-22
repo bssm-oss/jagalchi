@@ -4,53 +4,51 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('@xyflow/react', () => ({
-  ReactFlowProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useReactFlow: () => ({ fitView: vi.fn(), zoomIn: vi.fn(), zoomOut: vi.fn(), getZoom: () => 1 }),
-  useNodesState: () => [[], vi.fn(), vi.fn()],
-  useEdgesState: () => [[], vi.fn(), vi.fn()],
-  ReactFlow: () => <div data-testid="react-flow" />,
-  Background: () => null,
-  Controls: () => null,
-  MiniMap: () => null,
+const mockBack = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ back: mockBack }),
 }));
 
 import { RoadmapHeader } from './index';
 
 describe('RoadmapHeader', () => {
-  it('renders the roadmap title', () => {
+  it('renders the default roadmap title', () => {
+    render(<RoadmapHeader />);
+    expect(screen.getByText("Jagalchi's Roadmap")).toBeTruthy();
+  });
+
+  it('renders a custom roadmap title', () => {
     render(<RoadmapHeader roadmapTitle="My Roadmap" />);
     expect(screen.getByText('My Roadmap')).toBeTruthy();
   });
 
-  it('renders default roadmapMeta when not provided', () => {
-    render(<RoadmapHeader roadmapTitle="Test" />);
-    expect(screen.getByText('Draft • 공개 상태')).toBeTruthy();
+  it('renders the back button', () => {
+    render(<RoadmapHeader />);
+    expect(screen.getByRole('button', { name: '뒤로가기' })).toBeTruthy();
   });
 
-  it('renders custom roadmapMeta when provided', () => {
-    render(<RoadmapHeader roadmapTitle="Test" roadmapMeta="공개" />);
-    expect(screen.getByText('공개')).toBeTruthy();
+  it('renders the search input with placeholder', () => {
+    render(<RoadmapHeader />);
+    expect(screen.getByPlaceholderText('로드맵 안에서 검색')).toBeTruthy();
   });
 
-  it('calls onInfo when 상세 보기 button is clicked', async () => {
-    const onInfo = vi.fn();
-    render(<RoadmapHeader roadmapTitle="Test" onInfo={onInfo} />);
-    await userEvent.click(screen.getByText('상세 보기'));
-    expect(onInfo).toHaveBeenCalledTimes(1);
+  it('renders the AI feedback button', () => {
+    render(<RoadmapHeader />);
+    expect(screen.getByText('AI 학습 피드백')).toBeTruthy();
   });
 
-  it('calls onShare when 공유 button is clicked', async () => {
-    const onShare = vi.fn();
-    render(<RoadmapHeader roadmapTitle="Test" onShare={onShare} />);
-    await userEvent.click(screen.getByText('공유'));
-    expect(onShare).toHaveBeenCalledTimes(1);
+  it('calls onAiFeedback when AI button is clicked', async () => {
+    const onAiFeedback = vi.fn();
+    render(<RoadmapHeader onAiFeedback={onAiFeedback} />);
+    await userEvent.click(screen.getByText('AI 학습 피드백'));
+    expect(onAiFeedback).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onExport when 옵션 button is clicked', async () => {
-    const onExport = vi.fn();
-    render(<RoadmapHeader roadmapTitle="Test" onExport={onExport} />);
-    await userEvent.click(screen.getByText('옵션'));
-    expect(onExport).toHaveBeenCalledTimes(1);
+  it('calls router.back when back button is clicked', async () => {
+    mockBack.mockClear();
+    render(<RoadmapHeader />);
+    await userEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+    expect(mockBack).toHaveBeenCalledTimes(1);
   });
 });

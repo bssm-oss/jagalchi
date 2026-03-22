@@ -21,18 +21,18 @@ import { HeaderMenu } from './index';
 describe('HeaderMenu', () => {
   it('renders the menu trigger button', () => {
     render(<HeaderMenu />);
-    // The trigger button renders a Settings icon inside a Button
     const button = document.querySelector('button');
     expect(button).toBeTruthy();
   });
 
-  it('shows menu items after clicking the trigger', async () => {
+  it('shows top-level menu items after clicking the trigger', async () => {
     render(<HeaderMenu />);
     const trigger = document.querySelector('button')!;
     await userEvent.click(trigger);
     expect(screen.getByText(VIEWER_MESSAGES.MENU_STATISTICS)).toBeTruthy();
-    expect(screen.getByText(VIEWER_MESSAGES.MENU_DARK_MODE)).toBeTruthy();
     expect(screen.getByText(VIEWER_MESSAGES.MENU_EXPORT)).toBeTruthy();
-    expect(screen.getByText(VIEWER_MESSAGES.MENU_SAVE_IMAGE)).toBeTruthy();
+    expect(screen.getByText(VIEWER_MESSAGES.MENU_IMPORT_JSON)).toBeTruthy();
+    expect(screen.getByText(VIEWER_MESSAGES.MENU_DARK_MODE)).toBeTruthy();
+    expect(screen.getByText(VIEWER_MESSAGES.MENU_VERSION)).toBeTruthy();
   });
 });
