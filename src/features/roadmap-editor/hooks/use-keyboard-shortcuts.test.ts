@@ -39,7 +39,7 @@ function InitAtoms({
   edges: Edge[];
   selectedNodeIds: string[];
   selectedEdgeIds: string[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   const setNodes = useSetAtom(nodesAtom);
   const setEdges = useSetAtom(edgesAtom);
