@@ -75,11 +75,11 @@ describe('ToolbarButton', () => {
     expect(tooltip).toHaveTextContent('노드');
   });
 
-  it('size가 10x10 (40px)이다', () => {
+  it('size가 8x8 (32px)이다', () => {
     render(<ToolbarButton icon={<Square />} label="노드" isActive={false} onClick={() => {}} />);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('h-10');
-    expect(button).toHaveClass('w-10');
+    expect(button).toHaveClass('h-8');
+    expect(button).toHaveClass('w-8');
   });
 
   it('shadcn/ui Button 컴포넌트를 사용한다', () => {

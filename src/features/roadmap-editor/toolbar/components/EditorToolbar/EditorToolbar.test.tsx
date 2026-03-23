@@ -62,7 +62,7 @@ describe('EditorToolbar', () => {
     const { container } = renderToolbar();
     const divider = container.querySelector('.w-px');
     expect(divider).toBeInTheDocument();
-    expect(divider).toHaveClass('h-6');
+    expect(divider).toHaveClass('h-8');
   });
 
   it('is fixed at bottom center', () => {

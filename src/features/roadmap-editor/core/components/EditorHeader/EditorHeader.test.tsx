@@ -51,7 +51,7 @@ describe('EditorHeader', () => {
     expect(header).toHaveClass('top-4');
     expect(header).toHaveClass('left-4');
     expect(header).toHaveClass('rounded-lg');
-    expect(header).toHaveClass('shadow-sm');
+    expect(header).toHaveClass('shadow-md');
   });
 
   it('is a memo component', () => {

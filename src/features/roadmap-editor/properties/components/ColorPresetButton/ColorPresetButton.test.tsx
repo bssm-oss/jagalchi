@@ -41,21 +41,19 @@ describe('ColorPresetButton', () => {
     expect(button).toHaveAttribute('aria-label', '색상: #155dfc');
   });
 
-  it('Figma 디자인 스타일을 적용한다 (36px 높이, 8px border-radius)', () => {
+  it('Figma 디자인 스타일을 적용한다 (h-8 높이, 8px border-radius)', () => {
     render(<ColorPresetButton color="#155dfc" />);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('h-[36px]');
+    expect(button).toHaveClass('h-8');
     expect(button).toHaveClass('rounded-[8px]');
     expect(button).toHaveClass('border');
-    expect(button).toHaveClass('border-slate-200');
     expect(button).toHaveClass('shadow-sm');
   });
 
-  it('고정 너비를 가진다 (36px x 36px 정사각형)', () => {
+  it('flex-1로 균등 너비를 가진다', () => {
     render(<ColorPresetButton color="#155dfc" />);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('w-[36px]');
-    expect(button).toHaveClass('min-w-[36px]');
+    expect(button).toHaveClass('flex-1');
   });
 
   it('disabled 상태일 때 클릭이 동작하지 않는다', async () => {

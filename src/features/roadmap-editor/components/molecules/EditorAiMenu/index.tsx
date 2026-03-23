@@ -2,7 +2,7 @@
 
 import { memo, useState } from 'react';
 
-import { Settings, Sparkles, WandSparkles } from 'lucide-react';
+import { Sparkles, WandSparkles, ChevronDown } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -33,13 +33,14 @@ export const EditorAiMenu = memo(function EditorAiMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div>
+          <div className="flex items-center">
             <ToolbarButton
-              icon={<Settings className="h-5 w-5" />}
+              icon={<Sparkles className="h-[15px] w-[15px]" />}
               label={EDITOR_MESSAGES.TOOLBAR_GEAR_TOOLTIP}
               isActive={false}
               onClick={() => {}}
             />
+            <ChevronDown className="h-2 w-2 text-slate-500" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" side="top" sideOffset={8}>

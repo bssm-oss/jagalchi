@@ -74,7 +74,7 @@ export function createJagalchiSection(options: CreateSectionOptions): JagalchiSe
 export function createJagalchiText(options: CreateTextOptions): JagalchiTextType {
   const {
     position,
-    variant = 'gray',
+    variant = 'white',
     content = EDITOR_MESSAGES.FLOW_TEXT_DEFAULT_CONTENT,
   } = options;
 

@@ -60,7 +60,7 @@ describe('MultiSelectPanel', () => {
     const spacingLabel = screen.getByText(/간격/);
     expect(spacingLabel).toBeInTheDocument();
 
-    const input = screen.getByPlaceholderText(/Value/);
+    const input = screen.getByPlaceholderText(/Mixed/);
     expect(input).toBeDisabled();
   });
 

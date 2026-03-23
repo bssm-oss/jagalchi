@@ -10,12 +10,12 @@ export const NODE_PRESET_COLORS: { variant: NodeColorVariant; hex: string; label
 ];
 
 export const TEXT_PRESET_COLORS: { variant: TextColorVariant; hex: string; label: string }[] = [
-  { variant: 'gray', hex: '#64748b', label: 'Gray' },
+  { variant: 'white', hex: '#ffffff', label: 'White' },
   { variant: 'black', hex: '#000000', label: 'Black' },
-  { variant: 'blue', hex: '#3b82f6', label: 'Blue' },
-  { variant: 'purple', hex: '#8b5cf6', label: 'Purple' },
-  { variant: 'red', hex: '#f43f5e', label: 'Red' },
-  { variant: 'orange', hex: '#f59e0b', label: 'Orange' },
+  { variant: 'blue', hex: '#155dfc', label: 'Blue' },
+  { variant: 'purple', hex: '#9810fa', label: 'Purple' },
+  { variant: 'red', hex: '#ec003f', label: 'Red' },
+  { variant: 'orange', hex: '#e17100', label: 'Orange' },
 ];
 
 export function hexToNodeVariant(hex: string): NodeColorVariant {
@@ -25,7 +25,7 @@ export function hexToNodeVariant(hex: string): NodeColorVariant {
 
 export function hexToTextVariant(hex: string): TextColorVariant {
   const found = TEXT_PRESET_COLORS.find((c) => c.hex.toLowerCase() === hex.toLowerCase());
-  return found?.variant ?? 'gray';
+  return found?.variant ?? 'white';
 }
 
 export function nodeVariantToHex(variant: NodeColorVariant): string {
@@ -33,5 +33,5 @@ export function nodeVariantToHex(variant: NodeColorVariant): string {
 }
 
 export function textVariantToHex(variant: TextColorVariant): string {
-  return TEXT_PRESET_COLORS.find((c) => c.variant === variant)?.hex ?? '#64748b';
+  return TEXT_PRESET_COLORS.find((c) => c.variant === variant)?.hex ?? '#ffffff';
 }

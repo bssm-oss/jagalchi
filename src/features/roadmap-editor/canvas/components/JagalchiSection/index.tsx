@@ -46,7 +46,7 @@ export const JagalchiSection = memo(function JagalchiSection({
         minWidth={200}
         minHeight={200}
         onResizeEnd={handleResize}
-        handleClassName="h-3! w-3! rounded-sm! border-2! border-blue-600! bg-background!"
+        handleClassName="h-3! w-3! rounded-none! border-2! border-blue-600! bg-background!"
       />
     </JagalchiSectionBase>
   );

@@ -38,7 +38,7 @@ export const JagalchiSectionBase = memo(function JagalchiSectionBase({
       <div
         className={cn(
           'bg-background w-full flex-1 rounded-lg border-2 transition-colors',
-          colors.border,
+          colors.sectionBorder,
         )}
       />
     </div>

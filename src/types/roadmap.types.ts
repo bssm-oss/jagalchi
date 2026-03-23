@@ -3,7 +3,7 @@ import type { Edge, Node } from '@xyflow/react';
 // === Node Data Types ===
 
 export type NodeColorVariant = 'white' | 'black' | 'blue' | 'purple' | 'red' | 'orange';
-export type TextColorVariant = 'gray' | 'black' | 'blue' | 'purple' | 'red' | 'orange';
+export type TextColorVariant = 'white' | 'black' | 'blue' | 'purple' | 'red' | 'orange';
 export type NodeState = 'default' | 'focus';
 
 interface BaseNodeData {

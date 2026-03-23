@@ -3,6 +3,7 @@ import type { NodeColorVariant, TextColorVariant, NodeState } from '@/types/road
 export interface NodeColorClasses {
   bg: string;
   border: string;
+  sectionBorder: string;
   text: string;
   handle: string;
   badge: string;
@@ -13,13 +14,15 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     default: {
       bg: 'bg-background',
       border: 'border-border',
+      sectionBorder: 'border-[#e2e8f0]',
       text: 'text-foreground',
       handle: 'bg-primary',
-      badge: 'bg-muted text-muted-foreground',
+      badge: 'bg-muted text-[#0f172a]',
     },
     focus: {
       bg: 'bg-background',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-foreground',
       handle: 'bg-primary',
       badge: 'bg-blue-500 text-white',
@@ -29,6 +32,7 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     default: {
       bg: 'bg-primary',
       border: 'border-border',
+      sectionBorder: 'border-[#64748b]',
       text: 'text-primary-foreground',
       handle: 'bg-primary-foreground',
       badge: 'bg-primary text-primary-foreground',
@@ -36,6 +40,7 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     focus: {
       bg: 'bg-primary',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-primary-foreground',
       handle: 'bg-primary-foreground',
       badge: 'bg-blue-500 text-white',
@@ -44,7 +49,8 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
   blue: {
     default: {
       bg: 'bg-[#155dfc]',
-      border: 'border-[#155dfc]',
+      border: 'border-[#e2e8f0]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-[#155dfc] text-white',
@@ -52,6 +58,7 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     focus: {
       bg: 'bg-[#155dfc]',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-blue-500 text-white',
@@ -60,7 +67,8 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
   purple: {
     default: {
       bg: 'bg-[#9810fa]',
-      border: 'border-[#9810fa]',
+      border: 'border-[#e2e8f0]',
+      sectionBorder: 'border-[#dab2ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-[#9810fa] text-white',
@@ -68,6 +76,7 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     focus: {
       bg: 'bg-[#9810fa]',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-blue-500 text-white',
@@ -76,7 +85,8 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
   red: {
     default: {
       bg: 'bg-[#ec003f]',
-      border: 'border-[#ec003f]',
+      border: 'border-[#e2e8f0]',
+      sectionBorder: 'border-[#ffa1ad]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-[#ec003f] text-white',
@@ -84,6 +94,7 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
     focus: {
       bg: 'bg-[#ec003f]',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-blue-500 text-white',
@@ -92,14 +103,16 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
   orange: {
     default: {
       bg: 'bg-[#f54a00]',
-      border: 'border-[#f54a00]',
+      border: 'border-[#e2e8f0]',
+      sectionBorder: 'border-[#ffb86a]',
       text: 'text-white',
       handle: 'bg-white',
-      badge: 'bg-[#f54a00] text-white',
+      badge: 'bg-[#e17100] text-white',
     },
     focus: {
       bg: 'bg-[#f54a00]',
       border: 'border-[#3f8dff]',
+      sectionBorder: 'border-[#8ec5ff]',
       text: 'text-white',
       handle: 'bg-white',
       badge: 'bg-blue-500 text-white',
@@ -108,12 +121,12 @@ export const NODE_COLOR_CLASSES: Record<NodeColorVariant, Record<NodeState, Node
 } as const;
 
 export const TEXT_COLOR_CLASSES: Record<TextColorVariant, string> = {
-  gray: 'text-[#64748b]',
+  white: 'text-white',
   black: 'text-foreground',
-  blue: 'text-[#3b82f6]',
-  purple: 'text-[#8b5cf6]',
-  red: 'text-[#f43f5e]',
-  orange: 'text-[#f59e0b]',
+  blue: 'text-[#155dfc]',
+  purple: 'text-[#9810fa]',
+  red: 'text-[#ec003f]',
+  orange: 'text-[#e17100]',
 } as const;
 
 export function getNodeColors(variant: NodeColorVariant, state: NodeState): NodeColorClasses {
