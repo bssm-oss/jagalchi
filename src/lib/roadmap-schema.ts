@@ -11,7 +11,7 @@ const roadmapAuthorSchema = z.object({
 });
 
 const roadmapNodeDataSchema = z.object({
-  label: z.string(),
+  label: z.string().optional(),
   description: z.string().optional(),
   resources: z.array(z.string()).optional(),
   variant: z.string().optional(),
@@ -61,22 +61,28 @@ export const roadmapsArraySchema = z.array(roadmapSchema);
 
 /**
  * Safely parse and validate roadmaps from localStorage
- * Returns empty array if validation fails
+ * Validates each item individually so one corrupt entry doesn't discard all data
  */
 export function parseRoadmaps(stored: string | null): unknown[] {
   if (!stored) return [];
 
   try {
     const parsed = JSON.parse(stored);
-    const result = roadmapsArraySchema.safeParse(parsed);
 
-    if (!result.success) {
+    if (!Array.isArray(parsed)) {
       // eslint-disable-next-line no-console
-      console.error('Invalid roadmap data in localStorage:', result.error);
+      console.error('Invalid roadmap data in localStorage: expected array');
       return [];
     }
 
-    return result.data;
+    return parsed.filter((item) => {
+      const result = roadmapSchema.safeParse(item);
+      if (!result.success) {
+        // eslint-disable-next-line no-console
+        console.error('Skipping invalid roadmap entry:', result.error);
+      }
+      return result.success;
+    });
   } catch {
     // eslint-disable-next-line no-console
     console.error('Failed to parse roadmap data from localStorage');

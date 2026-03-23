@@ -114,12 +114,12 @@ describe('roadmapNodeDataSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects data missing label', () => {
+  it('accepts data missing label (optional for section/text nodes)', () => {
     const result = roadmapSchema.safeParse({
       ...validRoadmap,
       nodes: [{ ...validNode, data: { description: 'no label' } }],
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it('rejects data with non-string label', () => {
@@ -378,11 +378,11 @@ describe('parseRoadmaps', () => {
     });
   });
 
-  it('returns empty array and logs error for schema-mismatched JSON', () => {
+  it('filters out invalid entries instead of discarding all', () => {
     const invalid = JSON.stringify([{ id: 'bad', missing: 'fields' }]);
     expect(parseRoadmaps(invalid)).toEqual([]);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Invalid roadmap data in localStorage:',
+      'Skipping invalid roadmap entry:',
       expect.anything(),
     );
   });
@@ -391,8 +391,7 @@ describe('parseRoadmaps', () => {
     const input = JSON.stringify({ id: 'single-object' });
     expect(parseRoadmaps(input)).toEqual([]);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Invalid roadmap data in localStorage:',
-      expect.anything(),
+      'Invalid roadmap data in localStorage: expected array',
     );
   });
 });
