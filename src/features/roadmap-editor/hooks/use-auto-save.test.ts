@@ -67,40 +67,6 @@ describe('useAutoSave', () => {
     vi.restoreAllMocks();
   });
 
-  it('does not save to localStorage on initial render', () => {
-    renderHook(() =>
-      useAutoSave({
-        roadmapId: 'roadmap-1',
-        nodes: [],
-        edges: [],
-        title: 'Test',
-        isEnabled: true,
-      }),
-    );
-
-    // Initial render: prevRefs are '' and JSON.stringify([]) !== '' so it will save.
-    // But on truly empty data with no changes pattern, let's verify:
-    // Actually, on first render debouncedNodes = [] which stringifies to "[]" != "" (prevRef),
-    // so it WILL save. Let's test that the second render with same data does NOT save again.
-    setItemSpy.mockClear();
-
-    // Re-render with same data - should not trigger another save
-    renderHook(() =>
-      useAutoSave({
-        roadmapId: 'roadmap-1',
-        nodes: [],
-        edges: [],
-        title: 'Test',
-        isEnabled: true,
-      }),
-    );
-
-    // The second independent hook instance has its own refs starting at '',
-    // so it will also detect a "change". Let's adjust the test:
-    // The real intent is: "no spurious saves when data hasn't changed between renders"
-    // We test this with rerender instead.
-  });
-
   it('saves to localStorage when nodes change', () => {
     mockParseRoadmaps.mockReturnValue([]);
 

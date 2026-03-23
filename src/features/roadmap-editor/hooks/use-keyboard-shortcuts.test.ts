@@ -178,45 +178,74 @@ describe('useKeyboardShortcuts', () => {
     expect(result.current.selectedEdgeIds).toHaveLength(0);
   });
 
-  it('Ctrl+Z calls undo', () => {
-    const wrapper = createWrapper({});
+  it('Ctrl+Z undoes the last action (duplicate → undo)', () => {
+    const nodes = [makeNode('n1', 'Node 1')];
 
-    renderHook(() => useKeyboardShortcuts(), { wrapper });
-
-    const event = new KeyboardEvent('keydown', {
-      key: 'z',
-      ctrlKey: true,
-      bubbles: true,
-      cancelable: true,
+    const wrapper = createWrapper({
+      nodes,
+      edges: [],
+      selectedNodeIds: ['n1'],
+      selectedEdgeIds: [],
     });
-    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
 
+    const { result } = renderHook(
+      () => {
+        useKeyboardShortcuts();
+        return {
+          nodes: useAtomValue(nodesAtom),
+        };
+      },
+      { wrapper },
+    );
+
+    // Ctrl+D to duplicate — creates a history entry
     act(() => {
-      window.dispatchEvent(event);
+      dispatchKeydown({ key: 'd', ctrlKey: true });
     });
+    expect(result.current.nodes).toHaveLength(2);
 
-    expect(preventDefaultSpy).toHaveBeenCalled();
+    // Ctrl+Z to undo — should revert the duplicate
+    act(() => {
+      dispatchKeydown({ key: 'z', ctrlKey: true });
+    });
+    expect(result.current.nodes).toHaveLength(1);
   });
 
-  it('Ctrl+Shift+Z calls redo', () => {
-    const wrapper = createWrapper({});
+  it('Ctrl+Shift+Z redoes the undone action', () => {
+    const nodes = [makeNode('n1', 'Node 1')];
 
-    renderHook(() => useKeyboardShortcuts(), { wrapper });
-
-    const event = new KeyboardEvent('keydown', {
-      key: 'z',
-      ctrlKey: true,
-      shiftKey: true,
-      bubbles: true,
-      cancelable: true,
+    const wrapper = createWrapper({
+      nodes,
+      edges: [],
+      selectedNodeIds: ['n1'],
+      selectedEdgeIds: [],
     });
-    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+
+    const { result } = renderHook(
+      () => {
+        useKeyboardShortcuts();
+        return {
+          nodes: useAtomValue(nodesAtom),
+        };
+      },
+      { wrapper },
+    );
+
+    // Duplicate → Undo → Redo
+    act(() => {
+      dispatchKeydown({ key: 'd', ctrlKey: true });
+    });
+    expect(result.current.nodes).toHaveLength(2);
 
     act(() => {
-      window.dispatchEvent(event);
+      dispatchKeydown({ key: 'z', ctrlKey: true });
     });
+    expect(result.current.nodes).toHaveLength(1);
 
-    expect(preventDefaultSpy).toHaveBeenCalled();
+    act(() => {
+      dispatchKeydown({ key: 'z', ctrlKey: true, shiftKey: true });
+    });
+    expect(result.current.nodes).toHaveLength(2);
   });
 
   it('Ctrl+A selects all nodes and edges', () => {
@@ -337,81 +366,43 @@ describe('useKeyboardShortcuts', () => {
     expect(result.current.selectedNodeIds).toEqual(['mock-id-1']);
   });
 
-  it('ignores shortcuts when target is an input element', () => {
-    const nodes = [makeNode('n1', 'Node 1')];
+  it.each(['input', 'textarea'] as const)(
+    'ignores shortcuts when target is a %s element',
+    (tagName) => {
+      const nodes = [makeNode('n1', 'Node 1')];
 
-    const wrapper = createWrapper({
-      nodes,
-      edges: [],
-      selectedNodeIds: ['n1'],
-      selectedEdgeIds: [],
-    });
-
-    const { result } = renderHook(
-      () => {
-        useKeyboardShortcuts();
-        return {
-          nodes: useAtomValue(nodesAtom),
-          selectedNodeIds: useAtomValue(selectedNodeIdsAtom),
-        };
-      },
-      { wrapper },
-    );
-
-    // Create an input element to be the event target
-    const input = document.createElement('input');
-    document.body.appendChild(input);
-
-    act(() => {
-      const event = new KeyboardEvent('keydown', {
-        key: 'Delete',
-        bubbles: true,
+      const wrapper = createWrapper({
+        nodes,
+        edges: [],
+        selectedNodeIds: ['n1'],
+        selectedEdgeIds: [],
       });
-      // Override target by dispatching from the input element
-      input.dispatchEvent(event);
-    });
 
-    // Node should NOT be deleted since event came from input
-    expect(result.current.nodes).toHaveLength(1);
-    expect(result.current.selectedNodeIds).toEqual(['n1']);
+      const { result } = renderHook(
+        () => {
+          useKeyboardShortcuts();
+          return {
+            nodes: useAtomValue(nodesAtom),
+            selectedNodeIds: useAtomValue(selectedNodeIdsAtom),
+          };
+        },
+        { wrapper },
+      );
 
-    document.body.removeChild(input);
-  });
+      const element = document.createElement(tagName);
+      document.body.appendChild(element);
+      element.focus();
 
-  it('ignores shortcuts when target is a textarea element', () => {
-    const nodes = [makeNode('n1', 'Node 1')];
-
-    const wrapper = createWrapper({
-      nodes,
-      edges: [],
-      selectedNodeIds: ['n1'],
-      selectedEdgeIds: [],
-    });
-
-    const { result } = renderHook(
-      () => {
-        useKeyboardShortcuts();
-        return {
-          nodes: useAtomValue(nodesAtom),
-        };
-      },
-      { wrapper },
-    );
-
-    const textarea = document.createElement('textarea');
-    document.body.appendChild(textarea);
-
-    act(() => {
-      const event = new KeyboardEvent('keydown', {
-        key: 'Delete',
-        bubbles: true,
+      act(() => {
+        // Dispatch from the focused element — bubbles to window with element as target
+        element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));
       });
-      textarea.dispatchEvent(event);
-    });
 
-    // Node should NOT be deleted
-    expect(result.current.nodes).toHaveLength(1);
+      // Node should NOT be deleted since event came from an editable element
+      expect(result.current.nodes).toHaveLength(1);
+      expect(result.current.selectedNodeIds).toEqual(['n1']);
 
-    document.body.removeChild(textarea);
-  });
+      document.body.removeChild(element);
+    },
+  );
 });

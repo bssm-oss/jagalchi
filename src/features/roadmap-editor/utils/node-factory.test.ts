@@ -26,14 +26,10 @@ describe('createId', () => {
   });
 
   it('returns tmp- prefixed string when crypto.randomUUID is unavailable', () => {
-    const saved = globalThis.crypto.randomUUID;
-
     (globalThis.crypto as Record<string, unknown>).randomUUID = undefined;
 
     const id = createId();
     expect(id).toMatch(/^tmp-\d+-[0-9a-f]+$/);
-
-    globalThis.crypto.randomUUID = saved;
   });
 });
 
