@@ -25,10 +25,10 @@ function HydrateAtoms({
   initialValues,
   children,
 }: {
-  initialValues: [unknown, unknown][];
+  initialValues: any;
   children: React.ReactNode;
 }) {
-  useHydrateAtoms(initialValues as Parameters<typeof useHydrateAtoms>[0]);
+  useHydrateAtoms(initialValues);
   return <>{children}</>;
 }
 
@@ -36,7 +36,7 @@ function TestWrapper({
   initialValues = [],
   children,
 }: {
-  initialValues?: [unknown, unknown][];
+  initialValues?: any;
   children: React.ReactNode;
 }) {
   return (
