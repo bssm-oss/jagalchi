@@ -21,6 +21,8 @@ export function alignNodes(
 
   const selectedNodes = nodes.filter((node) => selectedIdsSet.has(node.id));
 
+  if (selectedNodes.length < 2) return nodes;
+
   // Calculate target position based on direction
   let targetValue: number;
 
