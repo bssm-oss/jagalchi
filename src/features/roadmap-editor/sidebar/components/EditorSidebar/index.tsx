@@ -53,7 +53,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
   // Multi-select (2개 이상 노드 선택)
   if (selectedNodeIds.length >= 2) {
     return (
-      <aside className="relative h-full w-[240px] border-l bg-white">
+      <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
         <div className="absolute top-0 left-0">{collapseButton}</div>
         <MultiSelectPanel />
       </aside>
@@ -63,7 +63,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
   // Edge가 선택된 경우
   if (selectedEdge) {
     return (
-      <aside className="relative h-full w-[240px] border-l bg-white">
+      <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
         <div className="absolute top-0 left-0">{collapseButton}</div>
         <EdgePropertiesPanel edge={selectedEdge} />
       </aside>
@@ -74,7 +74,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
   if (selectedNode) {
     if (selectedNode.type === 'jagalchi-node') {
       return (
-        <aside className="relative h-full w-[240px] border-l bg-white">
+        <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
           <div className="absolute top-0 left-0">{collapseButton}</div>
           <NodePropertiesPanel node={selectedNode as JagalchiNodeType} />
         </aside>
@@ -83,7 +83,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
 
     if (selectedNode.type === 'jagalchi-section') {
       return (
-        <aside className="relative h-full w-[240px] border-l bg-white">
+        <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
           <div className="absolute top-0 left-0">{collapseButton}</div>
           <SectionPropertiesPanel node={selectedNode as JagalchiSectionType} />
         </aside>
@@ -92,7 +92,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
 
     if (selectedNode.type === 'jagalchi-text') {
       return (
-        <aside className="relative h-full w-[240px] border-l bg-white">
+        <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
           <div className="absolute top-0 left-0">{collapseButton}</div>
           <TextPropertiesPanel node={selectedNode as JagalchiTextType} />
         </aside>
