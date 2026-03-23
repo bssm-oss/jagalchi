@@ -20,16 +20,16 @@ export function ViewerZoomControls() {
     zoomOut();
   }, [zoomOut]);
 
-  const handleZoomReset = useCallback(() => {
+  const handleFitView = useCallback(() => {
     fitView();
   }, [fitView]);
 
   return (
     <ZoomButtonGroup
-      value={Math.round(zoomLevel * 100)}
+      zoom={zoomLevel}
       onZoomIn={handleZoomIn}
       onZoomOut={handleZoomOut}
-      onZoomReset={handleZoomReset}
+      onFitView={handleFitView}
     />
   );
 }

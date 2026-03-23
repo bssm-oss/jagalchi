@@ -19,10 +19,10 @@ import { ZoomButtonGroup } from './index';
 
 describe('ZoomButtonGroup', () => {
   const defaultProps = {
-    value: 100,
+    zoom: 1,
     onZoomIn: vi.fn(),
     onZoomOut: vi.fn(),
-    onZoomReset: vi.fn(),
+    onFitView: vi.fn(),
   };
 
   it('renders zoom in button', () => {
@@ -35,9 +35,13 @@ describe('ZoomButtonGroup', () => {
     expect(screen.getByLabelText('축소')).toBeTruthy();
   });
 
-  it('renders reset button with current zoom value', () => {
-    render(<ZoomButtonGroup {...defaultProps} value={150} />);
-    expect(screen.getByLabelText('확대 초기화')).toBeTruthy();
+  it('renders fit view button', () => {
+    render(<ZoomButtonGroup {...defaultProps} />);
+    expect(screen.getByLabelText('화면 맞춤')).toBeTruthy();
+  });
+
+  it('renders zoom percentage display', () => {
+    render(<ZoomButtonGroup {...defaultProps} zoom={1.5} />);
     expect(screen.getByText('150%')).toBeTruthy();
   });
 
@@ -55,10 +59,10 @@ describe('ZoomButtonGroup', () => {
     expect(onZoomOut).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onZoomReset when 확대 초기화 button is clicked', async () => {
-    const onZoomReset = vi.fn();
-    render(<ZoomButtonGroup {...defaultProps} onZoomReset={onZoomReset} />);
-    await userEvent.click(screen.getByLabelText('확대 초기화'));
-    expect(onZoomReset).toHaveBeenCalledTimes(1);
+  it('calls onFitView when 화면 맞춤 button is clicked', async () => {
+    const onFitView = vi.fn();
+    render(<ZoomButtonGroup {...defaultProps} onFitView={onFitView} />);
+    await userEvent.click(screen.getByLabelText('화면 맞춤'));
+    expect(onFitView).toHaveBeenCalledTimes(1);
   });
 });
