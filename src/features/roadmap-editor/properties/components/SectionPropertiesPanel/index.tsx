@@ -36,7 +36,7 @@ export const SectionPropertiesPanel = memo(function SectionPropertiesPanel({
   return (
     <div className="flex h-full w-full flex-col">
       <PanelHeader
-        title={node.id}
+        title={node.data.title || '섹션'}
         subtitle="섹션"
         isLocked={node.data.isLocked}
         onToggleLock={toggleLock}

@@ -34,7 +34,7 @@ export const TextPropertiesPanel = memo(function TextPropertiesPanel({
   return (
     <div className="flex h-full w-full flex-col">
       <PanelHeader
-        title={node.id}
+        title={node.data.content || '텍스트'}
         subtitle="텍스트"
         isLocked={node.data.isLocked}
         onToggleLock={toggleLock}

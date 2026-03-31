@@ -58,7 +58,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
   return (
     <div className="flex h-full w-full flex-col">
       <PanelHeader
-        title={node.id}
+        title={node.data.label}
         subtitle="노드"
         isLocked={node.data.isLocked}
         onToggleLock={toggleLock}
