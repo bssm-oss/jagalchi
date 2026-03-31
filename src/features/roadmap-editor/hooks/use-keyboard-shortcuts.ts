@@ -39,7 +39,7 @@ const roadmapNodeSchema = z.object({
     y: z.number(),
   }),
   data: roadmapNodeDataSchema,
-  style: z.record(z.unknown()).optional(),
+  style: z.record(z.string(), z.unknown()).optional(),
 });
 
 const edgeSchema = z.object({
@@ -50,8 +50,8 @@ const edgeSchema = z.object({
   targetHandle: z.string().nullable().optional(),
   type: z.string().optional(),
   animated: z.boolean().optional(),
-  style: z.record(z.unknown()).optional(),
-  data: z.record(z.unknown()).optional(),
+  style: z.record(z.string(), z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 const clipboardSchema = z.object({
