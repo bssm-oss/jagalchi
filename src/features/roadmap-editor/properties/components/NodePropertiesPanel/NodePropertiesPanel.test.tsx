@@ -29,9 +29,9 @@ const renderWithProvider = (node: JagalchiNodeType) => {
 };
 
 describe('NodePropertiesPanel', () => {
-  it('renders node header with ID', () => {
+  it('renders node header with label', () => {
     renderWithProvider(mockNode);
-    expect(screen.getByText('node-1')).toBeInTheDocument();
+    expect(screen.getByText('Test Node')).toBeInTheDocument();
   });
 
   it('renders lock button', () => {

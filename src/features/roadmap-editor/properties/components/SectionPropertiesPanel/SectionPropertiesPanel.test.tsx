@@ -27,9 +27,9 @@ const renderWithProvider = (section: JagalchiSectionType) => {
 };
 
 describe('SectionPropertiesPanel', () => {
-  it('renders section header with ID', () => {
+  it('renders section header with title', () => {
     renderWithProvider(mockSection);
-    expect(screen.getByText('section-1')).toBeInTheDocument();
+    expect(screen.getByText('Test Section')).toBeInTheDocument();
   });
 
   it('renders lock button', () => {

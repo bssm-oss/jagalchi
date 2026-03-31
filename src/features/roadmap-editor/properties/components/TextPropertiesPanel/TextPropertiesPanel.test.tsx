@@ -28,9 +28,9 @@ const renderWithProvider = (text: JagalchiTextType) => {
 };
 
 describe('TextPropertiesPanel', () => {
-  it('renders text header with ID', () => {
+  it('renders text header with content', () => {
     renderWithProvider(mockText);
-    expect(screen.getByText('text-1')).toBeInTheDocument();
+    expect(screen.getByText('Test Text Content')).toBeInTheDocument();
   });
 
   it('renders lock button', () => {
