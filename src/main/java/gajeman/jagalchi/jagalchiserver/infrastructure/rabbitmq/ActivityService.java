@@ -8,6 +8,7 @@ import gajeman.jagalchi.jagalchiserver.infrastructure.persistence.users.UsersRep
 import gajeman.jagalchi.jagalchiserver.presentation.user.response.DailyActivityDto;
 import gajeman.jagalchi.jagalchiserver.presentation.user.response.StreakResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ActivityService {
@@ -26,6 +28,7 @@ public class ActivityService {
 
     @Transactional
     public void recordActivity(Long userId, LocalDate date) {
+        log.debug("Recording activity: userId={}, date={}", userId, date);
 
         Users user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -33,13 +36,16 @@ public class ActivityService {
         UserDailyActivity activity =
                 activityRepository
                         .findByUserAndActivityDate(user, date)
-                        .orElseGet(() ->
-                                activityRepository.save(
-                                        UserDailyActivity.from(user, date)
-                                )
-                        );
+                        .orElseGet(() -> {
+                            log.info("Creating new UserDailyActivity for userId={}, date={}", userId, date);
+                            return activityRepository.save(
+                                    UserDailyActivity.from(user, date)
+                            );
+                        });
 
         activity.increase();
+        log.info("Activity recorded successfully: userId={}, date={}, count={}",
+                userId, date, activity.getActivityCount());
     }
 
     @Transactional(readOnly = true)
