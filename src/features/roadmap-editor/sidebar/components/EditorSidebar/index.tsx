@@ -34,7 +34,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
 
   const collapseButton = (
     <button
-      className="flex h-8 w-8 items-center justify-center rounded-bl-lg border-b border-l border-[#e2e8f0] bg-white"
+      className="absolute top-2 -left-8 z-10 flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-[#e2e8f0] bg-white shadow-sm"
       onClick={() => setIsCollapsed((prev) => !prev)}
       aria-label={isCollapsed ? '사이드바 열기' : '사이드바 닫기'}
     >
@@ -43,18 +43,14 @@ export const EditorSidebar = memo(function EditorSidebar() {
   );
 
   if (isCollapsed) {
-    return (
-      <div className="relative flex h-full flex-col">
-        <div className="absolute top-0 right-0">{collapseButton}</div>
-      </div>
-    );
+    return <div className="relative h-full w-0">{collapseButton}</div>;
   }
 
   // Multi-select (2개 이상 노드 선택)
   if (selectedNodeIds.length >= 2) {
     return (
       <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
-        <div className="absolute top-0 left-0">{collapseButton}</div>
+        {collapseButton}
         <MultiSelectPanel />
       </aside>
     );
@@ -64,7 +60,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
   if (selectedEdge) {
     return (
       <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
-        <div className="absolute top-0 left-0">{collapseButton}</div>
+        {collapseButton}
         <EdgePropertiesPanel edge={selectedEdge} />
       </aside>
     );
@@ -75,7 +71,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
     if (selectedNode.type === 'jagalchi-node') {
       return (
         <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
-          <div className="absolute top-0 left-0">{collapseButton}</div>
+          {collapseButton}
           <NodePropertiesPanel node={selectedNode as JagalchiNodeType} />
         </aside>
       );
@@ -84,7 +80,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
     if (selectedNode.type === 'jagalchi-section') {
       return (
         <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
-          <div className="absolute top-0 left-0">{collapseButton}</div>
+          {collapseButton}
           <SectionPropertiesPanel node={selectedNode as JagalchiSectionType} />
         </aside>
       );
@@ -93,7 +89,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
     if (selectedNode.type === 'jagalchi-text') {
       return (
         <aside className="relative h-full w-[240px] border-l bg-white shadow-md">
-          <div className="absolute top-0 left-0">{collapseButton}</div>
+          {collapseButton}
           <TextPropertiesPanel node={selectedNode as JagalchiTextType} />
         </aside>
       );

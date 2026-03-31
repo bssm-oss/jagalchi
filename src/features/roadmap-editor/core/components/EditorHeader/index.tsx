@@ -28,7 +28,7 @@ export const EditorHeader = memo(function EditorHeader({ onBack }: EditorHeaderP
   };
 
   return (
-    <header className="absolute top-4 left-4 z-10 flex max-w-[320px] flex-col gap-4 rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-md">
+    <header className="absolute top-4 left-4 z-10 flex w-fit flex-col gap-4 rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-md">
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -39,7 +39,7 @@ export const EditorHeader = memo(function EditorHeader({ onBack }: EditorHeaderP
           <ChevronLeft className="h-[15px] w-[15px]" />
         </Button>
 
-        <span className="text-base leading-6 font-semibold text-[#020617]">
+        <span className="text-base leading-6 font-semibold whitespace-nowrap text-[#020617]">
           {title || 'Jagalchi Roadmap'}
         </span>
 
