@@ -52,3 +52,6 @@ visual-tests/
 .netlify
 .playwright-mcp/
 .mcp.json
+
+# screenshots (temp)
+*.png

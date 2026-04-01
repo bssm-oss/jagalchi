@@ -17,6 +17,7 @@
     "figma:screenshots": "tsx scripts/storybook-screenshots.ts",
     "figma:compare": "tsx scripts/compare-images.ts",
     "figma:report": "tsx scripts/generate-report.ts",
+    "figma:snapshot": "tsx scripts/figma-snapshot.ts",
     "figma:test": "pnpm figma:export && pnpm figma:screenshots && pnpm figma:compare && pnpm figma:report"
   },
   "lint-staged": {
