@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:dotenv:.env
   profiles:
     active: local
 
@@ -53,10 +55,10 @@ spring:
             enable: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 jwt:
   secret: ${SECRET_KEY}

@@ -24,10 +24,12 @@ services:
       - jagalchi-network
 
   app:
-    image: ghcr.io/hyunwookiim/jagalchi-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: jagalchi-server
     environment:
-      DB_HOST: mysql
+      DB_HOST: jagalchi-mysql
       DB_PORT: 3306
       DB_NAME: ${MYSQL_DATABASE}
       DB_USERNAME: ${MYSQL_USER}
