@@ -1,0 +1,70 @@
+# Progress Log
+
+## Status: In Progress
+## Current Story: US-005
+
+---
+
+## US-002: MSW 설치 및 핸들러 구조 세팅 (DONE)
+- msw 2.12.14 설치 (devDependency)
+- src/mocks/ 디렉토리 구조 생성:
+  - handlers/: auth.ts, roadmap.ts, profile.ts, index.ts
+  - fixtures/: users.ts, roadmaps.ts
+  - server.ts (setupServer for Node)
+  - browser.ts (setupWorker for browser)
+- pnpm lint: 0 errors
+- pnpm build: success
+
+### Files Changed
+- package.json (msw dependency added)
+- pnpm-lock.yaml
+- src/mocks/browser.ts
+- src/mocks/server.ts
+- src/mocks/handlers/index.ts
+- src/mocks/handlers/auth.ts (stub)
+- src/mocks/handlers/roadmap.ts (stub)
+- src/mocks/handlers/profile.ts (stub)
+- src/mocks/fixtures/users.ts
+- src/mocks/fixtures/roadmaps.ts
+
+---
+
+## US-003: Auth 핸들러 구현 (DONE)
+- 5개 Auth 엔드포인트 구현:
+  - POST /api/auth/login: JWT 토큰 + 사용자 정보 반환, 잘못된 credentials 401
+  - POST /api/auth/register: 유저 생성, 이메일 중복 409
+  - POST /api/auth/send-verification-code: mock 인증 코드 발송
+  - POST /api/auth/verify-code: 코드 검증 (고정값 123456), 실패 시 401
+  - POST /api/auth/reset-password: 비밀번호 재설정, 미등록 이메일 404
+- TypeScript 타입 안전성: Request/Response 인터페이스 정의
+- resetRegisteredUsers() 유틸 함수 제공
+
+### Decisions
+- auth.schema.ts의 Zod 스키마 구조 참고하여 요청 타입 정의
+- 런타임 가변 저장소(registeredUsers)로 등록/수정 추적
+- sanitizeUser로 비밀번호 제외 후 반환
+
+### Files Changed
+- src/mocks/handlers/auth.ts
+
+---
+
+## US-004: Roadmap 핸들러 구현 (DONE)
+- 5개 Roadmap CRUD 엔드포인트 구현:
+  - GET /api/roadmaps: 로드맵 목록 반환
+  - GET /api/roadmaps/:id: 단일 로드맵 반환, 404 에러
+  - POST /api/roadmaps: CreateRoadmapInput 타입으로 생성
+  - PUT /api/roadmaps/:id: UpdateRoadmapInput 타입으로 업데이트, 404 에러
+  - DELETE /api/roadmaps/:id: 삭제, 404 에러
+- 픽스처: 3개 로드맵 (프론트엔드/백엔드/비공개), 실제 Roadmap 타입과 일치
+- resetRoadmapStore() 유틸 함수 제공
+
+### Decisions
+- roadmap.types.ts의 Roadmap, CreateRoadmapInput, UpdateRoadmapInput 타입 직접 사용
+- 노드 타입 3종(jagalchi-node, jagalchi-section, jagalchi-text) 모두 포함하는 픽스처
+- 런타임 가변 저장소로 CRUD 추적
+
+### Files Changed
+- src/mocks/handlers/roadmap.ts
+
+---
