@@ -1,54 +1,47 @@
 # Progress Log
 
-## Status: US-001 + US-006 Complete
-## Current Story: Done (Track A)
+## Status: US-001~004 + US-006 Complete
+## Remaining: US-005, US-007, US-008
 
 ---
 
 ### US-001: Playwright 설정 및 프로젝트 구조 (2026-04-01)
 
 **Files changed:**
-- `playwright.config.ts` — Created. Chromium only, baseURL localhost:3000, webServer pnpm dev
-- `e2e/helpers/.gitkeep` — Created directory structure
-- `e2e/fixtures/.gitkeep` — Created directory structure
-- `package.json` — Added test:e2e, test:e2e:ui scripts; added @playwright/test devDep; updated playwright to 1.59.0
-- `tsconfig.json` — Excluded playwright.config.ts and e2e/ from Next.js compilation
+- `playwright.config.ts` — Chromium only, baseURL localhost:3000, webServer pnpm dev
+- `e2e/helpers/.gitkeep`, `e2e/fixtures/.gitkeep` — Directory structure
+- `package.json` — Added test:e2e, test:e2e:ui scripts; @playwright/test devDep
+- `tsconfig.json` — Excluded playwright.config.ts and e2e/
 - `.gitignore` — Added /test-results/, /playwright-report/, /blob-report/
 
-**Decisions:**
-- Had to install @playwright/test (was missing, only playwright library existed)
-- Updated playwright from 1.57.0 to 1.59.0 to match @playwright/test version
-- Excluded playwright.config.ts and e2e/ from tsconfig to prevent Next.js build errors
-- Used named export + eslint-disable comment for playwright config (requires default export)
+---
 
-**Verification:**
-- `npx playwright test --list` lists 4 tests successfully
-- `pnpm lint` passes (0 errors)
-- `pnpm build` succeeds
+### US-002: MSW 설치 및 핸들러 구조 세팅 (2026-04-01)
+
+- msw 2.12.14 설치 (devDependency)
+- src/mocks/ 디렉토리 구조 생성 (handlers, fixtures, server.ts, browser.ts)
+
+---
+
+### US-003: Auth 핸들러 구현 (2026-04-01)
+
+- POST /api/auth/login — JWT + user, 401 on bad creds
+- POST /api/auth/register — 409 on duplicate
+- POST /api/auth/send-verification-code — mock send
+- POST /api/auth/verify-code — code 123456, 401 on mismatch
+- POST /api/auth/reset-password — 404 on unknown email
+
+---
+
+### US-004: Roadmap 핸들러 구현 (2026-04-01)
+
+- GET/POST/PUT/DELETE /api/roadmaps — full CRUD
+- Fixtures: 3 roadmaps with all 3 node types
+- 404 on missing resources
 
 ---
 
 ### US-006: Editor E2E 테스트 (2026-04-01)
 
-**Files changed:**
-- `e2e/editor.spec.ts` — Created with 4 test cases
-- `src/features/roadmap-editor/toolbar/components/ToolbarButton/index.tsx` — Added testId prop
-- `src/features/roadmap-editor/toolbar/components/EditorToolbar/index.tsx` — Added data-testid to toolbar buttons
-- `src/features/roadmap-editor/sidebar/components/EditorSidebar/index.tsx` — Added data-testid to empty state
-- `src/features/roadmap-editor/properties/components/PanelHeader.tsx` — Added data-testid to panel header
-
-**Test cases:**
-1. Editor page loads and canvas renders
-2. Node can be added via toolbar
-3. Node selection shows properties panel
-4. Ctrl+Z undo works
-
-**Decisions:**
-- Used `.react-flow` and `.react-flow__node` CSS class selectors for canvas/nodes (standard @xyflow/react classes)
-- Added data-testid attributes to ToolbarButton, EditorToolbar, EditorSidebar, PanelHeader for reliable E2E selection
-- Editor uses localStorage, no MSW needed
-- Route: /editor/test-roadmap (dynamic [id] route with arbitrary ID)
-
-**Verification:**
-- `pnpm lint` passes (0 errors)
-- `pnpm build` succeeds
+- `e2e/editor.spec.ts` — 4 test cases
+- Added data-testid to ToolbarButton, EditorToolbar, EditorSidebar, PanelHeader

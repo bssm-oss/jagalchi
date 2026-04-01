@@ -32,7 +32,7 @@
         "pnpm build가 MSW 추가 후에도 정상 통과한다"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "MSW는 아직 설치되지 않음. pnpm add -D msw 필요. 현재 API 엔드포인트는 TODO 상태이므로, 예상 API 스펙을 기반으로 핸들러를 작성한다."
     },
     {
@@ -49,7 +49,7 @@
         "핸들러가 TypeScript 타입 안전성을 갖는다"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "현재 LoginForm, RegisterForm, FindPasswordForm에 TODO: API 연동 주석이 있음. 해당 폼의 Zod 스키마(auth.schema.ts)를 참고하여 요청/응답 타입을 정의한다."
     },
     {
@@ -66,7 +66,7 @@
         "존재하지 않는 ID로 요청 시 404 응답을 반환한다"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "현재 localStorage 기반으로 동작 중. roadmap-storage.ts의 Roadmap 인터페이스와 roadmap.schema.ts의 Zod 스키마를 참고한다."
     },
     {
