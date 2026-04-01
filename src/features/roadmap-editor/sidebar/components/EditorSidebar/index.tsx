@@ -100,7 +100,9 @@ export const EditorSidebar = memo(function EditorSidebar() {
   return (
     <aside className="relative flex h-full w-[240px] items-center justify-center border-l bg-white">
       <div className="absolute top-0 left-0">{collapseButton}</div>
-      <p className="text-muted-foreground text-sm">{EDITOR_MESSAGES.SIDEBAR_EMPTY_STATE}</p>
+      <p className="text-muted-foreground text-sm" data-testid="sidebar-empty-state">
+        {EDITOR_MESSAGES.SIDEBAR_EMPTY_STATE}
+      </p>
     </aside>
   );
 });
