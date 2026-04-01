@@ -1,21 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+
+const isMockingEnabled = process.env.NEXT_PUBLIC_API_MOCKING === 'true';
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
-  const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
+    if (!isMockingEnabled) return;
+
     async function init() {
-      if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
-        const { initMocks } = await import('@/mocks');
-        await initMocks();
-      }
-      setIsReady(true);
+      const { initMocks } = await import('@/mocks');
+      await initMocks();
     }
     init();
   }, []);
 
-  if (!isReady) return null;
   return <>{children}</>;
 }

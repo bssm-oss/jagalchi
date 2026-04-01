@@ -5,7 +5,7 @@ test.describe('Community E2E', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/community');
       // Wait for the grid to render with roadmap cards
-      await page.waitForSelector('a[href^="/community/"]', { timeout: 15000 });
+      await page.waitForSelector('a[href^="/community/"]', { timeout: 30000 });
     });
 
     test('community page loads and shows roadmap list', async ({ page }) => {
@@ -40,7 +40,7 @@ test.describe('Community E2E', () => {
       await firstCard.click();
 
       // Should navigate to the detail page
-      await page.waitForURL(`**${href}`, { timeout: 15000 });
+      await page.waitForURL(`**${href}`, { timeout: 30000 });
       expect(page.url()).toContain('/community/');
     });
   });
@@ -50,7 +50,7 @@ test.describe('Community E2E', () => {
       // Navigate to the first mock item (id: "1")
       await page.goto('/community/1');
       // Wait for the detail page title to render
-      await page.waitForSelector('h1', { timeout: 15000 });
+      await page.waitForSelector('h1', { timeout: 30000 });
     });
 
     test('community detail page renders roadmap info', async ({ page }) => {

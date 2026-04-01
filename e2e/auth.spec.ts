@@ -18,12 +18,12 @@ test.describe('Auth E2E', () => {
       const passwordInput = page.getByPlaceholder('비밀번호 입력');
       await expect(passwordInput).toBeVisible();
 
-      const submitButton = page.getByRole('button', { name: '로그인' });
+      const submitButton = page.getByRole('button', { name: '로그인', exact: true });
       await expect(submitButton).toBeVisible();
     });
 
     test('shows validation errors for empty submission', async ({ page }) => {
-      const submitButton = page.getByRole('button', { name: '로그인' });
+      const submitButton = page.getByRole('button', { name: '로그인', exact: true });
       await submitButton.click();
 
       await expect(page.getByText('이메일을 입력해주세요')).toBeVisible();
@@ -34,7 +34,7 @@ test.describe('Auth E2E', () => {
       const emailInput = page.getByPlaceholder('이메일 입력');
       await emailInput.fill('invalid-email');
 
-      const submitButton = page.getByRole('button', { name: '로그인' });
+      const submitButton = page.getByRole('button', { name: '로그인', exact: true });
       await submitButton.click();
 
       await expect(page.getByText('올바른 이메일 형식이 아닙니다')).toBeVisible();
@@ -43,7 +43,7 @@ test.describe('Auth E2E', () => {
     test('login with valid credentials redirects to home', async ({ page }) => {
       const emailInput = page.getByPlaceholder('이메일 입력');
       const passwordInput = page.getByPlaceholder('비밀번호 입력');
-      const submitButton = page.getByRole('button', { name: '로그인' });
+      const submitButton = page.getByRole('button', { name: '로그인', exact: true });
 
       await emailInput.fill('kim@example.com');
       await passwordInput.fill('Test1234!');
@@ -55,7 +55,7 @@ test.describe('Auth E2E', () => {
     test('login with invalid credentials shows error message', async ({ page }) => {
       const emailInput = page.getByPlaceholder('이메일 입력');
       const passwordInput = page.getByPlaceholder('비밀번호 입력');
-      const submitButton = page.getByRole('button', { name: '로그인' });
+      const submitButton = page.getByRole('button', { name: '로그인', exact: true });
 
       await emailInput.fill('wrong@example.com');
       await passwordInput.fill('wrongpassword');
@@ -85,12 +85,12 @@ test.describe('Auth E2E', () => {
     });
 
     test('renders Step 1 with email, password, and verification fields', async ({ page }) => {
-      await expect(page.getByText('회원가입')).toBeVisible();
+      await expect(page.getByText('회원가입', { exact: true })).toBeVisible();
       await expect(page.getByText('회원가입할 이메일 정보를 입력해주세요')).toBeVisible();
 
       await expect(page.getByPlaceholder('이메일 입력')).toBeVisible();
       await expect(page.getByPlaceholder('비밀번호 지정')).toBeVisible();
-      await expect(page.getByText('인증번호')).toBeVisible();
+      await expect(page.getByText('인증번호', { exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: '인증번호 전송' })).toBeVisible();
     });
 
@@ -158,7 +158,7 @@ test.describe('Auth E2E', () => {
       await expect(page.getByText('비밀번호를 재설정할 이메일을 입력해주세요')).toBeVisible();
 
       await expect(page.getByPlaceholder('이메일 입력')).toBeVisible();
-      await expect(page.getByText('인증번호')).toBeVisible();
+      await expect(page.getByText('인증번호', { exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: '인증번호 전송' })).toBeVisible();
 
       const loginLink = page.getByRole('link', { name: '로그인하기' });
@@ -211,7 +211,7 @@ test.describe('Auth E2E', () => {
       await registerLink.click();
 
       await expect(page).toHaveURL(/\/register/);
-      await expect(page.getByText('회원가입')).toBeVisible();
+      await expect(page.getByText('회원가입', { exact: true })).toBeVisible();
     });
 
     test('login → find-password link navigates correctly', async ({ page }) => {
