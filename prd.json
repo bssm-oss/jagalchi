@@ -82,7 +82,7 @@
         "pnpm test:e2e 실행 시 auth 테스트가 전부 통과한다"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "MSW 핸들러를 Playwright의 route.fulfill 또는 서버 사이드에서 연동해야 함. 현재 폼은 TODO 상태이므로, MSW 응답을 받아 처리하는 로직을 폼에 추가해야 할 수 있음."
     },
     {
@@ -114,7 +114,7 @@
         "pnpm test:e2e 실행 시 community, viewer 테스트가 전부 통과한다"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "커뮤니티는 현재 MOCK 데이터 기반. MSW 핸들러로 교체하거나, 기존 mock 데이터를 그대로 활용할 수 있음."
     },
     {
@@ -129,7 +129,7 @@
         "기존 CI 스텝(lint, build, unit test)과 병렬로 실행된다"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "현재 ci.yml에 lint + typecheck + build + vitest가 있음. E2E는 별도 job으로 추가하여 빌드 후 실행."
     }
   ]
