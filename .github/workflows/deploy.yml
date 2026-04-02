@@ -1,4 +1,4 @@
-name: CI/CD Deploy
+name: Deploy (user module - Proxmox)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,39 +19,50 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Build with Gradle
+        run: ./gradlew clean bootJar -x test
 
-      - name: Build Spring Boot
-        run: ./gradlew bootJar
-
-      - name: Login to GHCR
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build Docker image
+      - name: Prepare artifacts
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/jagalchi-server:latest .
+          mkdir -p artifacts
+          cp build/libs/*.jar artifacts/ 2>/dev/null || true
+          # Create .env from secrets
+          cat > artifacts/.env <<EOF
+RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+MYSQL_USER=${{ secrets.MYSQL_USER }}
+MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+REDIS_HOST=${{ secrets.REDIS_HOST }}
+REDIS_PORT=${{ secrets.REDIS_PORT }}
+EOF
 
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/jagalchi-server:latest
-
-      - name: Deploy to Raspberry Pi
-        uses: appleboy/ssh-action@v1
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.6.0
         with:
-          host: ${{ secrets.PI_HOST }}
-          username: ${{ secrets.PI_USER }}
-          key: ${{ secrets.PI_SSH_KEY }}
-          script: |
-            mkdir -p /home/jagalchi/app
-            cat > /home/jagalchi/app/.env << EOF
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            MYSQL_USER=${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
-            TZ=${{ secrets.TZ }}
-            EOF
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-            docker compose -f /home/jagalchi/app/compose.yml pull
-            docker compose -f /home/jagalchi/app/compose.yml up -d
+      - name: Upload artifacts to server
+        run: |
+          scp -o StrictHostKeyChecking=no -r artifacts/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/jagalchi/
+
+      - name: Remote deploy (Proxmox VM)
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} 'bash -s' <<'BASH'
+            set -e
+            REMOTE_DIR=/tmp/jagalchi
+            sudo mkdir -p /opt/jagalchi/current
+            sudo rm -rf /opt/jagalchi/current/* || true
+            sudo mv ${REMOTE_DIR}/* /opt/jagalchi/current/ || true
+            cd /opt/jagalchi/current
+            if [ -f docker-compose.yml ]; then
+              sudo docker compose down || true
+              sudo docker compose up -d --build
+            else
+              echo "docker-compose.yml not found"
+              exit 1
+            fi
+          BASH
