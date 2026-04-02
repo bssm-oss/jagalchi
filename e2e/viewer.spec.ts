@@ -24,6 +24,7 @@ test.describe('Viewer E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Seed localStorage with test roadmap
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     await page.evaluate(
       ({ key, data }) => {
         localStorage.setItem(key, JSON.stringify([data]));
@@ -32,6 +33,7 @@ test.describe('Viewer E2E', () => {
     );
 
     await page.goto(`/viewer/${TEST_ROADMAP_ID}`);
+    await page.waitForLoadState('networkidle');
     await page.waitForSelector('header', { timeout: 30000 });
   });
 

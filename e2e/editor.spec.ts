@@ -17,6 +17,7 @@ test.describe('Editor E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Seed localStorage with test roadmap before navigating
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     await page.evaluate(
       ({ key, data }) => {
         localStorage.setItem(key, JSON.stringify([data]));
@@ -25,6 +26,7 @@ test.describe('Editor E2E', () => {
     );
 
     await page.goto(`/editor/${TEST_ROADMAP_ID}`);
+    await page.waitForLoadState('networkidle');
     await page.waitForSelector('.react-flow', { timeout: 30000 });
   });
 
