@@ -1,6 +1,10 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
+import { MSWProvider } from '@/components/MswProvider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+
 import type { Metadata } from 'next';
+
 import './globals.css';
 
 const inter = Inter({
@@ -25,7 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+        <MSWProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </MSWProvider>
+      </body>
     </html>
   );
 }

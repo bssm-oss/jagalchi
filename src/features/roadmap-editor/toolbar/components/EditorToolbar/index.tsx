@@ -56,24 +56,28 @@ export const EditorToolbar = memo(function EditorToolbar() {
           label={EDITOR_MESSAGES.TOOLBAR_NODE_TOOLTIP}
           isActive={activeTool === 'node'}
           onClick={handleNodeAdd}
+          testId="toolbar-add-node"
         />
         <ToolbarButton
           icon={<Spline className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_LINE_TOOLTIP}
           isActive={activeTool === 'line'}
           onClick={handleLineAdd}
+          testId="toolbar-add-line"
         />
         <ToolbarButton
           icon={<Frame className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_SECTION_TOOLTIP}
           isActive={activeTool === 'section'}
           onClick={handleSectionAdd}
+          testId="toolbar-add-section"
         />
         <ToolbarButton
           icon={<Type className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_TEXT_TOOLTIP}
           isActive={activeTool === 'text'}
           onClick={handleTextAdd}
+          testId="toolbar-add-text"
         />
 
         <div className="bg-border mx-1 h-8 w-px" />

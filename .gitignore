@@ -55,3 +55,8 @@ visual-tests/
 
 # screenshots (temp)
 *.png
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/

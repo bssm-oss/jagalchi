@@ -17,7 +17,10 @@ interface PanelHeaderProps {
  */
 export function PanelHeader({ title, subtitle, isLocked, onToggleLock }: PanelHeaderProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[#e2e8f0] p-4">
+    <div
+      className="flex items-center justify-between gap-4 border-b border-[#e2e8f0] p-4"
+      data-testid="properties-panel-header"
+    >
       <div className="flex flex-col gap-1">
         <h3 className="text-base font-semibold text-[#020617]">{title}</h3>
         <p className="text-xs text-[#020617]">{subtitle}</p>

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -16,6 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { useResetPassword } from '../../hooks/use-reset-password';
 import { useVerificationCode } from '../../hooks/use-verification-code';
 import {
   findPasswordStep1Schema,
@@ -33,8 +36,11 @@ interface FindPasswordFormProps {
 }
 
 export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
+  const router = useRouter();
   const [step, setStep] = useState<FindPasswordStep>(1);
-  const { isCodeSent, handleSendCode } = useVerificationCode();
+  const [verifiedEmail, setVerifiedEmail] = useState('');
+  const { isCodeSent, handleSendCode, handleVerifyCode, isSendingCode } = useVerificationCode();
+  const resetPasswordMutation = useResetPassword();
 
   const step1Form = useForm<FindPasswordStep1Schema>({
     resolver: zodResolver(findPasswordStep1Schema),
@@ -52,14 +58,31 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
     },
   });
 
-  const onStep1Submit = (_data: FindPasswordStep1Schema) => {
-    // TODO: API 연동 - 이메일 인증 확인
-    setStep(2);
-    onStepChange?.(2, '새 비밀번호 입력', '재설정할 비밀번호를 입력해주세요');
+  const onStep1Submit = async (data: FindPasswordStep1Schema) => {
+    try {
+      await handleVerifyCode(data.email, data.verificationCode);
+      setVerifiedEmail(data.email);
+      setStep(2);
+      onStepChange?.(2, '새 비밀번호 입력', '재설정할 비밀번호를 입력해주세요');
+    } catch (error) {
+      step1Form.setError('verificationCode', {
+        message: error instanceof Error ? error.message : '인증에 실패했습니다',
+      });
+    }
   };
 
-  const onStep2Submit = (_data: FindPasswordStep2Schema) => {
-    // TODO: API 연동 - 비밀번호 재설정
+  const onStep2Submit = (data: FindPasswordStep2Schema) => {
+    resetPasswordMutation.mutate(
+      { email: verifiedEmail, newPassword: data.newPassword },
+      {
+        onSuccess: () => {
+          router.push('/login');
+        },
+        onError: (error) => {
+          step2Form.setError('root', { message: error.message });
+        },
+      },
+    );
   };
 
   if (step === 2) {
@@ -107,8 +130,12 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
             )}
           />
 
-          <Button type="submit" className="w-full">
-            완료
+          {step2Form.formState.errors.root && (
+            <p className="text-destructive text-sm">{step2Form.formState.errors.root.message}</p>
+          )}
+
+          <Button type="submit" className="w-full" disabled={resetPasswordMutation.isPending}>
+            {resetPasswordMutation.isPending ? '처리 중...' : '완료'}
           </Button>
         </form>
       </Form>
@@ -150,7 +177,7 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
                     type="button"
                     aria-label="인증번호 재전송"
                     className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700"
-                    onClick={handleSendCode}
+                    onClick={() => handleSendCode(step1Form.getValues('email'))}
                   >
                     재전송
                   </button>
@@ -169,8 +196,13 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
             다음
           </Button>
         ) : (
-          <Button type="button" className="w-full" onClick={handleSendCode}>
-            인증번호 전송
+          <Button
+            type="button"
+            className="w-full"
+            disabled={isSendingCode}
+            onClick={() => handleSendCode(step1Form.getValues('email'))}
+          >
+            {isSendingCode ? '전송 중...' : '인증번호 전송'}
           </Button>
         )}
       </form>

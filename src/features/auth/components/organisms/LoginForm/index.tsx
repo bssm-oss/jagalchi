@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -17,12 +18,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 
+import { useLogin } from '../../../hooks/use-login';
 import { loginSchema, type LoginSchema } from '../../../schemas/auth.schema';
 import { GitHubAuthButton } from '../../atoms/GitHubAuthButton';
 import { GoogleAuthButton } from '../../atoms/GoogleAuthButton';
 import { PasswordInput } from '../../molecules/PasswordInput';
 
 export function LoginForm() {
+  const router = useRouter();
+  const loginMutation = useLogin();
+
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -31,8 +36,15 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = (_data: LoginSchema) => {
-    // TODO: API 연동
+  const onSubmit = (data: LoginSchema) => {
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        router.push('/');
+      },
+      onError: (error) => {
+        form.setError('root', { message: error.message });
+      },
+    });
   };
 
   const handleGoogleLogin = () => {
@@ -82,9 +94,13 @@ export function LoginForm() {
           )}
         />
 
+        {form.formState.errors.root && (
+          <p className="text-destructive text-sm">{form.formState.errors.root.message}</p>
+        )}
+
         <div className="flex flex-col gap-3">
-          <Button type="submit" className="w-full">
-            로그인
+          <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? '로그인 중...' : '로그인'}
           </Button>
           <Separator className="my-2" />
           <GoogleAuthButton variant="login" onClick={handleGoogleLogin} />
