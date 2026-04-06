@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
@@ -35,11 +36,20 @@ export function MyRoadmapsToolbar() {
   const router = useRouter();
   const setItems = useSetAtom(myRoadmapItemsAtom);
   const [breadcrumbPath, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
-  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
+  const setSearchQuery = useSetAtom(searchQueryAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState(false);
+  const [localQuery, setLocalQuery] = useState('');
   const filterRef = useRef<HTMLDivElement>(null);
+
+  // Debounce search input by 300ms before updating the shared atom
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(localQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localQuery, setSearchQuery]);
 
   useClickOutside(filterRef, () => setIsFilterOpen(false));
 
@@ -110,10 +120,10 @@ export function MyRoadmapsToolbar() {
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
-            placeholder="로드맵 검색"
+            placeholder={MY_ROADMAPS_MESSAGES.SEARCH_PLACEHOLDER}
             className="border-border h-9 w-[240px] bg-white pl-9 text-xs"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
           />
         </div>
         <div className="relative" ref={filterRef}>

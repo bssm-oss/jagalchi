@@ -1,87 +1,160 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 
-import { breadcrumbPathAtom, myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
-import { RoadmapData } from '../../../types/my-roadmaps.types';
+import { myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
 import { RoadmapCard } from '../../atoms/RoadmapCard';
+
+import type { RoadmapData } from '../../../types/my-roadmaps.types';
 
 interface MyRoadmapsGridProps {
   roadmaps: RoadmapData[];
-  isSearching?: boolean;
 }
 
-export function MyRoadmapsGrid({ roadmaps, isSearching = false }: MyRoadmapsGridProps) {
-  const router = useRouter();
-  const [, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
-  const [items, setItems] = useAtom(myRoadmapItemsAtom);
+export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
+  const setItems = useSetAtom(myRoadmapItemsAtom);
 
-  const handleCardClick = (roadmap: RoadmapData) => {
-    if (roadmap.type === 'Directory') {
-      // Enter directory by updating breadcrumb
-      setBreadcrumbPath((prev) => [...prev, { id: roadmap.id, name: roadmap.title }]);
-    } else {
-      // Navigate to editor for roadmaps
-      router.push(`/editor/${roadmap.id}`);
-    }
+  // Delete dialog state
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Rename dialog state
+  const [renameTarget, setRenameTarget] = useState<{ id: string; title: string } | null>(null);
+  const [renameInput, setRenameInput] = useState('');
+
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    setItems((prev) => prev.filter((item) => item.id !== deleteTarget));
+    setDeleteTarget(null);
   };
 
-  const handleRename = (id: string) => {
-    const newName = window.prompt(MY_ROADMAPS_MESSAGES.RENAME_PROMPT);
-    if (!newName || !newName.trim()) return;
-
-    setItems(items.map((item) => (item.id === id ? { ...item, title: newName.trim() } : item)));
+  const handleRenameOpen = (id: string, title: string) => {
+    setRenameTarget({ id, title });
+    setRenameInput(title);
   };
 
-  const handleDelete = (id: string) => {
-    const confirmed = window.confirm(MY_ROADMAPS_MESSAGES.DELETE_CONFIRM);
-    if (!confirmed) return;
-
-    setItems(items.filter((item) => item.id !== id));
-  };
-
-  const handleFavorite = (id: string) => {
-    setItems(
-      items.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item)),
+  const handleRenameConfirm = () => {
+    if (!renameTarget || !renameInput.trim()) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === renameTarget.id ? { ...item, title: renameInput.trim() } : item,
+      ),
     );
+    setRenameTarget(null);
+    setRenameInput('');
   };
-
-  if (roadmaps.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <p className="text-base font-semibold text-[#020617]">
-          {isSearching ? MY_ROADMAPS_MESSAGES.EMPTY_SEARCH : MY_ROADMAPS_MESSAGES.EMPTY_LIST}
-        </p>
-        <p className="mt-1 text-sm text-[#64748b]">
-          {isSearching
-            ? MY_ROADMAPS_MESSAGES.EMPTY_SEARCH_DESCRIPTION
-            : MY_ROADMAPS_MESSAGES.EMPTY_LIST_DESCRIPTION}
-        </p>
-      </div>
-    );
-  }
 
   return (
-    <div className="grid grid-cols-1 gap-x-14 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
-      {roadmaps.map((roadmap) => (
-        <RoadmapCard
-          key={roadmap.id}
-          title={roadmap.title}
-          type={roadmap.type}
-          author={roadmap.author}
-          fileCount={roadmap.fileCount}
-          imageUrl={roadmap.imageUrl}
-          isFavorite={roadmap.isFavorite}
-          onClick={() => handleCardClick(roadmap)}
-          onRename={() => handleRename(roadmap.id)}
-          onDelete={() => handleDelete(roadmap.id)}
-          onFavorite={() => handleFavorite(roadmap.id)}
-        />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-x-14 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+        {roadmaps.map((roadmap) => (
+          <RoadmapCard
+            key={roadmap.id}
+            id={roadmap.id}
+            title={roadmap.title}
+            type={roadmap.type}
+            author={roadmap.author}
+            fileCount={roadmap.fileCount}
+            imageUrl={roadmap.imageUrl}
+            isFavorite={roadmap.isFavorite}
+            onRename={() => handleRenameOpen(roadmap.id, roadmap.title)}
+            onDelete={() => setDeleteTarget(roadmap.id)}
+            onFavorite={() => {
+              setItems((prev) =>
+                prev.map((item) =>
+                  item.id === roadmap.id ? { ...item, isFavorite: !item.isFavorite } : item,
+                ),
+              );
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{MY_ROADMAPS_MESSAGES.DELETE_TITLE}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {MY_ROADMAPS_MESSAGES.DELETE_DESCRIPTION}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{MY_ROADMAPS_MESSAGES.DELETE_CANCEL}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteConfirm}
+            >
+              {MY_ROADMAPS_MESSAGES.DELETE_CONFIRM}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Rename dialog */}
+      <Dialog
+        open={renameTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRenameTarget(null);
+            setRenameInput('');
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>{MY_ROADMAPS_MESSAGES.RENAME_TITLE}</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={renameInput}
+            onChange={(e) => setRenameInput(e.target.value)}
+            placeholder={MY_ROADMAPS_MESSAGES.RENAME_PLACEHOLDER}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRenameConfirm();
+            }}
+            autoFocus
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRenameTarget(null);
+                setRenameInput('');
+              }}
+            >
+              {MY_ROADMAPS_MESSAGES.RENAME_CANCEL}
+            </Button>
+            <Button onClick={handleRenameConfirm} disabled={!renameInput.trim()}>
+              {MY_ROADMAPS_MESSAGES.RENAME_CONFIRM}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
