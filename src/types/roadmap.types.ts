@@ -18,6 +18,14 @@ export interface JagalchiNodeData extends BaseNodeData {
   resources: string[]; // Phase 1에서는 간단히 URL 배열
 }
 
+export interface DetailNodeData extends BaseNodeData {
+  label: string;
+  description: string;
+  resources: string[];
+  /** Optional badge text shown below the label (e.g. estimated duration) */
+  badge?: string;
+}
+
 export interface JagalchiSectionData extends BaseNodeData {
   title?: string;
 }
@@ -36,8 +44,13 @@ export interface JagalchiTextData {
 export type JagalchiNodeType = Node<JagalchiNodeData, 'jagalchi-node'>;
 export type JagalchiSectionType = Node<JagalchiSectionData, 'jagalchi-section'>;
 export type JagalchiTextType = Node<JagalchiTextData, 'jagalchi-text'>;
+export type DetailNodeType = Node<DetailNodeData, 'detail-node'>;
 
-export type RoadmapNode = JagalchiNodeType | JagalchiSectionType | JagalchiTextType;
+export type RoadmapNode =
+  | JagalchiNodeType
+  | JagalchiSectionType
+  | JagalchiTextType
+  | DetailNodeType;
 
 // === Roadmap Entity Types ===
 

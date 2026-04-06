@@ -2,7 +2,7 @@
 
 import { memo, useState } from 'react';
 
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { HexColorPicker } from 'react-colorful';
 
 import { Button } from '@/components/ui/button';
@@ -15,17 +15,57 @@ import {
 } from '@/components/ui/dialog';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
-import { isColorPickerOpenAtom, colorPickerTargetAtom } from '../../../stores/editor-atoms';
+import {
+  isColorPickerOpenAtom,
+  colorPickerTargetAtom,
+  nodesAtom,
+  edgesAtom,
+} from '../../../stores/editor-atoms';
 
 export const ColorPicker = memo(function ColorPicker() {
   const [isOpen, setIsOpen] = useAtom(isColorPickerOpenAtom);
-  const [, setTarget] = useAtom(colorPickerTargetAtom);
+  const [target, setTarget] = useAtom(colorPickerTargetAtom);
+  const setNodes = useSetAtom(nodesAtom);
+  const setEdges = useSetAtom(edgesAtom);
 
   const [tempColor, setTempColor] = useState<string>('#3b82f6');
 
   const handleApply = () => {
-    // TODO: Phase 2.1에서 customColor 필드 추가 후 구현
-    // 현재는 프리셋 색상만 지원
+    if (!target) {
+      handleClose();
+      return;
+    }
+
+    if (target.type === 'node' || target.type === 'text') {
+      // Apply custom color via style.backgroundColor on the node
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id !== target.nodeId) return node;
+          return {
+            ...node,
+            style: {
+              ...node.style,
+              backgroundColor: tempColor,
+            },
+          };
+        }),
+      );
+    } else {
+      // Edge target: apply color to stroke
+      setEdges((eds) =>
+        eds.map((edge) => {
+          if (edge.id !== target.nodeId) return edge;
+          return {
+            ...edge,
+            style: {
+              ...edge.style,
+              stroke: tempColor,
+            },
+          };
+        }),
+      );
+    }
+
     handleClose();
   };
 
