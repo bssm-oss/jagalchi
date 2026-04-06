@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Image from 'next/image';
 
 import { Ellipsis, SquareDashed } from 'lucide-react';
@@ -46,8 +48,18 @@ export function RoadmapCard({
 
   return (
     <Card
+      role="article"
+      aria-label={title}
+      tabIndex={0}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       className={cn(
         'group relative flex h-[200px] w-[304px] cursor-pointer flex-col gap-0 overflow-hidden rounded-lg border border-[#e2e8f0] bg-[#f1f5f9] p-0 shadow-none transition-all',
+        'focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none',
         className,
       )}
       onClick={onClick}

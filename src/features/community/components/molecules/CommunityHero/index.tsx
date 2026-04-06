@@ -77,6 +77,7 @@ export function CommunityHero() {
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
+                aria-label="로드맵 검색"
                 className="border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
               />
             </div>

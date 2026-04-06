@@ -71,7 +71,7 @@ export function CommunityFilter() {
 
   return (
     <div className="relative mb-[40px] flex w-full max-w-[960px] items-center justify-between py-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4" role="group" aria-label="커뮤니티 탭 필터">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -79,6 +79,7 @@ export function CommunityFilter() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as ActiveTab)}
+              aria-pressed={isActive}
               className={cn(
                 'flex h-[36px] items-center gap-[8px] rounded-[8px] border px-4 py-[7.5px] transition-all',
                 isActive
@@ -102,6 +103,8 @@ export function CommunityFilter() {
         <Button
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="정렬 옵션"
+          aria-expanded={isOpen}
           className="border-border bg-background h-[36px] w-[128px] justify-between gap-[8px] rounded-[8px] py-[8px] pr-2 pl-3 shadow-xs hover:bg-slate-50"
         >
           <div className="flex items-center gap-[8px]">
