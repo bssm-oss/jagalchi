@@ -27,9 +27,17 @@ export function ProfilePicture({ src, userName, onUpload }: ProfilePictureProps)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && onUpload) {
-      onUpload(file);
+    if (!file) return;
+
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      alert('이미지 파일은 5MB 이하만 업로드할 수 있습니다.');
+      // Reset input so the same file can be re-selected after user chooses a smaller one
+      event.target.value = '';
+      return;
     }
+
+    onUpload?.(file);
   };
 
   const getInitials = (name?: string) => {

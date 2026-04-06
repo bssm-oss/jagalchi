@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -12,15 +12,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { PROFILE_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
-import { profileModeAtom } from '../../../stores/profile-atoms';
+import { profileBioAtom, profileModeAtom } from '../../../stores/profile-atoms';
 
-interface ProfileBioProps {
-  bio: string;
-  onChange?: (bio: string) => void;
-}
-
-export function ProfileBio({ bio, onChange }: ProfileBioProps) {
+export function ProfileBio() {
   const mode = useAtomValue(profileModeAtom);
+  const [bio, setBio] = useAtom(profileBioAtom);
 
   const { register, reset, watch } = useForm({
     defaultValues: {
@@ -34,15 +30,17 @@ export function ProfileBio({ bio, onChange }: ProfileBioProps) {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const bioRef = useRef<HTMLParagraphElement>(null);
 
-  // Update form when prop changes
+  // Reset form when atom value changes (e.g., cancel restoration)
   useEffect(() => {
     reset({ bio });
   }, [bio, reset]);
 
-  // Notify parent of changes
+  // Sync local form value up to atom in real-time while editing
   useEffect(() => {
-    onChange?.(userBio);
-  }, [userBio, onChange]);
+    if (mode === 'edit') {
+      setBio(userBio);
+    }
+  }, [userBio, mode, setBio]);
 
   useEffect(() => {
     const checkOverflow = () => {
