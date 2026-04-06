@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { COMMUNITY_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 export function CommunityHeader({ className }: { className?: string }) {
@@ -21,7 +22,7 @@ export function CommunityHeader({ className }: { className?: string }) {
         type="button"
         onClick={() => router.back()}
         className="flex min-h-9 min-w-9 items-center justify-center rounded-lg p-2 hover:bg-gray-100"
-        aria-label="뒤로가기"
+        aria-label={COMMUNITY_MESSAGES.BACK_ARIA}
       >
         <ArrowLeft className="h-5 w-5 text-slate-950" />
       </button>

@@ -67,7 +67,7 @@ export const MultiSelectPanel = memo(function MultiSelectPanel() {
           <h3 className="text-base font-bold text-slate-950">
             {EDITOR_MESSAGES.MULTI_SELECT_TITLE}
           </h3>
-          <p className="text-xs text-slate-950">노드</p>
+          <p className="text-xs text-slate-950">{EDITOR_MESSAGES.MULTI_SELECT_NODE_LABEL}</p>
         </div>
         <Button variant="ghost" size="icon" className="rounded-[4px]" disabled>
           <LockKeyholeOpen className="h-[13px] w-[13px]" />

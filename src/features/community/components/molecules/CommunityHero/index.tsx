@@ -6,6 +6,7 @@ import { useAtom } from 'jotai';
 import { Search, ArrowUp } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
+import { COMMUNITY_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 import { searchQueryAtom } from '../../../stores/community.atoms';
@@ -64,7 +65,7 @@ export function CommunityHero() {
 
       <div className="z-10 mt-[80px] flex flex-col items-center">
         <h1 className="text-foreground mb-[40px] text-[24px] leading-[28.8px] font-bold tracking-[-1px]">
-          어떤 로드맵을 찾고있나요?
+          {COMMUNITY_MESSAGES.HERO_TITLE}
         </h1>
 
         <div className="relative w-full max-w-[640px] px-4">
@@ -82,7 +83,7 @@ export function CommunityHero() {
             </div>
             <button
               type="button"
-              aria-label="검색"
+              aria-label={COMMUNITY_MESSAGES.SEARCH_ARIA}
               onClick={handleSearch}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white hover:bg-slate-800"
             >

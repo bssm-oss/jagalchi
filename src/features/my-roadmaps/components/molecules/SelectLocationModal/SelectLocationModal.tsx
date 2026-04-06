@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 interface LocationItem {
@@ -140,9 +141,11 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
         showCloseButton={false}
       >
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-4">
-          <DialogTitle className="text-xl font-bold text-slate-950">위치선택</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-slate-950">
+            {MY_ROADMAPS_MESSAGES.SELECT_LOCATION_TITLE}
+          </DialogTitle>
           <DialogDescription className="sr-only">
-            이동하거나 저장할 위치를 선택하세요.
+            {MY_ROADMAPS_MESSAGES.SELECT_LOCATION_DESCRIPTION}
           </DialogDescription>
           <div className="relative w-[210px]">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -170,7 +173,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
             onClick={handleClose}
             className="h-11 min-w-[100px] rounded-lg border-slate-200 text-base font-bold text-slate-950 hover:bg-slate-50"
           >
-            취소
+            {MY_ROADMAPS_MESSAGES.CANCEL}
           </Button>
           <Button
             onClick={handleConfirm}
@@ -180,7 +183,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
             )}
             disabled={!selectedId}
           >
-            확인
+            {MY_ROADMAPS_MESSAGES.CONFIRM}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { AUTH_MESSAGES } from '@/constants/messages';
 
 import { useLogin } from '../../../hooks/use-login';
 import { loginSchema, type LoginSchema } from '../../../schemas/auth.schema';
@@ -67,9 +68,9 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>이메일</FormLabel>
+              <FormLabel>{AUTH_MESSAGES.EMAIL_LABEL}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="이메일 입력" {...field} />
+                <Input type="email" placeholder={AUTH_MESSAGES.EMAIL_PLACEHOLDER} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,16 +83,16 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>비밀번호</FormLabel>
+                <FormLabel>{AUTH_MESSAGES.PASSWORD_LABEL}</FormLabel>
                 <Link
                   href="/find-password"
                   className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700"
                 >
-                  비밀번호를 잊어버렸나요?
+                  {AUTH_MESSAGES.PASSWORD_FORGOT}
                 </Link>
               </div>
               <FormControl>
-                <PasswordInput placeholder="비밀번호 입력" {...field} />
+                <PasswordInput placeholder={AUTH_MESSAGES.PASSWORD_PLACEHOLDER} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,7 +105,7 @@ export function LoginForm() {
 
         <div className="flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-            {loginMutation.isPending ? '로그인 중...' : '로그인'}
+            {loginMutation.isPending ? AUTH_MESSAGES.LOGIN_LOADING : AUTH_MESSAGES.LOGIN_LABEL}
           </Button>
           <Separator className="my-2" />
           <GoogleAuthButton variant="login" onClick={handleGoogleLogin} />

@@ -8,6 +8,7 @@ import { Pencil } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PROFILE_MESSAGES } from '@/constants/messages';
 
 import { profileModeAtom } from '../../../stores/profile-atoms';
 
@@ -31,14 +32,14 @@ export function ProfilePicture({ src, userName, onUpload }: ProfilePictureProps)
 
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!ALLOWED_TYPES.includes(file.type)) {
-      alert('JPG, PNG, GIF, WEBP 형식만 업로드 가능합니다.');
+      alert(PROFILE_MESSAGES.UPLOAD_FORMAT_ERROR);
       event.target.value = '';
       return;
     }
 
     const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      alert('이미지 파일은 5MB 이하만 업로드할 수 있습니다.');
+      alert(PROFILE_MESSAGES.UPLOAD_SIZE_ERROR);
       event.target.value = '';
       return;
     }
@@ -55,13 +56,27 @@ export function ProfilePicture({ src, userName, onUpload }: ProfilePictureProps)
     <div>
       {mode === 'show' ? (
         <Avatar className="border-border h-[128px] w-[128px] border">
-          <AvatarImage src={src} alt={userName ? `${userName}의 프로필 사진` : '프로필 사진'} />
+          <AvatarImage
+            src={src}
+            alt={
+              userName
+                ? `${userName}${PROFILE_MESSAGES.PROFILE_PICTURE_ALT_WITH_NAME}`
+                : PROFILE_MESSAGES.PROFILE_PICTURE_ALT
+            }
+          />
           <AvatarFallback className="text-2xl">{getInitials(userName)}</AvatarFallback>
         </Avatar>
       ) : (
         <div className="relative h-[128px] w-[128px]">
           <Avatar className="border-border h-[128px] w-[128px] border">
-            <AvatarImage src={src} alt={userName ? `${userName}의 프로필 사진` : '프로필 사진'} />
+            <AvatarImage
+              src={src}
+              alt={
+                userName
+                  ? `${userName}${PROFILE_MESSAGES.PROFILE_PICTURE_ALT_WITH_NAME}`
+                  : PROFILE_MESSAGES.PROFILE_PICTURE_ALT
+              }
+            />
             <AvatarFallback className="text-2xl">{getInitials(userName)}</AvatarFallback>
           </Avatar>
           <Button

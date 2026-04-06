@@ -62,9 +62,14 @@ export function RegisterStep1Form({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>이메일</FormLabel>
+              <FormLabel>{AUTH_MESSAGES.EMAIL_LABEL}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="이메일 입력" disabled={isCodeSent} {...field} />
+                <Input
+                  type="email"
+                  placeholder={AUTH_MESSAGES.EMAIL_PLACEHOLDER}
+                  disabled={isCodeSent}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -76,9 +81,9 @@ export function RegisterStep1Form({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>비밀번호</FormLabel>
+              <FormLabel>{AUTH_MESSAGES.PASSWORD_LABEL}</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="비밀번호 지정" {...field} />
+                <PasswordInput placeholder={AUTH_MESSAGES.PASSWORD_SET_PLACEHOLDER} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,12 +97,12 @@ export function RegisterStep1Form({
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel className={!isCodeSent ? 'text-muted-foreground' : ''}>
-                  인증번호
+                  {AUTH_MESSAGES.VERIFICATION_CODE_LABEL}
                 </FormLabel>
                 {isCodeSent && (
                   <button
                     type="button"
-                    aria-label="인증번호 재전송"
+                    aria-label={AUTH_MESSAGES.VERIFICATION_CODE_RESEND_ARIA}
                     disabled={isResendDisabled}
                     className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-400 disabled:no-underline"
                     onClick={handleResend}
@@ -119,7 +124,7 @@ export function RegisterStep1Form({
         <div className="flex flex-col gap-3">
           {isCodeSent ? (
             <Button type="submit" className="w-full">
-              다음
+              {AUTH_MESSAGES.NEXT}
             </Button>
           ) : (
             <Button
