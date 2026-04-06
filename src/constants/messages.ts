@@ -21,6 +21,12 @@ export const MY_ROADMAPS_MESSAGES = {
   NEW_DIRECTORY: '디렉토리',
   SHARE_COPIED: '링크가 클립보드에 복사되었습니다',
   SHARE_FAILED: '링크 복사에 실패했습니다',
+  RENAME_PROMPT: '새 이름을 입력하세요',
+  DELETE_CONFIRM: '정말 삭제하시겠습니까?',
+  EMPTY_SEARCH: '검색 결과가 없습니다',
+  EMPTY_SEARCH_DESCRIPTION: '다른 검색어를 입력해보세요',
+  EMPTY_LIST: '로드맵이 없습니다',
+  EMPTY_LIST_DESCRIPTION: 'New 버튼으로 새 로드맵을 만들어보세요',
 } as const;
 
 export const PROFILE_MESSAGES = {

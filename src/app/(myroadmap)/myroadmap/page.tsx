@@ -9,6 +9,7 @@ import { MyRoadmapsLayout } from '@/features/my-roadmaps/components/templates';
 import {
   filterCategoryAtom,
   myRoadmapItemsAtom,
+  searchQueryAtom,
   sidebarCategoryAtom,
   sortByAtom,
   sortOrderAtom,
@@ -20,6 +21,7 @@ export default function MyRoadmapsPage() {
   const sortOrder = useAtomValue(sortOrderAtom);
   const sortBy = useAtomValue(sortByAtom);
   const filterCategory = useAtomValue(filterCategoryAtom);
+  const searchQuery = useAtomValue(searchQueryAtom);
 
   const filteredRoadmaps = items
     .filter((roadmap) => {
@@ -54,6 +56,12 @@ export default function MyRoadmapsPage() {
         if (!typeMatch) return false;
       }
 
+      // 3. Search Query Filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.trim().toLowerCase();
+        if (!roadmap.title.toLowerCase().includes(query)) return false;
+      }
+
       return true;
     })
     .sort((a, b) => {
@@ -83,7 +91,10 @@ export default function MyRoadmapsPage() {
         <div className="flex-1 px-20 pb-20">
           <MyRoadmapsToolbar />
           <div className="mt-6">
-            <MyRoadmapsGrid roadmaps={filteredRoadmaps} />
+            <MyRoadmapsGrid
+              roadmaps={filteredRoadmaps}
+              isSearching={searchQuery.trim().length > 0}
+            />
           </div>
         </div>
       </div>

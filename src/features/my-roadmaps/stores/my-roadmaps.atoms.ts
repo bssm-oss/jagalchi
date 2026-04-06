@@ -16,6 +16,8 @@ export interface BreadcrumbSegment {
 
 export const breadcrumbPathAtom = atom<BreadcrumbSegment[]>([]);
 
+export const searchQueryAtom = atom<string>('');
+
 export const sortOrderAtom = atom<SortOrder>('desc');
 export const sortByAtom = atom<SortBy>('recent');
 export const filterCategoryAtom = atom<FilterCategory>('all');
