@@ -1,3 +1,14 @@
+export const ERROR_MESSAGES = {
+  GENERIC_HEADING: '문제가 발생했습니다',
+  GENERIC_DESCRIPTION: '요청을 처리하는 중 오류가 발생했습니다.',
+  RETRY_BUTTON: '다시 시도',
+  GO_HOME: '홈으로',
+  GO_HOME_FULL: '홈으로 돌아가기',
+  NOT_FOUND_HEADING: '페이지를 찾을 수 없습니다',
+  NOT_FOUND_DESCRIPTION: '요청하신 페이지가 존재하지 않거나 이동되었습니다.',
+  GO_MY_ROADMAPS: '내 로드맵으로',
+} as const;
+
 export const AUTH_MESSAGES = {
   LOGIN_EMAIL_NOT_FOUND: '존재하지 않는 이메일입니다',
   LOGIN_PASSWORD_MISMATCH: '비밀번호가 일치하지 않습니다',
