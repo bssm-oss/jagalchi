@@ -63,6 +63,7 @@ export function ProfileInfoForm({
     register,
     reset,
     watch,
+    trigger,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -105,8 +106,10 @@ export function ProfileInfoForm({
     setMode('show');
   };
 
-  /** Save edit: persist current values (already synced via atoms) */
-  const handleSave = () => {
+  /** Save edit: validate then persist current values */
+  const handleSave = async () => {
+    const isValid = await trigger();
+    if (!isValid) return;
     if (!userName.trim() || !userEmail.trim()) return;
     setMode('show');
   };

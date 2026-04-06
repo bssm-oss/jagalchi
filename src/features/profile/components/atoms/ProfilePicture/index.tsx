@@ -29,10 +29,16 @@ export function ProfilePicture({ src, userName, onUpload }: ProfilePictureProps)
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      alert('JPG, PNG, GIF, WEBP 형식만 업로드 가능합니다.');
+      event.target.value = '';
+      return;
+    }
+
     const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
     if (file.size > MAX_FILE_SIZE_BYTES) {
       alert('이미지 파일은 5MB 이하만 업로드할 수 있습니다.');
-      // Reset input so the same file can be re-selected after user chooses a smaller one
       event.target.value = '';
       return;
     }
