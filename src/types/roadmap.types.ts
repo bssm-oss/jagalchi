@@ -71,3 +71,19 @@ export interface UpdateRoadmapInput {
   edges?: Edge[];
   isPublic?: boolean;
 }
+
+// === List/Summary Types ===
+
+/** 로드맵 목록에서 사용하는 경량 타입 (Roadmap에서 파생) */
+export interface RoadmapSummary {
+  id: string;
+  title: string;
+  type?: 'Roadmap' | 'Directory';
+  author?: string;
+  fileCount?: number;
+  imageUrl?: string;
+  updatedAt?: string;
+  isFavorite?: boolean;
+  isShared?: boolean;
+  category?: 'my-roadmap' | 'community';
+}
