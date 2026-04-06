@@ -43,7 +43,7 @@ export function Profile() {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-white">
-      <header className="flex h-11 w-full items-center justify-between border-b border-[#e2e8f0] bg-white px-5">
+      <header className="flex h-11 w-full items-center justify-between border-b border-slate-200 bg-white px-5">
         <button className="flex items-center gap-1 text-sm" onClick={() => router.back()}>
           <ArrowLeft size={14} />
           <span>프로필</span>

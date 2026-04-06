@@ -144,27 +144,27 @@ export function MyRoadmapsToolbar() {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="h-9 rounded-md bg-[#1d4ed8] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1e40af]">
+            <Button className="h-9 rounded-md bg-blue-700 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-800">
               New
               <Plus className="ml-1.5 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-[140px] rounded-lg border-[#e2e8f0] bg-white p-1.5 shadow-lg"
+            className="w-[140px] rounded-lg border-slate-200 bg-white p-1.5 shadow-lg"
           >
             <DropdownMenuItem
-              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-gray-100"
               onClick={() => setIsRoadmapModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#020617]">로드맵</span>
+              <span className="text-[13px] font-semibold text-slate-950">로드맵</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-gray-100"
               onClick={() => setIsDirectoryModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#020617]">디렉토리</span>
+              <span className="text-[13px] font-semibold text-slate-950">디렉토리</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

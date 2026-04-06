@@ -47,7 +47,7 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
     <div className="flex min-h-screen flex-col items-center bg-white">
       <CommunityHeader />
 
-      <div className="relative h-[400px] w-full bg-[#f1f5f9]">
+      <div className="relative h-[400px] w-full bg-slate-100">
         {item.imageUrl && (
           <NextImage src={item.imageUrl} alt={item.title} fill className="object-cover" priority />
         )}
@@ -63,7 +63,7 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
               <button
                 type="button"
                 onClick={handleLikeToggle}
-                className="flex min-h-[36px] items-center gap-2 rounded-lg px-4 py-[7.5px] text-[14px] font-semibold text-[#334155] hover:bg-slate-50"
+                className="flex min-h-[36px] items-center gap-2 rounded-lg px-4 py-[7.5px] text-[14px] font-semibold text-slate-700 hover:bg-slate-50"
               >
                 {likeCount}
                 <Heart
@@ -75,14 +75,14 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
             <div className="flex items-center gap-[16px]">
               <Button
                 variant="default"
-                className="h-[32px] rounded-lg bg-[#0f172a] px-3 py-[5.5px] text-[14px] font-semibold text-white hover:bg-[#1e293b]"
+                className="h-[32px] rounded-lg bg-slate-900 px-3 py-[5.5px] text-[14px] font-semibold text-white hover:bg-slate-800"
                 onClick={() => router.push(`/viewer/${id}`)}
               >
                 {COMMUNITY_MESSAGES.VIEW_ROADMAP}
               </Button>
               <Button
                 variant="default"
-                className="h-[32px] items-center gap-[8px] rounded-lg bg-[#0f172a] px-3 py-[5.5px] text-[14px] font-semibold text-white hover:bg-[#1e293b]"
+                className="h-[32px] items-center gap-[8px] rounded-lg bg-slate-900 px-3 py-[5.5px] text-[14px] font-semibold text-white hover:bg-slate-800"
                 onClick={() => window.alert(COMMUNITY_MESSAGES.LOGIN_REQUIRED)}
               >
                 <FilePlus2 className="h-[13px] w-[13px]" />
@@ -95,7 +95,7 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
             <h2 className="text-foreground text-[20px] leading-none font-semibold">
               {COMMUNITY_MESSAGES.ABOUT}
             </h2>
-            <p className="text-[16px] leading-[24px] text-[#020617]">{item.description ?? ''}</p>
+            <p className="text-[16px] leading-[24px] text-slate-950">{item.description ?? ''}</p>
           </section>
         </div>
 
@@ -120,10 +120,10 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
           <Separator className="bg-border" />
 
           <div className="flex flex-col gap-0">
-            <span className="text-xs font-normal text-[#737373]">
+            <span className="text-xs font-normal text-neutral-500">
               {COMMUNITY_MESSAGES.LAST_UPDATED}
             </span>
-            <span className="text-xs font-normal text-[#020617]">2달 전</span>
+            <span className="text-xs font-normal text-slate-950">2달 전</span>
           </div>
         </aside>
       </div>

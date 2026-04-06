@@ -68,9 +68,9 @@ export function CommunityHero() {
         </h1>
 
         <div className="relative w-full max-w-[640px] px-4">
-          <div className="flex items-start gap-2 overflow-hidden rounded-xl border border-[#cbd5e1] bg-white p-2 shadow-md">
+          <div className="flex items-start gap-2 overflow-hidden rounded-xl border border-slate-300 bg-white p-2 shadow-md">
             <div className="flex min-h-[32px] flex-1 items-center gap-1.5 overflow-hidden rounded-lg bg-white px-2">
-              <Search className="h-5 w-5 shrink-0 text-[#64748b]" />
+              <Search className="h-5 w-5 shrink-0 text-slate-500" />
               <Input
                 type="text"
                 placeholder="Type a roadmap name to find..."
@@ -84,7 +84,7 @@ export function CommunityHero() {
               type="button"
               aria-label="검색"
               onClick={handleSearch}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0f172a] text-white hover:bg-[#1e293b]"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white hover:bg-slate-800"
             >
               <ArrowUp className="h-4 w-4" />
             </button>

@@ -47,7 +47,7 @@ export function MyRoadmapsSidebar({
   return (
     <div
       className={cn(
-        'flex min-h-screen w-[240px] flex-col border-r border-[#e2e8f0] bg-[#f1f5f9] p-4',
+        'flex min-h-screen w-[240px] flex-col border-r border-slate-200 bg-slate-100 p-4',
         className,
       )}
     >
@@ -58,19 +58,19 @@ export function MyRoadmapsSidebar({
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-normal text-[#020617]">{userName}</span>
-          <span className="truncate text-xs leading-4 text-[#64748b]">{userEmail}</span>
+          <span className="truncate text-sm font-normal text-slate-950">{userName}</span>
+          <span className="truncate text-xs leading-4 text-slate-500">{userEmail}</span>
         </div>
-        <ChevronDown className="h-5 w-5 text-[#64748b]" />
+        <ChevronDown className="h-5 w-5 text-slate-500" />
       </div>
 
       {/* Search */}
       <div className="mb-4">
         <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-[#64748b]" />
+          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-slate-500" />
           <Input
             placeholder="Search"
-            className="h-9 border border-[#e2e8f0] bg-white pl-10 text-sm shadow-xs"
+            className="h-9 border border-slate-200 bg-white pl-10 text-sm shadow-xs"
           />
         </div>
       </div>
@@ -88,8 +88,8 @@ export function MyRoadmapsSidebar({
                 className={cn(
                   'flex h-8 w-full items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors',
                   activeCategory === item.id
-                    ? 'bg-[#e2e8f0] text-[#334155]'
-                    : 'text-[#334155] hover:bg-black/5',
+                    ? 'bg-slate-200 text-slate-700'
+                    : 'text-slate-700 hover:bg-black/5',
                 )}
               >
                 <item.icon className="h-5 w-5" />
@@ -107,7 +107,7 @@ export function MyRoadmapsSidebar({
           <button
             type="button"
             onClick={onLogout}
-            className="flex h-8 w-full items-center gap-2 rounded-md px-3 py-1 text-sm text-[#334155] transition-colors hover:bg-black/5"
+            className="flex h-8 w-full items-center gap-2 rounded-md px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-black/5"
           >
             <LogOut className="h-5 w-5" />
             {AUTH_MESSAGES.LOGOUT}

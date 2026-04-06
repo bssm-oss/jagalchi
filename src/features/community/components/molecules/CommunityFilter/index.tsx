@@ -43,7 +43,7 @@ function FilterDropdownItem({ label, isActive, onClick, icon }: FilterItemProps)
       onClick={onClick}
       className={cn(
         'flex min-h-[32px] w-full items-center gap-2 rounded-md px-2 py-[5.5px] text-sm',
-        isActive ? 'text-foreground bg-[#e2e8f0]' : 'text-slate-600 hover:bg-slate-50',
+        isActive ? 'text-foreground bg-slate-200' : 'text-slate-600 hover:bg-slate-50',
       )}
     >
       {icon}
@@ -83,7 +83,7 @@ export function CommunityFilter() {
                 'flex h-[36px] items-center gap-[8px] rounded-[8px] border px-4 py-[7.5px] transition-all',
                 isActive
                   ? 'border-primary bg-primary text-primary-foreground'
-                  : 'text-foreground border-[#cbd5e1] bg-white/10 shadow-sm hover:border-slate-300',
+                  : 'text-foreground border-slate-300 bg-white/10 shadow-sm hover:border-slate-300',
               )}
             >
               <Icon
@@ -116,7 +116,7 @@ export function CommunityFilter() {
         </Button>
 
         {isOpen && (
-          <div className="animate-in fade-in zoom-in-95 border-border bg-background absolute top-[44px] right-0 z-50 flex flex-wrap gap-x-2 gap-y-1.5 rounded-lg border border-[#e2e8f0] p-4 duration-100">
+          <div className="animate-in fade-in zoom-in-95 border-border bg-background absolute top-[44px] right-0 z-50 flex flex-wrap gap-x-2 gap-y-1.5 rounded-lg border border-slate-200 p-4 duration-100">
             <div className="flex w-[124px] flex-col gap-1">
               <p className="text-xs font-medium text-black">정렬순서</p>
               <Separator />

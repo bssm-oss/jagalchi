@@ -97,7 +97,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
           onClick={() => setSelectedId(item.id)}
           className={cn(
             'flex items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors',
-            selectedId === item.id ? 'bg-[#0f172a] text-white' : 'text-slate-900 hover:bg-slate-50',
+            selectedId === item.id ? 'bg-slate-900 text-white' : 'text-slate-900 hover:bg-slate-50',
           )}
           style={{ marginLeft: `${item.level * 16}px` }}
         >
@@ -140,7 +140,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
         showCloseButton={false}
       >
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-4">
-          <DialogTitle className="text-xl font-bold text-[#020617]">위치선택</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-slate-950">위치선택</DialogTitle>
           <DialogDescription className="sr-only">
             이동하거나 저장할 위치를 선택하세요.
           </DialogDescription>
@@ -157,7 +157,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
 
         <div className="px-6 py-2">
           <div className="rounded-xl border border-slate-100 p-4">
-            <h3 className="mb-4 text-xl font-bold text-[#020617]">Root</h3>
+            <h3 className="mb-4 text-xl font-bold text-slate-950">Root</h3>
             <ScrollArea className="h-[320px] pr-4">
               <div className="flex flex-col gap-1">{renderLocationItems(filteredLocations)}</div>
             </ScrollArea>
@@ -168,7 +168,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
           <Button
             variant="outline"
             onClick={handleClose}
-            className="h-11 min-w-[100px] rounded-lg border-slate-200 text-base font-bold text-[#020617] hover:bg-slate-50"
+            className="h-11 min-w-[100px] rounded-lg border-slate-200 text-base font-bold text-slate-950 hover:bg-slate-50"
           >
             취소
           </Button>
@@ -176,7 +176,7 @@ export function SelectLocationModal({ isOpen, onClose, onConfirm }: SelectLocati
             onClick={handleConfirm}
             className={cn(
               'h-11 min-w-[100px] rounded-lg text-base font-bold text-white shadow-sm transition-colors',
-              selectedId ? 'bg-[#0f172a] hover:bg-[#1e293b]' : 'cursor-not-allowed bg-[#81868f]',
+              selectedId ? 'bg-slate-900 hover:bg-slate-800' : 'cursor-not-allowed bg-slate-400',
             )}
             disabled={!selectedId}
           >

@@ -97,7 +97,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
 
         {/* 형부자료 */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[#020617]">
+          <label className="text-sm font-medium text-slate-950">
             {EDITOR_MESSAGES.SIDEBAR_RESOURCES_LABEL}
           </label>
           <div className="space-y-2">

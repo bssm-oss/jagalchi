@@ -18,7 +18,7 @@ export function ProfileEditButton({ variant, className, onClick }: ProfileEditBu
         type="button"
         variant="outline"
         className={cn(
-          'h-[36px] rounded-lg border-[#cbd5e1] px-4 text-sm font-semibold text-[#020617]',
+          'h-[36px] rounded-lg border-slate-300 px-4 text-sm font-semibold text-slate-950',
           className,
         )}
         onClick={onClick}

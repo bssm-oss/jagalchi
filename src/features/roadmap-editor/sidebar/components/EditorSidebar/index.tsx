@@ -34,7 +34,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
 
   const collapseButton = (
     <button
-      className="absolute top-2 -left-8 z-10 flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-[#e2e8f0] bg-white shadow-sm"
+      className="absolute top-2 -left-8 z-10 flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-slate-200 bg-white shadow-sm"
       onClick={() => setIsCollapsed((prev) => !prev)}
       aria-label={isCollapsed ? '사이드바 열기' : '사이드바 닫기'}
     >

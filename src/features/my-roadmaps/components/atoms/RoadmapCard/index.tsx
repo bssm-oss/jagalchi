@@ -47,13 +47,13 @@ export function RoadmapCard({
   return (
     <Card
       className={cn(
-        'group relative flex h-[200px] w-[304px] cursor-pointer flex-col gap-0 overflow-hidden rounded-lg border border-[#e2e8f0] bg-[#f1f5f9] p-0 shadow-none transition-all',
+        'group relative flex h-[200px] w-[304px] cursor-pointer flex-col gap-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 p-0 shadow-none transition-all',
         className,
       )}
       onClick={onClick}
     >
       {/* Thumbnail Area */}
-      <div className="relative flex-1 bg-[#f1f5f9]">
+      <div className="relative flex-1 bg-slate-100">
         {isDirectory ? (
           <div className="relative h-full w-full">
             <div className="absolute top-0 left-0 h-4 w-24 rounded-t-lg bg-white" />
@@ -75,8 +75,8 @@ export function RoadmapCard({
       {/* Info Area */}
       <div className="flex items-center bg-white px-3 py-2">
         <div className="flex min-w-0 flex-1 flex-col">
-          <p className="truncate text-sm leading-[21px] text-[#020617]">{title}</p>
-          <p className="truncate text-xs leading-4 text-[#64748b]">
+          <p className="truncate text-sm leading-[21px] text-slate-950">{title}</p>
+          <p className="truncate text-xs leading-4 text-slate-500">
             {isDirectory ? `${fileCount ?? 0}개의 파일` : `By ${author ?? '홍길동'}`}
           </p>
         </div>

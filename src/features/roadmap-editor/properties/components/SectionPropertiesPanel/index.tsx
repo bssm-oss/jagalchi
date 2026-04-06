@@ -55,9 +55,9 @@ export const SectionPropertiesPanel = memo(function SectionPropertiesPanel({
       </div>
 
       {/* 크기 */}
-      <div className="border-b border-[#e2e8f0] p-4">
+      <div className="border-b border-slate-200 p-4">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[#020617]">크기</label>
+          <label className="text-sm font-medium text-slate-950">크기</label>
           <div className="flex items-center gap-4">
             <div className="flex flex-1 items-center gap-2">
               <p className="text-sm text-black">W</p>
