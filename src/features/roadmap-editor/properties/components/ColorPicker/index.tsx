@@ -36,8 +36,13 @@ export const ColorPicker = memo(function ColorPicker() {
       return;
     }
 
+    // Validate hex color format
+    if (!/^#[0-9a-fA-F]{6}$/.test(tempColor)) {
+      handleClose();
+      return;
+    }
+
     if (target.type === 'node' || target.type === 'text') {
-      // Apply custom color via style.backgroundColor on the node
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id !== target.nodeId) return node;
@@ -50,11 +55,10 @@ export const ColorPicker = memo(function ColorPicker() {
           };
         }),
       );
-    } else {
-      // Edge target: apply color to stroke
+    } else if (target.type === 'edge') {
       setEdges((eds) =>
         eds.map((edge) => {
-          if (edge.id !== target.nodeId) return edge;
+          if (edge.id !== target.edgeId) return edge;
           return {
             ...edge,
             style: {

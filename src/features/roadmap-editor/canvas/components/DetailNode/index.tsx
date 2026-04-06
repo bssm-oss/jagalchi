@@ -18,7 +18,7 @@ interface DetailNodeProps {
   id: string;
 }
 
-const POSITION_OFFSET = 100;
+const POSITION_OFFSET = 250;
 
 export const DetailNode = memo(function DetailNode({ data, selected, id }: DetailNodeProps) {
   const setNodes = useSetAtom(nodesAtom);

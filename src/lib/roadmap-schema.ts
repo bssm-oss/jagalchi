@@ -20,6 +20,7 @@ const roadmapNodeDataSchema = z.object({
   content: z.string().optional(),
   fontSize: z.number().optional(),
   fontWeight: z.string().optional(),
+  badge: z.string().optional(),
 });
 
 const roadmapNodeSchema = z.object({

@@ -74,10 +74,9 @@ export const singleSelectedEdgeAtom = atom((get) => {
 
 // ColorPicker state
 export const isColorPickerOpenAtom = atom<boolean>(false);
-export const colorPickerTargetAtom = atom<{
-  type: 'node' | 'text';
-  nodeId: string;
-} | null>(null);
+export const colorPickerTargetAtom = atom<
+  { type: 'node' | 'text'; nodeId: string } | { type: 'edge'; edgeId: string } | null
+>(null);
 
 // Toolbar state
 export const activeToolAtom = atom<'select' | 'node' | 'line' | 'section' | 'text'>('select');

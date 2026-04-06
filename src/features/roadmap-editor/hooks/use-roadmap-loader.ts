@@ -26,7 +26,7 @@ interface UseRoadmapLoaderReturn {
   initialNodes: string;
   initialEdges: string;
   initialTitle: string;
-  retry: () => void;
+  retry: () => Promise<void>;
 }
 
 interface ApiRoadmap {
@@ -93,6 +93,7 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
 
           // Redirect to new roadmap ID
           router.replace(`/editor/${newId}`);
+          setIsLoading(false);
           return;
         }
 
@@ -101,6 +102,7 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
 
         if (!roadmap) {
           setError('로드맵을 찾을 수 없습니다.');
+          setIsLoading(false);
           return;
         }
 
