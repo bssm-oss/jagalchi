@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSetAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ import { Separator } from '@/components/ui/separator';
 
 import { useLogin } from '../../../hooks/use-login';
 import { loginSchema, type LoginSchema } from '../../../schemas/auth.schema';
+import { loginAtom } from '../../../stores/auth.atoms';
 import { GitHubAuthButton } from '../../atoms/GitHubAuthButton';
 import { GoogleAuthButton } from '../../atoms/GoogleAuthButton';
 import { PasswordInput } from '../../molecules/PasswordInput';
@@ -27,6 +29,7 @@ import { PasswordInput } from '../../molecules/PasswordInput';
 export function LoginForm() {
   const router = useRouter();
   const loginMutation = useLogin();
+  const setLogin = useSetAtom(loginAtom);
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -38,7 +41,8 @@ export function LoginForm() {
 
   const onSubmit = (data: LoginSchema) => {
     loginMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        setLogin(response.accessToken);
         router.push('/');
       },
       onError: (error) => {

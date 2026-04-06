@@ -62,7 +62,10 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
       },
       {
         onSuccess: () => {
-          router.push('/');
+          router.push('/login');
+        },
+        onError: () => {
+          // registerMutation.error로 에러 상태 접근 가능
         },
       },
     );
