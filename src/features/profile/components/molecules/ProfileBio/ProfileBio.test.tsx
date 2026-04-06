@@ -34,7 +34,7 @@ describe('ProfileBio', () => {
           [profileBioAtom, defaultBio],
         ]}
       >
-        <ProfileBio />
+        <ProfileBio bio={defaultBio} />
       </Wrapper>,
     );
     expect(screen.getByText('자기소개')).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('ProfileBio', () => {
           [profileBioAtom, defaultBio],
         ]}
       >
-        <ProfileBio />
+        <ProfileBio bio={defaultBio} />
       </Wrapper>,
     );
     expect(screen.getByText('자기소개')).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('ProfileBio', () => {
           [profileBioAtom, defaultBio],
         ]}
       >
-        <ProfileBio />
+        <ProfileBio bio={defaultBio} />
       </Wrapper>,
     );
 

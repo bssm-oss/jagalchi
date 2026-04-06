@@ -371,7 +371,7 @@ export const ProfileComponents: Story = {
           followerCount={12}
           followingCount={3}
         />
-        <ProfileBio />
+        <ProfileBio bio="프론트엔드 개발자 | React, TypeScript 전문" />
         <ProfileCustomOrganization initialValue="Jagalchi" />
         <ProfileCustomLinks
           initialLinks={[

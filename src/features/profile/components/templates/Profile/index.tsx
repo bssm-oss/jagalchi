@@ -21,6 +21,7 @@ const MOCK_USER_DATA = {
   email: 'john.doe@example.com',
   followerCount: 3000,
   followingCount: 100,
+  bio: '프론트엔드 개발자 | React, TypeScript 전문\n부산소프트웨어마이스터고등학교 출신',
 };
 
 export function Profile() {
