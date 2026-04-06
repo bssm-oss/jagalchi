@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -12,35 +12,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { PROFILE_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
-import { profileBioAtom, profileModeAtom } from '../../../stores/profile-atoms';
+import { profileModeAtom } from '../../../stores/profile-atoms';
 
-export function ProfileBio() {
+interface ProfileBioProps {
+  bio: string;
+  onChange?: (bio: string) => void;
+}
+
+export function ProfileBio({ bio, onChange }: ProfileBioProps) {
   const mode = useAtomValue(profileModeAtom);
-  const [bio, setBio] = useAtom(profileBioAtom);
 
-  const { register, reset, watch } = useForm({
-    defaultValues: {
-      bio,
-    },
+  const { register, reset } = useForm({
+    defaultValues: { bio },
   });
-
-  const userBio = watch('bio');
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const bioRef = useRef<HTMLParagraphElement>(null);
 
-  // Reset form when atom value changes (e.g., cancel restoration)
+  // Sync form when prop value changes (e.g., on cancel/restore)
   useEffect(() => {
     reset({ bio });
   }, [bio, reset]);
-
-  // Sync local form value up to atom in real-time while editing
-  useEffect(() => {
-    if (mode === 'edit') {
-      setBio(userBio);
-    }
-  }, [userBio, mode, setBio]);
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -52,13 +45,18 @@ export function ProfileBio() {
     checkOverflow();
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
-  }, [userBio]);
+  }, [bio]);
 
   if (mode === 'edit') {
     return (
       <div className="flex flex-col gap-4">
         <p className="text-muted-foreground text-sm font-semibold">{PROFILE_MESSAGES.BIO_TITLE}</p>
-        <Textarea className="h-[280px] w-full resize-none" {...register('bio')} />
+        <Textarea
+          className="h-[280px] w-full resize-none"
+          {...register('bio', {
+            onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange?.(e.target.value),
+          })}
+        />
       </div>
     );
   }
@@ -76,11 +74,11 @@ export function ProfileBio() {
           ref={bioRef}
           className={cn(
             'text-justify text-sm leading-relaxed whitespace-pre-wrap',
-            userBio ? 'text-muted-foreground' : 'text-muted-foreground/50',
+            bio ? 'text-muted-foreground' : 'text-muted-foreground/50',
             !isExpanded && 'line-clamp-3',
           )}
         >
-          {userBio || `${PROFILE_MESSAGES.BIO_TITLE}가 없습니다.`}
+          {bio || `${PROFILE_MESSAGES.BIO_TITLE}가 없습니다.`}
         </p>
 
         {(isOverflowing || isExpanded) && (

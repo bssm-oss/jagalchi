@@ -4,10 +4,10 @@ import { useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeft, Pencil } from 'lucide-react';
 
-import { profileModeAtom } from '../../../stores/profile-atoms';
+import { profileBioAtom, profileModeAtom } from '../../../stores/profile-atoms';
 import { ProfileBio } from '../../molecules/ProfileBio';
 import { ProfileCustomBoxArea } from '../../molecules/ProfileCustomBoxArea';
 import { ProfileHeader } from '../../molecules/ProfileHeader';
@@ -26,6 +26,7 @@ const MOCK_USER_DATA = {
 export function Profile() {
   const router = useRouter();
   const mode = useAtomValue(profileModeAtom);
+  const setBio = useSetAtom(profileBioAtom);
 
   // Warn user before leaving the page while in edit mode
   useEffect(() => {
@@ -60,7 +61,7 @@ export function Profile() {
         />
         <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-[76px]">
           <div className="w-full lg:w-[500px] lg:shrink-0">
-            <ProfileBio />
+            <ProfileBio bio={MOCK_USER_DATA.bio} onChange={setBio} />
           </div>
           <div className="flex-1">
             <ProfileCustomBoxArea />
