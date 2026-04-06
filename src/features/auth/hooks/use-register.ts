@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { register } from '@/api/auth';
-import type { AuthResponse, RegisterRequest } from '@/api/auth';
+import { signUp } from '@/api/auth';
+import type { SignUpRequest, SignUpResponse } from '@/api/auth';
 
 export function useRegister() {
-  return useMutation<AuthResponse, Error, RegisterRequest>({
-    mutationFn: register,
+  return useMutation<SignUpResponse, Error, SignUpRequest>({
+    mutationFn: signUp,
   });
 }

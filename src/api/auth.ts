@@ -1,17 +1,16 @@
 import { apiClient } from './client';
 
-// === Request Types ===
+// === Request Types (aligned with docs/api.md) ===
 
 interface LoginRequest {
   email: string;
   password: string;
 }
 
-interface RegisterRequest {
+interface SignUpRequest {
   email: string;
+  name: string;
   password: string;
-  username: string;
-  links?: { name: string; url: string }[];
 }
 
 interface SendVerificationCodeRequest {
@@ -23,67 +22,82 @@ interface VerifyCodeRequest {
   code: string;
 }
 
-interface ResetPasswordRequest {
+interface ChangePasswordRequest {
   email: string;
   newPassword: string;
 }
 
+interface RefreshTokenRequest {
+  refreshToken?: string;
+}
+
 // === Response Types ===
 
-interface AuthUser {
-  id: string;
+interface LoginResponse {
+  accessToken: string;
+}
+
+interface SignUpResponse {
+  id: number;
   email: string;
-  username: string;
-  bio?: string;
-  links: { name: string; url: string }[];
-  createdAt: string;
+  name: string;
 }
 
-interface AuthResponse {
-  token: string;
-  user: AuthUser;
-}
-
-interface SendVerificationCodeResponse {
-  message: string;
-  expiresIn: number;
-}
-
-interface VerifyCodeResponse {
-  isVerified: boolean;
-}
-
-interface ResetPasswordResponse {
+interface MessageResponse {
   message: string;
 }
 
-// === API Functions ===
+interface RefreshTokenResponse {
+  accessToken: string;
+}
 
-export const login = (data: LoginRequest) => apiClient.post<AuthResponse>('/auth/login', data);
+// === API Functions (endpoints match docs/api.md) ===
 
-export const register = (data: RegisterRequest) =>
-  apiClient.post<AuthResponse>('/auth/register', data);
+/** POST /users/auth/login */
+export const login = (data: LoginRequest) =>
+  apiClient.post<LoginResponse>('/users/auth/login', data);
 
+/** POST /users */
+export const signUp = (data: SignUpRequest) => apiClient.post<SignUpResponse>('/users', data);
+
+/** POST /users/verification — 회원가입 인증코드 전송 */
 export const sendVerificationCode = (data: SendVerificationCodeRequest) =>
-  apiClient.post<SendVerificationCodeResponse>('/auth/send-verification-code', data);
+  apiClient.post<MessageResponse>('/users/verification', data);
 
+/** PATCH /users/verification — 회원가입 인증코드 확인 */
 export const verifyCode = (data: VerifyCodeRequest) =>
-  apiClient.post<VerifyCodeResponse>('/auth/verify-code', data);
+  apiClient.patch<MessageResponse>('/users/verification', data);
 
-export const resetPassword = (data: ResetPasswordRequest) =>
-  apiClient.post<ResetPasswordResponse>('/auth/reset-password', data);
+/** PATCH /users/auth/password-reset — 비밀번호 리셋 코드 전송 */
+export const sendPasswordResetCode = (data: SendVerificationCodeRequest) =>
+  apiClient.patch<MessageResponse>('/users/auth/password-reset', data);
+
+/** PATCH /users/auth/password-reset/verify — 비밀번호 리셋 코드 확인 */
+export const verifyPasswordResetCode = (data: VerifyCodeRequest) =>
+  apiClient.patch<MessageResponse>('/users/auth/password-reset/verify', data);
+
+/** POST /users/auth/reset-password — 비밀번호 변경 (레거시, MSW용) */
+export const resetPassword = (data: ChangePasswordRequest) =>
+  apiClient.post<MessageResponse>('/users/auth/reset-password', data);
+
+/** PATCH /users/auth/refresh — 토큰 갱신 */
+export const refreshToken = (data?: RefreshTokenRequest) =>
+  apiClient.patch<RefreshTokenResponse>('/users/auth/refresh', data);
+
+/** DELETE /users — 계정 삭제 */
+export const deleteAccount = () => apiClient.delete<void>('/users');
 
 // === Type Exports ===
 
 export type {
   LoginRequest,
-  RegisterRequest,
+  SignUpRequest,
   SendVerificationCodeRequest,
   VerifyCodeRequest,
-  ResetPasswordRequest,
-  AuthUser,
-  AuthResponse,
-  SendVerificationCodeResponse,
-  VerifyCodeResponse,
-  ResetPasswordResponse,
+  ChangePasswordRequest,
+  RefreshTokenRequest,
+  LoginResponse,
+  SignUpResponse,
+  MessageResponse,
+  RefreshTokenResponse,
 };

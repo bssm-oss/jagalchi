@@ -14,16 +14,10 @@ interface LoginRequest {
   password: string;
 }
 
-interface LoginResponse {
-  token: string;
-  user: Omit<MockUser, 'password'>;
-}
-
-interface RegisterRequest {
+interface SignUpRequest {
   email: string;
+  name: string;
   password: string;
-  username: string;
-  links?: { name: string; url: string }[];
 }
 
 interface SendVerificationCodeRequest {
@@ -41,55 +35,67 @@ interface ResetPasswordRequest {
 }
 
 interface ErrorResponse {
+  timestamp: string;
+  status: number;
+  error: string;
+  code: string;
   message: string;
+  path: string;
 }
 
 // 가변 유저 저장소 (등록된 유저를 런타임에서 추적)
 const registeredUsers: MockUser[] = [...MOCK_USERS];
 
-/** 비밀번호를 제외한 사용자 정보 반환 */
-const sanitizeUser = (user: MockUser): Omit<MockUser, 'password'> => ({
-  id: user.id,
-  email: user.email,
-  username: user.username,
-  bio: user.bio,
-  links: user.links,
-  createdAt: user.createdAt,
+/** API 스펙 형식의 에러 응답 생성 */
+const createErrorResponse = (
+  status: number,
+  code: string,
+  message: string,
+  path: string,
+): ErrorResponse => ({
+  timestamp: new Date().toISOString(),
+  status,
+  error: status === 400 ? 'Bad Request' : status === 401 ? 'Unauthorized' : 'Not Found',
+  code,
+  message,
+  path,
 });
 
-/** Auth API 핸들러 */
+/** Auth API 핸들러 (endpoints aligned with docs/api.md) */
 export const authHandlers = [
-  // POST /api/auth/login
-  http.post<Record<string, never>, LoginRequest>('/api/auth/login', async ({ request }) => {
+  // POST /api/users/auth/login
+  http.post<Record<string, never>, LoginRequest>('/api/users/auth/login', async ({ request }) => {
     const body = await request.json();
     const { email, password } = body;
 
     const user = registeredUsers.find((u) => u.email === email);
 
     if (!user || user.password !== password) {
-      return HttpResponse.json<ErrorResponse>(
-        { message: '이메일 또는 비밀번호가 올바르지 않습니다' },
+      return HttpResponse.json(
+        createErrorResponse(
+          401,
+          'UNAUTHORIZED',
+          '이메일 또는 비밀번호가 올바르지 않습니다',
+          '/users/auth/login',
+        ),
         { status: 401 },
       );
     }
 
-    return HttpResponse.json<LoginResponse>({
-      token: createMockToken(user.id),
-      user: sanitizeUser(user),
-    });
+    return HttpResponse.json({ accessToken: createMockToken(user.id) });
   }),
 
-  // POST /api/auth/register
-  http.post<Record<string, never>, RegisterRequest>('/api/auth/register', async ({ request }) => {
+  // POST /api/users
+  http.post<Record<string, never>, SignUpRequest>('/api/users', async ({ request }) => {
     const body = await request.json();
-    const { email, password, username, links } = body;
+    const { email, name, password } = body;
 
     const existingUser = registeredUsers.find((u) => u.email === email);
 
     if (existingUser) {
-      return HttpResponse.json<ErrorResponse>(
-        { message: '이미 등록된 이메일입니다' },
-        { status: 409 },
+      return HttpResponse.json(
+        createErrorResponse(400, 'INVALID_INPUT', '이미 등록된 이메일입니다', '/users'),
+        { status: 400 },
       );
     }
 
@@ -97,72 +103,133 @@ export const authHandlers = [
       id: `user-${Date.now()}`,
       email,
       password,
-      username,
-      links: links ?? [],
+      username: name,
+      links: [],
       createdAt: new Date().toISOString(),
     };
 
     registeredUsers.push(newUser);
 
     return HttpResponse.json(
-      {
-        token: createMockToken(newUser.id),
-        user: sanitizeUser(newUser),
-      },
+      { id: registeredUsers.length, email: newUser.email, name: newUser.username },
       { status: 201 },
     );
   }),
 
-  // POST /api/auth/send-verification-code
+  // POST /api/users/verification — 인증코드 전송
   http.post<Record<string, never>, SendVerificationCodeRequest>(
-    '/api/auth/send-verification-code',
+    '/api/users/verification',
     async ({ request }) => {
       const body = await request.json();
       const { email } = body;
 
       if (!email) {
-        return HttpResponse.json<ErrorResponse>(
-          { message: '이메일을 입력해주세요' },
+        return HttpResponse.json(
+          createErrorResponse(400, 'INVALID_INPUT', '이메일을 입력해주세요', '/users/verification'),
           { status: 400 },
         );
       }
 
-      // Mock: 항상 성공 (실제로 코드를 보내지 않음)
-      return HttpResponse.json({
-        message: '인증 코드가 발송되었습니다',
-        expiresIn: 300, // 5분
-      });
+      return HttpResponse.json({ message: '인증 코드가 발송되었습니다' });
     },
   ),
 
-  // POST /api/auth/verify-code
-  http.post<Record<string, never>, VerifyCodeRequest>(
-    '/api/auth/verify-code',
+  // PATCH /api/users/verification — 인증코드 확인
+  http.patch<Record<string, never>, VerifyCodeRequest>(
+    '/api/users/verification',
     async ({ request }) => {
       const body = await request.json();
       const { email, code } = body;
 
       if (!email || !code) {
-        return HttpResponse.json<ErrorResponse>(
-          { message: '이메일과 인증 코드를 입력해주세요' },
+        return HttpResponse.json(
+          createErrorResponse(
+            400,
+            'INVALID_INPUT',
+            '이메일과 인증 코드를 입력해주세요',
+            '/users/verification',
+          ),
           { status: 400 },
         );
       }
 
       if (code !== MOCK_VERIFICATION_CODE) {
-        return HttpResponse.json<ErrorResponse>(
-          { message: '인증 코드가 올바르지 않습니다' },
-          { status: 401 },
+        return HttpResponse.json(
+          createErrorResponse(
+            400,
+            'VALIDATION_FAILED',
+            '인증 코드가 올바르지 않습니다',
+            '/users/verification',
+          ),
+          { status: 400 },
         );
       }
 
-      return HttpResponse.json({ isVerified: true });
+      return HttpResponse.json({ message: '인증 완료' });
     },
   ),
 
-  // POST /api/auth/reset-password
+  // PATCH /api/users/auth/password-reset — 비밀번호 리셋 코드 전송
+  http.patch<Record<string, never>, SendVerificationCodeRequest>(
+    '/api/users/auth/password-reset',
+    async ({ request }) => {
+      const body = await request.json();
+      const { email } = body;
+
+      if (!email) {
+        return HttpResponse.json(
+          createErrorResponse(
+            400,
+            'INVALID_INPUT',
+            '이메일을 입력해주세요',
+            '/users/auth/password-reset',
+          ),
+          { status: 400 },
+        );
+      }
+
+      return HttpResponse.json({ message: '비밀번호 리셋 코드가 발송되었습니다' });
+    },
+  ),
+
+  // PATCH /api/users/auth/password-reset/verify — 비밀번호 리셋 코드 확인
+  http.patch<Record<string, never>, VerifyCodeRequest>(
+    '/api/users/auth/password-reset/verify',
+    async ({ request }) => {
+      const body = await request.json();
+      const { email, code } = body;
+
+      if (!email || !code) {
+        return HttpResponse.json(
+          createErrorResponse(
+            400,
+            'INVALID_INPUT',
+            '이메일과 인증 코드를 입력해주세요',
+            '/users/auth/password-reset/verify',
+          ),
+          { status: 400 },
+        );
+      }
+
+      if (code !== MOCK_VERIFICATION_CODE) {
+        return HttpResponse.json(
+          createErrorResponse(
+            400,
+            'VALIDATION_FAILED',
+            '인증 코드가 올바르지 않습니다',
+            '/users/auth/password-reset/verify',
+          ),
+          { status: 400 },
+        );
+      }
+
+      return HttpResponse.json({ message: '인증 완료' });
+    },
+  ),
+
+  // POST /api/users/auth/reset-password — 비밀번호 변경
   http.post<Record<string, never>, ResetPasswordRequest>(
-    '/api/auth/reset-password',
+    '/api/users/auth/reset-password',
     async ({ request }) => {
       const body = await request.json();
       const { email, newPassword } = body;
@@ -170,18 +237,32 @@ export const authHandlers = [
       const user = registeredUsers.find((u) => u.email === email);
 
       if (!user) {
-        return HttpResponse.json<ErrorResponse>(
-          { message: '등록되지 않은 이메일입니다' },
+        return HttpResponse.json(
+          createErrorResponse(
+            404,
+            'NOT_FOUND',
+            '등록되지 않은 이메일입니다',
+            '/users/auth/reset-password',
+          ),
           { status: 404 },
         );
       }
 
-      // 비밀번호 업데이트
       user.password = newPassword;
 
       return HttpResponse.json({ message: '비밀번호가 변경되었습니다' });
     },
   ),
+
+  // PATCH /api/users/auth/refresh — 토큰 갱신
+  http.patch('/api/users/auth/refresh', () => {
+    return HttpResponse.json({ accessToken: createMockToken('refreshed') });
+  }),
+
+  // DELETE /api/users — 계정 삭제
+  http.delete('/api/users', () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];
 
 // 테스트에서 사용자 목록 초기화할 때 사용

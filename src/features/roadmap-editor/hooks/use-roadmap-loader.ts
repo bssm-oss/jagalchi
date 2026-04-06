@@ -13,6 +13,9 @@ import {
 import { nodesAtom, edgesAtom, roadmapTitleAtom } from '../stores/editor-atoms';
 import { hashNodes, hashEdges } from '../utils/fast-hash';
 
+import type { RoadmapNode } from '../types/editor.types';
+import type { Edge } from '@xyflow/react';
+
 interface UseRoadmapLoaderProps {
   roadmapId: string;
 }
@@ -23,7 +26,45 @@ interface UseRoadmapLoaderReturn {
   initialNodes: string;
   initialEdges: string;
   initialTitle: string;
-  retry: () => void;
+  retry: () => Promise<void>;
+}
+
+interface ApiRoadmap {
+  nodes: RoadmapNode[];
+  edges: Edge[];
+  title: string;
+}
+
+/**
+ * Attempt to fetch roadmap data from the API.
+ * Returns null when the API is unavailable — caller falls back to localStorage.
+ * TODO: Implement actual GET /api/roadmap/{id}/events call when API is ready.
+ */
+async function loadFromApi(_roadmapId: string): Promise<ApiRoadmap | null> {
+  // API not yet available — always return null so caller uses localStorage
+  return null;
+}
+
+/**
+ * Load roadmap from API first, then fall back to localStorage.
+ * Structured so replacing `loadFromApi` body is the only change needed
+ * once the real API is ready.
+ */
+async function loadRoadmapData(roadmapId: string): Promise<ApiRoadmap | null> {
+  const apiResult = await loadFromApi(roadmapId);
+  if (apiResult !== null) {
+    return apiResult;
+  }
+
+  // Fallback to localStorage
+  const local = loadRoadmapFromLocalStorage(roadmapId);
+  if (!local) return null;
+
+  return {
+    nodes: local.nodes,
+    edges: local.edges,
+    title: local.title,
+  };
 }
 
 export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadmapLoaderReturn {
@@ -52,14 +93,16 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
 
           // Redirect to new roadmap ID
           router.replace(`/editor/${newId}`);
+          setIsLoading(false);
           return;
         }
 
-        // Load existing roadmap
-        const roadmap = loadRoadmapFromLocalStorage(roadmapId);
+        // Load roadmap: API first → localStorage fallback
+        const roadmap = await loadRoadmapData(roadmapId);
 
         if (!roadmap) {
           setError('로드맵을 찾을 수 없습니다.');
+          setIsLoading(false);
           return;
         }
 
@@ -83,22 +126,26 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
     loadRoadmap();
   }, [roadmapId, router, setNodes, setEdges, setTitle]);
 
-  const retry = () => {
+  const retry = async () => {
     setError(null);
     setIsLoading(true);
 
-    // Re-trigger load
-    const roadmap = loadRoadmapFromLocalStorage(roadmapId);
-    if (roadmap) {
-      setNodes(roadmap.nodes);
-      setEdges(roadmap.edges);
-      setTitle(roadmap.title);
-      setInitialNodes(hashNodes(roadmap.nodes));
-      setInitialEdges(hashEdges(roadmap.edges));
-      setInitialTitle(roadmap.title);
-      setIsLoading(false);
-    } else {
-      setError('로드맵을 찾을 수 없습니다.');
+    try {
+      const roadmap = await loadRoadmapData(roadmapId);
+      if (roadmap) {
+        setNodes(roadmap.nodes);
+        setEdges(roadmap.edges);
+        setTitle(roadmap.title);
+        setInitialNodes(hashNodes(roadmap.nodes));
+        setInitialEdges(hashEdges(roadmap.edges));
+        setInitialTitle(roadmap.title);
+        setIsLoading(false);
+      } else {
+        setError('로드맵을 찾을 수 없습니다.');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '로드맵을 불러오는 중 오류가 발생했습니다.');
       setIsLoading(false);
     }
   };

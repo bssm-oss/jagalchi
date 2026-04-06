@@ -2,6 +2,11 @@ export const AUTH_MESSAGES = {
   LOGIN_EMAIL_NOT_FOUND: '존재하지 않는 이메일입니다',
   LOGIN_PASSWORD_MISMATCH: '비밀번호가 일치하지 않습니다',
   LOGIN_FAILED: '로그인에 실패했습니다',
+  VERIFICATION_CODE_SENDING: '전송 중...',
+  VERIFICATION_CODE_SEND: '인증번호 전송',
+  VERIFICATION_CODE_RESEND: '재전송',
+  VERIFICATION_CODE_RESEND_COOLDOWN: '초 후 재전송',
+  LOGOUT: '로그아웃',
 } as const;
 
 export const COMMUNITY_MESSAGES = {
@@ -21,6 +26,16 @@ export const MY_ROADMAPS_MESSAGES = {
   NEW_DIRECTORY: '디렉토리',
   SHARE_COPIED: '링크가 클립보드에 복사되었습니다',
   SHARE_FAILED: '링크 복사에 실패했습니다',
+  // Delete dialog
+  DELETE_TITLE: '정말 삭제하시겠습니까?',
+  DELETE_DESCRIPTION: '이 작업은 되돌릴 수 없습니다.',
+  DELETE_CANCEL: '취소',
+  DELETE_CONFIRM: '삭제',
+  // Rename dialog
+  RENAME_TITLE: '이름 수정',
+  RENAME_CANCEL: '취소',
+  RENAME_CONFIRM: '확인',
+  RENAME_PLACEHOLDER: '새 이름을 입력하세요',
 } as const;
 
 export const PROFILE_MESSAGES = {
@@ -58,6 +73,8 @@ export const VIEWER_MESSAGES = {
   // View mode
   VIEW_CANVAS: '캔버스',
   VIEW_CARDS: '카드',
+  // Sidebar toggle
+  SIDEBAR_OPEN_BUTTON_LABEL: '노드 목록 열기',
 } as const;
 
 export const EDITOR_MESSAGES = {
@@ -65,6 +82,7 @@ export const EDITOR_MESSAGES = {
   SAVE_FAILED: '저장 실패',
   // Phase 1: React Flow 노드 기본값
   FLOW_NODE_DEFAULT_LABEL: '새 노드',
+  FLOW_DETAIL_NODE_DEFAULT_LABEL: '새 상세 노드',
   FLOW_SECTION_DEFAULT_TITLE: '빈 섹션',
   FLOW_TEXT_DEFAULT_CONTENT: '텍스트',
   // Phase 2: Sidebar 라벨

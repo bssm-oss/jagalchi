@@ -21,6 +21,7 @@ interface RoadmapCardProps {
   imageUrl?: string;
   isFavorite?: boolean;
   className?: string;
+  onClick?: () => void;
   onFavorite?: () => void;
   onRename?: () => void;
   onMove?: () => void;
@@ -35,6 +36,7 @@ export function RoadmapCard({
   imageUrl,
   isFavorite: _isFavorite,
   className,
+  onClick,
   onFavorite,
   onRename,
   onMove,
@@ -48,6 +50,7 @@ export function RoadmapCard({
         'group relative flex h-[200px] w-[304px] cursor-pointer flex-col gap-0 overflow-hidden rounded-lg border border-[#e2e8f0] bg-[#f1f5f9] p-0 shadow-none transition-all',
         className,
       )}
+      onClick={onClick}
     >
       {/* Thumbnail Area */}
       <div className="relative flex-1 bg-[#f1f5f9]">

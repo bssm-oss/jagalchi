@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { AUTH_MESSAGES } from '@/constants/messages';
 
 import { useVerificationCode } from '../../../hooks/use-verification-code';
 import { registerStep1Schema, type RegisterStep1Schema } from '../../../schemas/auth.schema';
@@ -33,7 +34,8 @@ export function RegisterStep1Form({
   onGoogleRegister,
   onGitHubRegister,
 }: RegisterStep1FormProps) {
-  const { isCodeSent, handleSendCode, isSendingCode } = useVerificationCode();
+  const { isCodeSent, handleSendCode, isSendingCode, isCooldownActive, cooldownSeconds } =
+    useVerificationCode();
 
   const form = useForm<RegisterStep1Schema>({
     resolver: zodResolver(registerStep1Schema),
@@ -43,6 +45,14 @@ export function RegisterStep1Form({
       verificationCode: '',
     },
   });
+
+  const handleResend = () => {
+    handleSendCode(form.getValues('email'), () => {
+      form.setValue('verificationCode', '');
+    });
+  };
+
+  const isResendDisabled = isCooldownActive || isSendingCode;
 
   return (
     <Form {...form}>
@@ -54,7 +64,7 @@ export function RegisterStep1Form({
             <FormItem>
               <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="이메일 입력" {...field} />
+                <Input type="email" placeholder="이메일 입력" disabled={isCodeSent} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,10 +98,13 @@ export function RegisterStep1Form({
                   <button
                     type="button"
                     aria-label="인증번호 재전송"
-                    className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700"
-                    onClick={() => handleSendCode(form.getValues('email'))}
+                    disabled={isResendDisabled}
+                    className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-400 disabled:no-underline"
+                    onClick={handleResend}
                   >
-                    재전송
+                    {isCooldownActive
+                      ? `${cooldownSeconds}${AUTH_MESSAGES.VERIFICATION_CODE_RESEND_COOLDOWN}`
+                      : AUTH_MESSAGES.VERIFICATION_CODE_RESEND}
                   </button>
                 )}
               </div>
@@ -115,7 +128,9 @@ export function RegisterStep1Form({
               disabled={isSendingCode}
               onClick={() => handleSendCode(form.getValues('email'))}
             >
-              {isSendingCode ? '전송 중...' : '인증번호 전송'}
+              {isSendingCode
+                ? AUTH_MESSAGES.VERIFICATION_CODE_SENDING
+                : AUTH_MESSAGES.VERIFICATION_CODE_SEND}
             </Button>
           )}
           <Separator className="my-2" />

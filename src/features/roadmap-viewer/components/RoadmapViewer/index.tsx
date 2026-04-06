@@ -2,7 +2,7 @@
 
 import { ReactFlowProvider } from '@xyflow/react';
 import { useAtom, useAtomValue } from 'jotai';
-import { LayoutGrid, Map } from 'lucide-react';
+import { LayoutGrid, Map, PanelRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { VIEWER_MESSAGES } from '@/constants/messages';
@@ -79,6 +79,16 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
                 <LayoutGrid className="mr-1.5 h-4 w-4" />
                 {VIEWER_MESSAGES.VIEW_CARDS}
               </Button>
+              {!isSidebarOpen && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsSidebarOpen(true)}
+                  aria-label={VIEWER_MESSAGES.SIDEBAR_OPEN_BUTTON_LABEL}
+                >
+                  <PanelRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
 

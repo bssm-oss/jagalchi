@@ -18,9 +18,9 @@ export function CommunityGrid({ items }: CommunityGridProps) {
   }
 
   return (
-    <div className="grid w-full max-w-[960px] grid-cols-3 gap-x-6 gap-y-6">
+    <div className="grid w-full max-w-[960px] grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <div key={item.id} className="h-[200px] w-[304px]">
+        <div key={item.id} className="h-auto w-full">
           <RoadmapCard
             id={item.id}
             title={item.title}

@@ -16,6 +16,7 @@ import {
   type OnSelectionChangeFunc,
   type OnConnectEnd,
   type NodeTypes,
+  type IsValidConnection,
   ConnectionMode,
 } from '@xyflow/react';
 import { useAtom, useSetAtom } from 'jotai';
@@ -33,6 +34,7 @@ import { createId } from '@/features/roadmap-editor/utils/node-factory';
 
 import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
 import { ConnectionLine } from '../ConnectionLine';
+import { DetailNode } from '../DetailNode';
 import { JagalchiNode } from '../JagalchiNode';
 import { JagalchiSection } from '../JagalchiSection';
 import { JagalchiText } from '../JagalchiText';
@@ -41,6 +43,7 @@ const nodeTypes: NodeTypes = {
   'jagalchi-node': JagalchiNode,
   'jagalchi-section': JagalchiSection,
   'jagalchi-text': JagalchiText,
+  'detail-node': DetailNode,
 };
 
 export function RoadmapCanvas() {
@@ -66,6 +69,11 @@ export function RoadmapCanvas() {
     },
     [setEdges],
   );
+
+  const isValidConnection = useCallback<IsValidConnection>((connection) => {
+    // Prevent self-loops
+    return connection.source !== connection.target;
+  }, []);
 
   const onConnect: OnConnect = useCallback(
     (connection) => {
@@ -146,6 +154,7 @@ export function RoadmapCanvas() {
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onSelectionChange={onSelectionChange}
+        isValidConnection={isValidConnection}
         nodeTypes={nodeTypes}
         connectionLineComponent={ConnectionLine}
         multiSelectionKeyCode="Shift"

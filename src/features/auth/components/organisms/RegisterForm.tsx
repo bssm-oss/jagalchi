@@ -50,19 +50,22 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
     onStepChange?.(3, '사용자 프로필 링크 추가', '사용자 프로필에 표시할 링크를 입력해주세요');
   };
 
-  const completeRegistration = (links?: { name: string; url: string }[]) => {
+  const completeRegistration = (_links?: { name: string; url: string }[]) => {
     if (!step1DataRef.current || !step2DataRef.current) return;
 
+    // TODO: _links는 회원가입 후 프로필 업데이트 API로 별도 처리
     registerMutation.mutate(
       {
         email: step1DataRef.current.email,
+        name: step2DataRef.current.username,
         password: step1DataRef.current.password,
-        username: step2DataRef.current.username,
-        links,
       },
       {
         onSuccess: () => {
-          router.push('/');
+          router.push('/login');
+        },
+        onError: () => {
+          // registerMutation.error로 에러 상태 접근 가능
         },
       },
     );
