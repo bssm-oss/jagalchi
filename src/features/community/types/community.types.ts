@@ -11,4 +11,5 @@ export interface CommunityItem {
   updatedAt: string;
   type: 'roadmap' | 'directory';
   size?: number;
+  description?: string;
 }

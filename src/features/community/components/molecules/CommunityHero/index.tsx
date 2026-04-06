@@ -67,9 +67,9 @@ export function CommunityHero() {
           어떤 로드맵을 찾고있나요?
         </h1>
 
-        <div className="relative w-[640px]">
+        <div className="relative w-full max-w-[640px] px-4">
           <div className="flex items-start gap-2 overflow-hidden rounded-xl border border-[#cbd5e1] bg-white p-2 shadow-md">
-            <div className="flex min-h-[32px] w-[580px] items-center gap-1.5 overflow-hidden rounded-lg bg-white px-2">
+            <div className="flex min-h-[32px] flex-1 items-center gap-1.5 overflow-hidden rounded-lg bg-white px-2">
               <Search className="h-5 w-5 shrink-0 text-[#64748b]" />
               <Input
                 type="text"

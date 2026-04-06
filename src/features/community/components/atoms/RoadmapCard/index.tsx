@@ -18,7 +18,7 @@ export function RoadmapCard({ id, title, author, imageUrl, className }: RoadmapC
     <Link href={`/community/${id}`} className="block">
       <div
         className={cn(
-          'h-[200px] w-[304px] cursor-pointer overflow-hidden rounded-lg border border-[#e2e8f0] bg-[#f1f5f9]',
+          'h-full w-full cursor-pointer overflow-hidden rounded-lg border border-[#e2e8f0] bg-[#f1f5f9]',
           className,
         )}
       >
