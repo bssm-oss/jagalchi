@@ -4,6 +4,8 @@ import { useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { AUTH_MESSAGES } from '@/constants/messages';
+
 import { useRegister } from '../../hooks/use-register';
 import { useVerifyCode } from '../../hooks/use-verify-code';
 
@@ -38,7 +40,7 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
         onSuccess: () => {
           step1DataRef.current = data;
           setStep(2);
-          onStepChange?.(2, '사용자 이름 설정', '사용자 이름을 입력해주세요');
+          onStepChange?.(2, AUTH_MESSAGES.STEP2_TITLE, AUTH_MESSAGES.STEP2_DESCRIPTION);
         },
       },
     );
@@ -47,7 +49,7 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
   const handleStep2Submit = (data: RegisterStep2Schema) => {
     step2DataRef.current = data;
     setStep(3);
-    onStepChange?.(3, '사용자 프로필 링크 추가', '사용자 프로필에 표시할 링크를 입력해주세요');
+    onStepChange?.(3, AUTH_MESSAGES.STEP3_TITLE, AUTH_MESSAGES.STEP3_DESCRIPTION);
   };
 
   const completeRegistration = (_links?: { name: string; url: string }[]) => {

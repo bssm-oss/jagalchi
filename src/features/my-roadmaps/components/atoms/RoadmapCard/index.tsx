@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 interface RoadmapCardProps {
@@ -77,14 +78,16 @@ export function RoadmapCard({
         <div className="flex min-w-0 flex-1 flex-col">
           <p className="truncate text-sm leading-[21px] text-[#020617]">{title}</p>
           <p className="truncate text-xs leading-4 text-[#64748b]">
-            {isDirectory ? `${fileCount ?? 0}개의 파일` : `By ${author ?? '홍길동'}`}
+            {isDirectory
+              ? `${fileCount ?? 0}${MY_ROADMAPS_MESSAGES.CARD_FILE_COUNT_SUFFIX}`
+              : `By ${author ?? '홍길동'}`}
           </p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              aria-label="더 보기"
+              aria-label={MY_ROADMAPS_MESSAGES.CARD_MORE_ARIA}
               className="text-muted-foreground/60 hover:text-foreground shrink-0 p-1 transition-colors"
             >
               <Ellipsis className="h-[13px] w-[13px]" />
@@ -100,7 +103,7 @@ export function RoadmapCard({
                     onFavorite?.();
                   }}
                 >
-                  즐겨찾기
+                  {MY_ROADMAPS_MESSAGES.CARD_FAVORITE}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
@@ -112,7 +115,7 @@ export function RoadmapCard({
                 onRename?.();
               }}
             >
-              이름수정
+              {MY_ROADMAPS_MESSAGES.CARD_RENAME}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -122,7 +125,7 @@ export function RoadmapCard({
                 onMove?.();
               }}
             >
-              파일이동
+              {MY_ROADMAPS_MESSAGES.CARD_MOVE}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -132,7 +135,7 @@ export function RoadmapCard({
                 onDelete?.();
               }}
             >
-              삭제
+              {MY_ROADMAPS_MESSAGES.CARD_DELETE}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

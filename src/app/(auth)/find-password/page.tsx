@@ -4,12 +4,13 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
+import { AUTH_MESSAGES } from '@/constants/messages';
 import { AuthCard, FindPasswordForm } from '@/features/auth';
 
 export default function FindPasswordPage() {
   const [cardInfo, setCardInfo] = useState({
-    title: '이메일 인증',
-    description: '비밀번호를 재설정할 이메일을 입력해주세요',
+    title: AUTH_MESSAGES.FIND_PASSWORD_TITLE,
+    description: AUTH_MESSAGES.FIND_PASSWORD_DESCRIPTION,
     showFooter: true,
   });
 
@@ -29,7 +30,7 @@ export default function FindPasswordPage() {
         cardInfo.showFooter ? (
           <p className="text-center text-sm tracking-[0.07px]">
             <Link href="/login" className="text-foreground underline underline-offset-4">
-              로그인하기
+              {AUTH_MESSAGES.LOGIN_BACK_LINK}
             </Link>
           </p>
         ) : undefined

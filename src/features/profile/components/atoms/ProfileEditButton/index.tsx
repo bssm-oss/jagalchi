@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { PROFILE_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 interface ProfileEditButtonProps {
@@ -10,7 +11,8 @@ interface ProfileEditButtonProps {
 }
 
 export function ProfileEditButton({ variant, className, onClick }: ProfileEditButtonProps) {
-  const label = variant === 'show' ? '편집하기' : '편집 모드 나가기';
+  const label =
+    variant === 'show' ? PROFILE_MESSAGES.EDIT_BUTTON_SHOW : PROFILE_MESSAGES.EDIT_BUTTON_EDIT;
 
   if (variant === 'show') {
     return (

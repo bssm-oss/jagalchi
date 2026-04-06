@@ -83,7 +83,7 @@ export function MyRoadmapsToolbar() {
     <div className="flex w-full items-center justify-between py-6">
       {breadcrumbPath.length === 0 ? (
         <div className="flex h-9 items-center px-3">
-          <span className="text-sm font-semibold">내 전체 로드맵</span>
+          <span className="text-sm font-semibold">{MY_ROADMAPS_MESSAGES.ALL_ROADMAPS}</span>
         </div>
       ) : (
         <div className="flex h-9 items-center">
@@ -92,7 +92,7 @@ export function MyRoadmapsToolbar() {
             className="text-foreground text-xl font-semibold transition-colors hover:opacity-70"
             onClick={() => setBreadcrumbPath([])}
           >
-            내 전체 로드맵
+            {MY_ROADMAPS_MESSAGES.ALL_ROADMAPS}
           </button>
           {breadcrumbPath.map((segment, index) => {
             const isLast = index === breadcrumbPath.length - 1;
@@ -157,14 +157,18 @@ export function MyRoadmapsToolbar() {
               className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
               onClick={() => setIsRoadmapModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#020617]">로드맵</span>
+              <span className="text-[13px] font-semibold text-[#020617]">
+                {MY_ROADMAPS_MESSAGES.NEW_ROADMAP}
+              </span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors outline-none focus:bg-[#F3F4F6]"
               onClick={() => setIsDirectoryModalOpen(true)}
             >
-              <span className="text-[13px] font-semibold text-[#020617]">디렉토리</span>
+              <span className="text-[13px] font-semibold text-[#020617]">
+                {MY_ROADMAPS_MESSAGES.NEW_DIRECTORY}
+              </span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

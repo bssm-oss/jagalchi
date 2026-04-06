@@ -7,6 +7,56 @@ export const AUTH_MESSAGES = {
   VERIFICATION_CODE_RESEND: '재전송',
   VERIFICATION_CODE_RESEND_COOLDOWN: '초 후 재전송',
   LOGOUT: '로그아웃',
+  // Login page
+  LOGIN_TITLE: '로그인해서 계속하기',
+  LOGIN_DESCRIPTION: '이메일 주소를 입력해주세요',
+  LOGIN_NO_ACCOUNT: '아직 계정이 없나요?',
+  LOGIN_REGISTER_LINK: '회원가입',
+  LOGIN_LABEL: '로그인',
+  LOGIN_LOADING: '로그인 중...',
+  LOGIN_BACK_LINK: '로그인하기',
+  // Login form labels
+  EMAIL_LABEL: '이메일',
+  EMAIL_PLACEHOLDER: '이메일 입력',
+  PASSWORD_LABEL: '비밀번호',
+  PASSWORD_PLACEHOLDER: '비밀번호 입력',
+  PASSWORD_FORGOT: '비밀번호를 잊어버렸나요?',
+  // Register page
+  REGISTER_TITLE: '회원가입',
+  REGISTER_DESCRIPTION: '회원가입할 이메일 정보를 입력해주세요',
+  REGISTER_HAS_ACCOUNT: '이미 계정이 있나요?',
+  REGISTER_LOGIN_LINK: '로그인',
+  // Register step 1
+  PASSWORD_SET_PLACEHOLDER: '비밀번호 지정',
+  VERIFICATION_CODE_LABEL: '인증번호',
+  VERIFICATION_CODE_RESEND_ARIA: '인증번호 재전송',
+  NEXT: '다음',
+  // Register step 2
+  NAME_LABEL: '이름',
+  USERNAME_PLACEHOLDER: '사용자 이름 입력',
+  CONFIRM: '확인',
+  STEP2_TITLE: '사용자 이름 설정',
+  STEP2_DESCRIPTION: '사용자 이름을 입력해주세요',
+  // Register step 3
+  STEP3_TITLE: '사용자 프로필 링크 추가',
+  STEP3_DESCRIPTION: '사용자 프로필에 표시할 링크를 입력해주세요',
+  LINK_LABEL_1: '1번 링크',
+  LINK_LABEL_2: '2번 링크',
+  LINK_LABEL_3: '3번 링크',
+  LINK_NAME_PLACEHOLDER: '링크 이름',
+  LINK_URL_PLACEHOLDER: '링크 URL',
+  SKIP: '건너뛰기',
+  // Find password
+  FIND_PASSWORD_TITLE: '이메일 인증',
+  FIND_PASSWORD_DESCRIPTION: '비밀번호를 재설정할 이메일을 입력해주세요',
+  FIND_PASSWORD_STEP2_TITLE: '새 비밀번호 입력',
+  FIND_PASSWORD_STEP2_DESCRIPTION: '재설정할 비밀번호를 입력해주세요',
+  NEW_PASSWORD_LABEL: '새 비밀번호',
+  PASSWORD_CONFIRM_LABEL: '비밀번호 확인',
+  PASSWORD_CONFIRM_PLACEHOLDER: '비밀번호 다시 입력',
+  VERIFICATION_FAILED: '인증에 실패했습니다',
+  PROCESSING: '처리 중...',
+  COMPLETE: '완료',
 } as const;
 
 export const COMMUNITY_MESSAGES = {
@@ -18,6 +68,27 @@ export const COMMUNITY_MESSAGES = {
   ABOUT: 'About',
   MADE_BY: 'Made by',
   LAST_UPDATED: '마지막 업데이트',
+  // Hero
+  HERO_TITLE: '어떤 로드맵을 찾고있나요?',
+  SEARCH_ARIA: '검색',
+  BACK_ARIA: '뒤로가기',
+  // Grid
+  SEARCH_EMPTY: '검색 결과가 없습니다.',
+  // Filter
+  TAB_POPULAR: '인기',
+  TAB_LATEST: '최신',
+  TAB_SAVED: '저장된 로드맵',
+  SORT_ORDER_LABEL: '정렬순서',
+  SORT_BY_LABEL: '정렬기준',
+  FILTER_LABEL: '필터링',
+  SORT_DESC: '내림차순',
+  SORT_ASC: '오름차순',
+  SORT_NAME: '글자순',
+  SORT_RECENT: '최신순',
+  SORT_SIZE: '크기순',
+  FILTER_ALL: '전체',
+  FILTER_ROADMAP: '로드맵',
+  FILTER_DIRECTORY: '디렉토리',
 } as const;
 
 export const MY_ROADMAPS_MESSAGES = {
@@ -36,6 +107,46 @@ export const MY_ROADMAPS_MESSAGES = {
   RENAME_CANCEL: '취소',
   RENAME_CONFIRM: '확인',
   RENAME_PLACEHOLDER: '새 이름을 입력하세요',
+  // Header
+  HEADER_TITLE: '내 로드맵',
+  HEADER_ROADMAP_SUFFIX: '로드맵',
+  // Toolbar
+  ALL_ROADMAPS: '내 전체 로드맵',
+  // Sidebar
+  SIDEBAR_RECENT: '최근',
+  SIDEBAR_COMMUNITY: '커뮤니티',
+  SIDEBAR_MY_ROADMAP: '내 로드맵',
+  SIDEBAR_SHARED: '공유된 로드맵',
+  SIDEBAR_FAVORITES: '즐겨찾기',
+  // Card
+  CARD_FILE_COUNT_SUFFIX: '개의 파일',
+  CARD_MORE_ARIA: '더 보기',
+  CARD_FAVORITE: '즐겨찾기',
+  CARD_RENAME: '이름수정',
+  CARD_MOVE: '파일이동',
+  CARD_DELETE: '삭제',
+  // AddRoadmapModal
+  ADD_ROADMAP_TITLE: '로드맵 추가',
+  ADD_ROADMAP_PLACEHOLDER: '로드맵 이름을 입력하세요',
+  ADD_ROADMAP_DETAIL: '자세히 설정하기',
+  // SelectLocationModal
+  SELECT_LOCATION_TITLE: '위치선택',
+  SELECT_LOCATION_DESCRIPTION: '이동하거나 저장할 위치를 선택하세요.',
+  // Filter (shared with community)
+  SORT_ORDER_LABEL: '정렬순서',
+  SORT_BY_LABEL: '정렬기준',
+  FILTER_LABEL: '필터링',
+  SORT_DESC: '내림차순',
+  SORT_ASC: '오름차순',
+  SORT_NAME: '글자순',
+  SORT_RECENT: '최신순',
+  SORT_SIZE: '크기순',
+  FILTER_ALL: '전체',
+  FILTER_ROADMAP: '로드맵',
+  FILTER_DIRECTORY: '디렉토리',
+  // Common dialog buttons
+  CANCEL: '취소',
+  CONFIRM: '확인',
 } as const;
 
 export const PROFILE_MESSAGES = {
@@ -43,6 +154,26 @@ export const PROFILE_MESSAGES = {
   COMPLETED_ROADMAP: '완주한 로드맵',
   IN_PROGRESS_ROADMAP: '진행중인 로드맵',
   MADE_ROADMAP: '만든 로드맵',
+  // ProfilePicture
+  PROFILE_PICTURE_ALT: '프로필 사진',
+  PROFILE_PICTURE_ALT_WITH_NAME: '의 프로필 사진',
+  UPLOAD_FORMAT_ERROR: 'JPG, PNG, GIF, WEBP 형식만 업로드 가능합니다.',
+  UPLOAD_SIZE_ERROR: '이미지 파일은 5MB 이하만 업로드할 수 있습니다.',
+  // ProfileEditButton
+  EDIT_BUTTON_SHOW: '편집하기',
+  EDIT_BUTTON_EDIT: '편집 모드 나가기',
+  // ProfileLinkAddButton
+  LINK_ADD_BUTTON: '링크추가',
+  // ProfileCustomLinks
+  LINK_NAME_PLACEHOLDER: '링크 이름',
+  LINK_DELETE_TITLE: '링크 삭제',
+  // AddRoadmapModal (profile)
+  ADD_PUBLIC_ROADMAP: '공개 로드맵 추가',
+  SELECT_ROADMAP_TITLE: '로드맵 선택',
+  SEARCH_ROADMAP_PLACEHOLDER: '로드맵 검색',
+  SEARCH_EMPTY: '검색 결과가 없습니다.',
+  CANCEL: '취소',
+  CONFIRM: '확인',
 } as const;
 
 export const VIEWER_MESSAGES = {
@@ -75,6 +206,15 @@ export const VIEWER_MESSAGES = {
   VIEW_CARDS: '카드',
   // Sidebar toggle
   SIDEBAR_OPEN_BUTTON_LABEL: '노드 목록 열기',
+  // Editor sidebar
+  SIDEBAR_OPEN_ARIA: '사이드바 열기',
+  SIDEBAR_CLOSE_ARIA: '사이드바 닫기',
+  // Multi-select
+  MULTI_SELECT_NODE_LABEL: '노드',
+  // ErrorFallback
+  ERROR_CANNOT_LOAD: '로드맵을 불러올 수 없습니다',
+  ERROR_RETRY: '다시 시도',
+  ERROR_BACK_TO_ROADMAPS: '내 로드맵으로 돌아가기',
 } as const;
 
 export const EDITOR_MESSAGES = {

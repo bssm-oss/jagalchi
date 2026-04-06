@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { COMMUNITY_MESSAGES } from '@/constants/messages';
+
 import { RoadmapCard } from '../../atoms/RoadmapCard';
 
 import type { CommunityItem } from '../../../types/community.types';
@@ -12,7 +14,7 @@ export function CommunityGrid({ items }: CommunityGridProps) {
   if (items.length === 0) {
     return (
       <div className="flex h-[400px] w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">
-        <p className="text-sm font-medium text-slate-500">검색 결과가 없습니다.</p>
+        <p className="text-sm font-medium text-slate-500">{COMMUNITY_MESSAGES.SEARCH_EMPTY}</p>
       </div>
     );
   }

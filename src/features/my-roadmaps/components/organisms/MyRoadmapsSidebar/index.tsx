@@ -4,7 +4,7 @@ import { BookOpen, ChevronDown, Clock, Files, LogOut, Search, Star, Users } from
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { AUTH_MESSAGES } from '@/constants/messages';
+import { AUTH_MESSAGES, MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 import { type SidebarCategory, sidebarCategoryAtom } from '../../../stores/my-roadmaps.atoms';
@@ -19,14 +19,14 @@ interface SidebarItem {
 
 const SIDEBAR_GROUPS: SidebarItem[][] = [
   [
-    { icon: Clock, label: '최근', id: 'recent' },
-    { icon: BookOpen, label: '커뮤니티', id: 'community' },
+    { icon: Clock, label: MY_ROADMAPS_MESSAGES.SIDEBAR_RECENT, id: 'recent' },
+    { icon: BookOpen, label: MY_ROADMAPS_MESSAGES.SIDEBAR_COMMUNITY, id: 'community' },
   ],
   [
-    { icon: Files, label: '내 로드맵', id: 'my-roadmap' },
-    { icon: Users, label: '공유된 로드맵', id: 'shared' },
+    { icon: Files, label: MY_ROADMAPS_MESSAGES.SIDEBAR_MY_ROADMAP, id: 'my-roadmap' },
+    { icon: Users, label: MY_ROADMAPS_MESSAGES.SIDEBAR_SHARED, id: 'shared' },
   ],
-  [{ icon: Star, label: '즐겨찾기', id: 'favorites' }],
+  [{ icon: Star, label: MY_ROADMAPS_MESSAGES.SIDEBAR_FAVORITES, id: 'favorites' }],
 ];
 
 interface MyRoadmapsSidebarProps {
