@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { AUTH_MESSAGES } from '@/constants/messages';
 
 import { useResetPassword } from '../../hooks/use-reset-password';
 import { useVerificationCode } from '../../hooks/use-verification-code';
@@ -39,7 +40,14 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
   const router = useRouter();
   const [step, setStep] = useState<FindPasswordStep>(1);
   const [verifiedEmail, setVerifiedEmail] = useState('');
-  const { isCodeSent, handleSendCode, handleVerifyCode, isSendingCode } = useVerificationCode();
+  const {
+    isCodeSent,
+    handleSendCode,
+    handleVerifyCode,
+    isSendingCode,
+    isCooldownActive,
+    cooldownSeconds,
+  } = useVerificationCode();
   const resetPasswordMutation = useResetPassword();
 
   const step1Form = useForm<FindPasswordStep1Schema>({
@@ -84,6 +92,14 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
       },
     );
   };
+
+  const handleResend = () => {
+    handleSendCode(step1Form.getValues('email'), () => {
+      step1Form.setValue('verificationCode', '');
+    });
+  };
+
+  const isResendDisabled = isCooldownActive || isSendingCode;
 
   if (step === 2) {
     return (
@@ -156,7 +172,7 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
             <FormItem>
               <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="이메일 입력" {...field} />
+                <Input type="email" placeholder="이메일 입력" disabled={isCodeSent} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -176,10 +192,13 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
                   <button
                     type="button"
                     aria-label="인증번호 재전송"
-                    className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700"
-                    onClick={() => handleSendCode(step1Form.getValues('email'))}
+                    disabled={isResendDisabled}
+                    className="cursor-pointer text-sm tracking-[0.07px] text-neutral-900 underline transition-colors hover:text-neutral-700 disabled:cursor-not-allowed disabled:text-neutral-400 disabled:no-underline"
+                    onClick={handleResend}
                   >
-                    재전송
+                    {isCooldownActive
+                      ? `${cooldownSeconds}${AUTH_MESSAGES.VERIFICATION_CODE_RESEND_COOLDOWN}`
+                      : AUTH_MESSAGES.VERIFICATION_CODE_RESEND}
                   </button>
                 )}
               </div>
@@ -202,7 +221,9 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
             disabled={isSendingCode}
             onClick={() => handleSendCode(step1Form.getValues('email'))}
           >
-            {isSendingCode ? '전송 중...' : '인증번호 전송'}
+            {isSendingCode
+              ? AUTH_MESSAGES.VERIFICATION_CODE_SENDING
+              : AUTH_MESSAGES.VERIFICATION_CODE_SEND}
           </Button>
         )}
       </form>

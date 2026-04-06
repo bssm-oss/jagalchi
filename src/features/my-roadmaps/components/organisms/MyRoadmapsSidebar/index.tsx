@@ -1,9 +1,10 @@
 import { useAtom } from 'jotai';
-import { BookOpen, ChevronDown, Clock, Files, Search, Star, Users } from 'lucide-react';
+import { BookOpen, ChevronDown, Clock, Files, LogOut, Search, Star, Users } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { AUTH_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 import { type SidebarCategory, sidebarCategoryAtom } from '../../../stores/my-roadmaps.atoms';
@@ -32,12 +33,14 @@ interface MyRoadmapsSidebarProps {
   className?: string;
   userName?: string;
   userEmail?: string;
+  onLogout?: () => void;
 }
 
 export function MyRoadmapsSidebar({
   className,
   userName = 'UserName',
   userEmail = 'user@example.com',
+  onLogout,
 }: MyRoadmapsSidebarProps) {
   const [activeCategory, setActiveCategory] = useAtom(sidebarCategoryAtom);
 
@@ -96,6 +99,21 @@ export function MyRoadmapsSidebar({
           </div>
         ))}
       </nav>
+
+      {/* Logout */}
+      {onLogout && (
+        <>
+          <Separator className="my-2 mt-auto" />
+          <button
+            type="button"
+            onClick={onLogout}
+            className="flex h-8 w-full items-center gap-2 rounded-md px-3 py-1 text-sm text-[#334155] transition-colors hover:bg-black/5"
+          >
+            <LogOut className="h-5 w-5" />
+            {AUTH_MESSAGES.LOGOUT}
+          </button>
+        </>
+      )}
     </div>
   );
 }
