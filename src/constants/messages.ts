@@ -217,6 +217,9 @@ export const VIEWER_MESSAGES = {
   VIEW_CARDS: '카드',
   // Sidebar toggle
   SIDEBAR_OPEN_BUTTON_LABEL: '노드 목록 열기',
+} as const;
+
+export const EDITOR_MESSAGES = {
   // Editor sidebar
   SIDEBAR_OPEN_ARIA: '사이드바 열기',
   SIDEBAR_CLOSE_ARIA: '사이드바 닫기',
@@ -226,9 +229,6 @@ export const VIEWER_MESSAGES = {
   ERROR_CANNOT_LOAD: '로드맵을 불러올 수 없습니다',
   ERROR_RETRY: '다시 시도',
   ERROR_BACK_TO_ROADMAPS: '내 로드맵으로 돌아가기',
-} as const;
-
-export const EDITOR_MESSAGES = {
   SAVE_SUCCESS: '저장됨',
   SAVE_FAILED: '저장 실패',
   // Phase 1: React Flow 노드 기본값

@@ -8,7 +8,11 @@ import { AUTH_MESSAGES } from '@/constants/messages';
 import { AuthCard, RegisterForm } from '@/features/auth';
 
 export default function RegisterPage() {
-  const [cardInfo, setCardInfo] = useState({
+  const [cardInfo, setCardInfo] = useState<{
+    title: string;
+    description: string;
+    showFooter: boolean;
+  }>({
     title: AUTH_MESSAGES.REGISTER_TITLE,
     description: AUTH_MESSAGES.REGISTER_DESCRIPTION,
     showFooter: true,
