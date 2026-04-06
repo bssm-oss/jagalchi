@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback, useRef } from 'react';
 
 import { useAtom, useSetAtom } from 'jotai';
 import { SquarePlus, Spline, Frame, Type } from 'lucide-react';
@@ -48,9 +48,31 @@ export const EditorToolbar = memo(function EditorToolbar() {
     setActiveTool('line');
   };
 
+  const toolbarRef = useRef<HTMLDivElement>(null);
+
+  const handleToolbarKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const buttons = toolbarRef.current?.querySelectorAll<HTMLButtonElement>('button');
+    if (!buttons?.length) return;
+    const idx = Array.from(buttons).indexOf(document.activeElement as HTMLButtonElement);
+    if (idx === -1) return;
+    e.preventDefault();
+    const next =
+      e.key === 'ArrowRight'
+        ? (idx + 1) % buttons.length
+        : (idx - 1 + buttons.length) % buttons.length;
+    buttons[next].focus();
+  }, []);
+
   return (
     <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2">
-      <div className="bg-background flex items-center gap-2 rounded-lg border p-2 shadow-md">
+      <div
+        ref={toolbarRef}
+        role="toolbar"
+        aria-label="에디터 도구 모음"
+        onKeyDown={handleToolbarKeyDown}
+        className="bg-background flex items-center gap-2 rounded-lg border p-2 shadow-md"
+      >
         <ToolbarButton
           icon={<SquarePlus className="h-[15px] w-[15px]" />}
           label={EDITOR_MESSAGES.TOOLBAR_NODE_TOOLTIP}
