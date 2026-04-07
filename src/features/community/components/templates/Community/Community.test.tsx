@@ -1,8 +1,13 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'jotai';
 import { describe, it, expect, vi } from 'vitest';
 
 import { Community } from './index';
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 vi.mock('../../molecules/CommunityHeader', () => ({
   CommunityHeader: () => <div data-testid="community-header">Header</div>,
@@ -23,9 +28,11 @@ vi.mock('../../organisms/CommunityGrid', () => ({
 describe('Community Template', () => {
   it('renders all main sections', () => {
     render(
-      <Provider>
-        <Community />
-      </Provider>,
+      <QueryClientProvider client={queryClient}>
+        <Provider>
+          <Community />
+        </Provider>
+      </QueryClientProvider>,
     );
 
     expect(screen.getByTestId('community-header')).toBeInTheDocument();
