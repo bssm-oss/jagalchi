@@ -2,7 +2,6 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { MSWProvider } from '@/components/MswProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { AuthProvider } from '@/features/auth';
 
 import type { Metadata } from 'next';
@@ -31,15 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-        <ThemeProvider>
-          <MSWProvider>
-            <QueryProvider>
-              <AuthProvider>{children}</AuthProvider>
-            </QueryProvider>
-          </MSWProvider>
-        </ThemeProvider>
+        <MSWProvider>
+          <QueryProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryProvider>
+        </MSWProvider>
       </body>
     </html>
   );

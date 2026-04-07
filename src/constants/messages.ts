@@ -240,9 +240,6 @@ export const VIEWER_MESSAGES = {
   EXPORT_LOADING: '내보내는 중...',
   // Import
   IMPORT_JSON_INVALID: '유효하지 않은 JSON 파일입니다',
-  // Dark mode
-  DARK_MODE_ON: '다크모드',
-  DARK_MODE_OFF: '라이트모드',
 } as const;
 
 export const EDITOR_MESSAGES = {

@@ -7,7 +7,6 @@ import { toJpeg, toPng, toSvg } from 'html-to-image';
 import { useAtomValue } from 'jotai';
 import { jsPDF } from 'jspdf';
 import { Settings } from 'lucide-react';
-import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -73,7 +72,6 @@ export function HeaderMenu() {
   const [isExporting, setIsExporting] = useState(false);
   const reactFlow = useReactFlow();
   const roadmap = useAtomValue(viewerRoadmapAtom);
-  const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageExport = useCallback(
@@ -182,10 +180,6 @@ export function HeaderMenu() {
     [reactFlow],
   );
 
-  const handleToggleDarkMode = useCallback(() => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  }, [theme, setTheme]);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -221,9 +215,7 @@ export function HeaderMenu() {
         <DropdownMenuItem onClick={handleJsonImport}>
           {VIEWER_MESSAGES.MENU_IMPORT_JSON}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleToggleDarkMode}>
-          {theme === 'dark' ? VIEWER_MESSAGES.DARK_MODE_OFF : VIEWER_MESSAGES.MENU_DARK_MODE}
-        </DropdownMenuItem>
+        <DropdownMenuItem>{VIEWER_MESSAGES.MENU_DARK_MODE}</DropdownMenuItem>
         <DropdownMenuItem>{VIEWER_MESSAGES.MENU_VERSION}</DropdownMenuItem>
       </DropdownMenuContent>
 
