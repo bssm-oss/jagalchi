@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 
 import { useAtom, useSetAtom } from 'jotai';
 import { ChevronRight, ListFilter, Plus, Search } from 'lucide-react';
-import { nanoid } from 'nanoid';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,20 +20,15 @@ import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
-import {
-  breadcrumbPathAtom,
-  myRoadmapItemsAtom,
-  searchQueryAtom,
-} from '../../../stores/my-roadmaps.atoms';
+import { useCreateRoadmap } from '../../../hooks/use-create-roadmap';
+import { breadcrumbPathAtom, searchQueryAtom } from '../../../stores/my-roadmaps.atoms';
 import { AddDirectoryModal } from '../AddDirectoryModal';
 import { AddRoadmapModal } from '../AddRoadmapModal';
 import { MyRoadmapsFilter } from '../MyRoadmapsFilter';
 
-import type { RoadmapData } from '../../../types/my-roadmaps.types';
-
 export function MyRoadmapsToolbar() {
   const router = useRouter();
-  const setItems = useSetAtom(myRoadmapItemsAtom);
+  const createMutation = useCreateRoadmap();
   const [breadcrumbPath, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
   const setSearchQuery = useSetAtom(searchQueryAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -54,29 +48,18 @@ export function MyRoadmapsToolbar() {
   useClickOutside(filterRef, () => setIsFilterOpen(false));
 
   const handleAddRoadmap = (name: string, _locationId?: string | null) => {
-    const id = nanoid();
-    const newItem: RoadmapData = {
-      id,
-      title: name,
-      type: 'Roadmap',
-      updatedAt: new Date().toISOString(),
-      category: 'my-roadmap',
-    };
-    setItems((prev) => [newItem, ...prev]);
-    router.push(`/editor/${id}`);
+    createMutation.mutate(
+      { title: name },
+      {
+        onSuccess: (response) => {
+          router.push(`/editor/${response.id}`);
+        },
+      },
+    );
   };
 
-  const handleAddDirectory = (name: string) => {
-    const id = nanoid();
-    const newItem: RoadmapData = {
-      id,
-      title: name,
-      type: 'Directory',
-      fileCount: 0,
-      updatedAt: new Date().toISOString(),
-      category: 'my-roadmap',
-    };
-    setItems((prev) => [newItem, ...prev]);
+  const handleAddDirectory = (_name: string) => {
+    // TODO: createDirectory mutation 연결
   };
 
   return (

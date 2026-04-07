@@ -158,6 +158,8 @@ export const MY_ROADMAPS_MESSAGES = {
   // Common dialog buttons
   CANCEL: '취소',
   CONFIRM: '확인',
+  // Loading/Error
+  LOADING: '로드맵을 불러오는 중...',
 } as const;
 
 export const PROFILE_MESSAGES = {

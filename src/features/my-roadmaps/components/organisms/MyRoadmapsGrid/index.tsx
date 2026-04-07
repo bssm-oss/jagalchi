@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { useSetAtom } from 'jotai';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +23,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 
-import { myRoadmapItemsAtom } from '../../../stores/my-roadmaps.atoms';
+import { useDeleteRoadmap } from '../../../hooks/use-delete-roadmap';
+import { useUpdateRoadmap } from '../../../hooks/use-update-roadmap';
 import { RoadmapCard } from '../../atoms/RoadmapCard';
 
 import type { RoadmapData } from '../../../types/my-roadmaps.types';
@@ -35,7 +34,8 @@ interface MyRoadmapsGridProps {
 }
 
 export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
-  const setItems = useSetAtom(myRoadmapItemsAtom);
+  const deleteMutation = useDeleteRoadmap();
+  const updateMutation = useUpdateRoadmap();
 
   // Delete dialog state
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
 
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return;
-    setItems((prev) => prev.filter((item) => item.id !== deleteTarget));
+    deleteMutation.mutate(deleteTarget);
     setDeleteTarget(null);
   };
 
@@ -57,11 +57,10 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
 
   const handleRenameConfirm = () => {
     if (!renameTarget || !renameInput.trim()) return;
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === renameTarget.id ? { ...item, title: renameInput.trim() } : item,
-      ),
-    );
+    updateMutation.mutate({
+      roadmapId: renameTarget.id,
+      data: { title: renameInput.trim() },
+    });
     setRenameTarget(null);
     setRenameInput('');
   };
@@ -82,11 +81,7 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
             onRename={() => handleRenameOpen(roadmap.id, roadmap.title)}
             onDelete={() => setDeleteTarget(roadmap.id)}
             onFavorite={() => {
-              setItems((prev) =>
-                prev.map((item) =>
-                  item.id === roadmap.id ? { ...item, isFavorite: !item.isFavorite } : item,
-                ),
-              );
+              // TODO: 즐겨찾기 API 연동 (백엔드 미구현)
             }}
           />
         ))}
