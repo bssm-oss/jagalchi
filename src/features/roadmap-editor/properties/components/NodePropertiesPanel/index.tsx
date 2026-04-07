@@ -1,9 +1,12 @@
 'use client';
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 
+import { getNodeDescription } from '@/api/ai';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
+import { LoadingButton } from '../../../components/atoms/LoadingButton';
+import { ResourceRecommendationModal } from '../../../components/organisms/ResourceRecommendationModal';
 import { NODE_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateNode } from '../../../hooks/use-update-node';
 import { validateUrl } from '../../../utils/url-validation';
@@ -32,6 +35,8 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
   node,
 }: NodePropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
+  const [isDescLoading, setIsDescLoading] = useState(false);
+  const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
 
   const toggleLock = useCallback(() => {
     updateNode({ isLocked: !node.data.isLocked });
@@ -56,6 +61,29 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
       updateNode({ resources: newResources });
     },
     [node.data.resources, updateNode],
+  );
+
+  const handleGenerateDescription = useCallback(async () => {
+    if (!node.data.label) return;
+    setIsDescLoading(true);
+    try {
+      const response = await getNodeDescription({ node_title: node.data.label });
+      updateNode({ description: response.description });
+    } catch {
+      // 에러 시 기존 설명 유지
+    } finally {
+      setIsDescLoading(false);
+    }
+  }, [node.data.label, updateNode]);
+
+  const handleAddResource = useCallback(
+    (url: string) => {
+      const emptyIndex = node.data.resources.findIndex((r) => !r);
+      if (emptyIndex !== -1) {
+        handleResourceChange(emptyIndex, url);
+      }
+    },
+    [node.data.resources, handleResourceChange],
   );
 
   // Ensure we have exactly 3 resource slots
@@ -91,9 +119,20 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
           onChange={(value) => updateNode({ description: value })}
           placeholder="노드 설명을 입력하세요"
           isMultiline
-          isDisabled={node.data.isLocked}
+          isDisabled={node.data.isLocked || isDescLoading}
         />
-        <p className="text-muted-foreground text-right text-sm font-medium">AI 생성</p>
+        <div className="flex justify-end">
+          <LoadingButton
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground h-auto p-0 text-sm font-medium hover:bg-transparent hover:underline"
+            isLoading={isDescLoading}
+            onClick={handleGenerateDescription}
+            disabled={node.data.isLocked || !node.data.label}
+          >
+            {isDescLoading ? EDITOR_MESSAGES.AI_DESC_LOADING : EDITOR_MESSAGES.AI_DESC_BUTTON}
+          </LoadingButton>
+        </div>
 
         {/* 기본 컬러 */}
         <ColorSelector
@@ -121,9 +160,25 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
               />
             ))}
           </div>
-          <p className="text-muted-foreground text-right text-sm font-medium">AI 추천</p>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="text-muted-foreground text-sm font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setIsResourceModalOpen(true)}
+              disabled={node.data.isLocked}
+            >
+              {EDITOR_MESSAGES.AI_RECOMMEND_BUTTON}
+            </button>
+          </div>
         </div>
       </div>
+
+      <ResourceRecommendationModal
+        isOpen={isResourceModalOpen}
+        onClose={() => setIsResourceModalOpen(false)}
+        nodeName={node.data.label}
+        onAddResource={handleAddResource}
+      />
     </div>
   );
 });

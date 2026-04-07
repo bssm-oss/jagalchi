@@ -330,4 +330,12 @@ export const EDITOR_MESSAGES = {
   AI_RESOURCE_MODAL_CLOSE: '닫기',
   AI_RESOURCE_MODAL_LOADING: '자료를 찾는 중...',
   AI_RESOURCE_MODAL_EMPTY: '추천할 자료가 없습니다',
+  AI_RESOURCE_MODAL_ERROR: '자료 추천 중 오류가 발생했습니다',
+  // AI 기능 에러/로딩
+  AI_GENERATE_ERROR: '로드맵 생성 중 오류가 발생했습니다',
+  AI_MODIFY_ERROR: '로드맵 수정 중 오류가 발생했습니다',
+  AI_DESC_LOADING: 'AI가 설명을 생성 중입니다...',
+  AI_DESC_BUTTON: 'AI 생성',
+  AI_DESC_ERROR: '설명 생성 중 오류가 발생했습니다',
+  AI_RECOMMEND_BUTTON: 'AI 추천',
 } as const;
