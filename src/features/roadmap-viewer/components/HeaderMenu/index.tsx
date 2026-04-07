@@ -1,11 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useReactFlow } from '@xyflow/react';
 import { toJpeg, toPng, toSvg } from 'html-to-image';
 import { useAtomValue } from 'jotai';
+import { jsPDF } from 'jspdf';
 import { Settings } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -71,6 +73,8 @@ export function HeaderMenu() {
   const [isExporting, setIsExporting] = useState(false);
   const reactFlow = useReactFlow();
   const roadmap = useAtomValue(viewerRoadmapAtom);
+  const { theme, setTheme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageExport = useCallback(
     async (format: 'png' | 'jpg' | 'svg') => {
@@ -117,6 +121,71 @@ export function HeaderMenu() {
     [isExporting, reactFlow, roadmap],
   );
 
+  const handlePdfExport = useCallback(async () => {
+    if (isExporting) return;
+    const element = getReactFlowElement();
+    if (!element) return;
+
+    setIsExporting(true);
+    try {
+      const dataUrl = await toPng(element, { cacheBust: true, pixelRatio: 2 });
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise<void>((resolve) => {
+        img.onload = () => resolve();
+      });
+
+      const isLandscape = img.width > img.height;
+      const pdf = new jsPDF({
+        orientation: isLandscape ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [img.width, img.height],
+      });
+      pdf.addImage(dataUrl, 'PNG', 0, 0, img.width, img.height);
+      pdf.save(`roadmap-${Date.now()}.pdf`);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [isExporting]);
+
+  const handleJsonImport = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = JSON.parse(event.target?.result as string);
+          if (json.nodes && json.edges) {
+            reactFlow.setNodes(json.nodes);
+            reactFlow.setEdges(json.edges);
+            if (json.viewport) {
+              reactFlow.setViewport(json.viewport);
+            }
+          } else {
+            alert(VIEWER_MESSAGES.IMPORT_JSON_INVALID);
+          }
+        } catch {
+          alert(VIEWER_MESSAGES.IMPORT_JSON_INVALID);
+        }
+      };
+      reader.readAsText(file);
+
+      // Reset input so same file can be re-selected
+      e.target.value = '';
+    },
+    [reactFlow],
+  );
+
+  const handleToggleDarkMode = useCallback(() => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  }, [theme, setTheme]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -138,7 +207,9 @@ export function HeaderMenu() {
             <DropdownMenuItem onClick={() => handleImageExport('svg')}>
               {VIEWER_MESSAGES.IMAGE_SVG}
             </DropdownMenuItem>
-            <DropdownMenuItem>{VIEWER_MESSAGES.EXPORT_PDF}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handlePdfExport()}>
+              {VIEWER_MESSAGES.EXPORT_PDF}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDataExport('markdown')}>
               {VIEWER_MESSAGES.EXPORT_MARKDOWN}
             </DropdownMenuItem>
@@ -147,10 +218,23 @@ export function HeaderMenu() {
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        <DropdownMenuItem>{VIEWER_MESSAGES.MENU_IMPORT_JSON}</DropdownMenuItem>
-        <DropdownMenuItem>{VIEWER_MESSAGES.MENU_DARK_MODE}</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleJsonImport}>
+          {VIEWER_MESSAGES.MENU_IMPORT_JSON}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleToggleDarkMode}>
+          {theme === 'dark' ? VIEWER_MESSAGES.DARK_MODE_OFF : VIEWER_MESSAGES.MENU_DARK_MODE}
+        </DropdownMenuItem>
         <DropdownMenuItem>{VIEWER_MESSAGES.MENU_VERSION}</DropdownMenuItem>
       </DropdownMenuContent>
+
+      {/* Hidden file input for JSON import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleFileChange}
+      />
     </DropdownMenu>
   );
 }

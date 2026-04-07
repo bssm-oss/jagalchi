@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import {
   ReactFlow,
@@ -17,6 +17,7 @@ import {
   type OnConnectEnd,
   type NodeTypes,
   type IsValidConnection,
+  type NodeMouseHandler,
   ConnectionMode,
 } from '@xyflow/react';
 import { useAtom, useSetAtom } from 'jotai';
@@ -28,6 +29,7 @@ import {
   edgesAtom,
   selectedNodeIdsAtom,
   selectedEdgeIdsAtom,
+  activeToolAtom,
 } from '@/features/roadmap-editor/stores/editor-atoms';
 import type { RoadmapNode } from '@/features/roadmap-editor/types/editor.types';
 import { createId } from '@/features/roadmap-editor/utils/node-factory';
@@ -51,7 +53,11 @@ export function RoadmapCanvas() {
   const [edges, setEdges] = useAtom(edgesAtom);
   const setSelectedNodeIds = useSetAtom(selectedNodeIdsAtom);
   const setSelectedEdgeIds = useSetAtom(selectedEdgeIdsAtom);
+  const [activeTool, setActiveTool] = useAtom(activeToolAtom);
   const { screenToFlowPosition } = useReactFlow();
+
+  // Line tool: source 노드를 기억
+  const lineSourceRef = useRef<string | null>(null);
 
   // 키보드 단축키 활성화
   useKeyboardShortcuts();
@@ -88,6 +94,33 @@ export function RoadmapCanvas() {
       setSelectedEdgeIds(selectedEdges.map((edge) => edge.id));
     },
     [setSelectedNodeIds, setSelectedEdgeIds],
+  );
+
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_event, node) => {
+      if (activeTool !== 'line') return;
+
+      if (lineSourceRef.current === null) {
+        // 첫 번째 클릭: source 선택
+        lineSourceRef.current = node.id;
+      } else {
+        // 두 번째 클릭: target 선택 → 엣지 생성
+        const sourceId = lineSourceRef.current;
+        lineSourceRef.current = null;
+
+        if (sourceId !== node.id) {
+          const newEdge: Edge = {
+            id: createId(),
+            source: sourceId,
+            target: node.id,
+          };
+          setEdges((eds) => [...eds, newEdge]);
+        }
+
+        setActiveTool('select');
+      }
+    },
+    [activeTool, setEdges, setActiveTool],
   );
 
   const onConnectEnd: OnConnectEnd = useCallback(
@@ -145,7 +178,7 @@ export function RoadmapCanvas() {
   );
 
   return (
-    <div className="h-full w-full">
+    <div className={`h-full w-full ${activeTool === 'line' ? 'cursor-crosshair' : ''}`}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -154,6 +187,7 @@ export function RoadmapCanvas() {
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onSelectionChange={onSelectionChange}
+        onNodeClick={onNodeClick}
         isValidConnection={isValidConnection}
         nodeTypes={nodeTypes}
         connectionLineComponent={ConnectionLine}

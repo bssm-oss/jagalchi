@@ -238,6 +238,11 @@ export const VIEWER_MESSAGES = {
   EXPORT_MARKDOWN_DOWNLOAD: 'Markdown으로 내보내기',
   // Export loading
   EXPORT_LOADING: '내보내는 중...',
+  // Import
+  IMPORT_JSON_INVALID: '유효하지 않은 JSON 파일입니다',
+  // Dark mode
+  DARK_MODE_ON: '다크모드',
+  DARK_MODE_OFF: '라이트모드',
 } as const;
 
 export const EDITOR_MESSAGES = {
@@ -291,6 +296,7 @@ export const EDITOR_MESSAGES = {
   COLOR_PICKER_TITLE: '컬러 선택',
   COLOR_PICKER_CANCEL: '취소',
   COLOR_PICKER_APPLY: '적용',
+  COLOR_PICKER_HEX_PLACEHOLDER: '#000000',
   // Phase 3: Multi-select
   MULTI_SELECT_TITLE: '다중 선택',
   MULTI_SELECT_COUNT: '개 선택됨',
