@@ -9,6 +9,10 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
+vi.mock('@/hooks/use-popular-roadmaps', () => ({
+  usePopularRoadmaps: () => ({ data: undefined, isLoading: false }),
+}));
+
 vi.mock('../../molecules/CommunityHeader', () => ({
   CommunityHeader: () => <div data-testid="community-header">Header</div>,
 }));
