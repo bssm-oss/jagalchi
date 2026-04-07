@@ -75,14 +75,16 @@ Frontend (React/Next.js)
 
 ### 2.3 Public 엔드포인트 (JWT 불필요)
 
-| 메서드    | 경로                  | 설명           |
-| --------- | --------------------- | -------------- |
-| `POST`    | `/users`              | 회원가입       |
-| `POST`    | `/users/auth/login`   | 로그인         |
-| `PATCH`   | `/users/auth/refresh` | 토큰 갱신      |
-| `*`       | `/users/oauth2/**`    | OAuth2         |
-| `GET`     | `/actuator/health`    | 헬스체크       |
-| `OPTIONS` | `**`                  | CORS preflight |
+| 메서드    | 경로                            | 설명                                |
+| --------- | ------------------------------- | ----------------------------------- |
+| `POST`    | `/users`                        | 회원가입                            |
+| `POST`    | `/users/auth/login`             | 로그인                              |
+| `PATCH`   | `/users/auth/refresh`           | 토큰 갱신                           |
+| `*`       | `/users/auth/password-reset/**` | 비밀번호 리셋 (코드 발송/검증/변경) |
+| `*`       | `/users/verification/**`        | 이메일 인증 (코드 발송/검증)        |
+| `*`       | `/users/oauth2/**`              | OAuth2                              |
+| `GET`     | `/actuator/health`              | 헬스체크                            |
+| `OPTIONS` | `**`                            | CORS preflight                      |
 
 ### 2.4 인증 플로우
 
@@ -286,10 +288,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 #### POST `/users/verification` — 회원가입 인증코드 발송
 
-| 항목 | 값               |
-| ---- | ---------------- |
-| 인증 | 불필요           |
-| 상태 | `204 No Content` |
+| 항목 | 값       |
+| ---- | -------- |
+| 인증 | 불필요   |
+| 상태 | `200 OK` |
 
 **Request Body**
 
@@ -303,10 +305,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 #### PATCH `/users/verification` — 회원가입 인증코드 검증
 
-| 항목 | 값               |
-| ---- | ---------------- |
-| 인증 | 불필요           |
-| 상태 | `204 No Content` |
+| 항목 | 값       |
+| ---- | -------- |
+| 인증 | 불필요   |
+| 상태 | `200 OK` |
 
 **Request Body**
 
@@ -321,10 +323,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 #### POST `/users/auth/password-reset` — 비밀번호 리셋 인증코드 발송
 
-| 항목 | 값               |
-| ---- | ---------------- |
-| 인증 | 불필요           |
-| 상태 | `204 No Content` |
+| 항목 | 값       |
+| ---- | -------- |
+| 인증 | 불필요   |
+| 상태 | `200 OK` |
 
 **Request Body**
 
@@ -340,10 +342,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 #### PATCH `/users/auth/password-reset/verify` — 비밀번호 리셋 인증코드 검증
 
-| 항목 | 값               |
-| ---- | ---------------- |
-| 인증 | 불필요           |
-| 상태 | `204 No Content` |
+| 항목 | 값       |
+| ---- | -------- |
+| 인증 | 불필요   |
+| 상태 | `200 OK` |
 
 **Request Body**
 
@@ -382,7 +384,7 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
     "bio": "자기소개",
     "isFollowed": true,
     "stats": {
-      "followerCount": 10,
+      "followersCount": 10,
       "followingCount": 5
     },
     "externalLinks": {
@@ -391,7 +393,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
   },
   "streak": {
     "currentStreak": 5,
-    "longestStreak": 30
+    "activities": [
+      { "date": "2026-04-07", "count": 3 },
+      { "date": "2026-04-06", "count": 1 }
+    ]
   }
 }
 ```
@@ -423,7 +428,7 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 ```json
 {
-  "message": "프로필이 업데이트되었습니다."
+  "message": "프로필이 성공적으로 수정되었습니다."
 }
 ```
 
@@ -433,10 +438,10 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 
 #### PATCH `/users/{name}/follow` — 팔로우 토글
 
-| 항목 | 값               |
-| ---- | ---------------- |
-| 인증 | **필수**         |
-| 상태 | `204 No Content` |
+| 항목 | 값       |
+| ---- | -------- |
+| 인증 | **필수** |
+| 상태 | `200 OK` |
 
 **Path Parameters**
 
@@ -466,9 +471,9 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 ```json
 {
   "userId": 1,
-  "type": "followers",
+  "type": "FOLLOWER",
   "totalCount": 10,
-  "users": [{ "name": "follower1", "profileImageUrl": "https://..." }]
+  "users": [{ "name": "follower1", "profileImage": "https://..." }]
 }
 ```
 
@@ -486,9 +491,9 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 ```json
 {
   "userId": 1,
-  "type": "followings",
+  "type": "FOLLOWING",
   "totalCount": 5,
-  "users": [{ "name": "following1", "profileImageUrl": "https://..." }]
+  "users": [{ "name": "following1", "profileImage": "https://..." }]
 }
 ```
 
@@ -1032,10 +1037,12 @@ GET /users/auth/login/github → GitHub 리다이렉트 → 콜백 → accessTok
 #### 연결
 
 ```
-WebSocket: ws://localhost:8080/ws?access_token=<token>
-SockJS:    http://localhost:8080/ws-sockjs?access_token=<token>
-STOMP:     /ws/roadmap (SockJS fallback 포함)
+WebSocket (순수):  ws://localhost:8080/ws?access_token=<token>
+SockJS fallback:  http://localhost:8080/ws-sockjs?access_token=<token>
+STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
 ```
+
+> 3개 엔드포인트가 모두 활성화되어 있다. `/ws`는 순수 WebSocket, `/ws-sockjs`는 SockJS fallback, `/ws/roadmap`은 STOMP+SockJS 통합 엔드포인트.
 
 **STOMP 브로커 설정**
 
@@ -1277,11 +1284,11 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
 {
   "record_id": "rec_001",
   "scores": {
-    "evidence_level": 0.8,
-    "structure_score": 0.7,
-    "specificity_score": 0.9,
-    "reproducibility_score": 0.6,
-    "quality_score": 0.75
+    "evidence_level": 80,
+    "structure_score": 70,
+    "specificity_score": 90,
+    "reproducibility_score": 60,
+    "quality_score": 75
   },
   "strengths": ["코드 예시가 풍부함", "단계별 설명이 명확함"],
   "gaps": ["테스트 코드 부재", "에러 핸들링 미언급"],
@@ -1314,7 +1321,7 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
   "question": "React useEffect 에러 해결 방법",
   "intent": "debugging",
   "toolchain": ["rag", "web_search"],
-  "plan": "...",
+  "plan": ["RAG 검색으로 관련 문서 탐색", "코드 예시 생성"],
   "answer": "useEffect에서 발생하는 에러는...",
   "retrieval_evidence": [{ "...": "..." }],
   "behavior_summary": { "...": "..." },
@@ -1366,7 +1373,7 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
     {
       "related_roadmap_id": "rm_react",
       "score": 0.92,
-      "reasons": [{ "type": "topic_overlap", "detail": "React 관련 노드 80% 공유" }]
+      "reasons": [{ "type": "topic_overlap", "value": "React 관련 노드 80% 공유" }]
     }
   ],
   "model_version": "gemini-2.0",
@@ -1393,8 +1400,8 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
   "roadmap_id": "rm_generated_001",
   "title": "프론트엔드 심화 로드맵",
   "description": "...",
-  "nodes": [{ "id": "n1", "label": "TypeScript 기초", "x": 0, "y": 0 }],
-  "edges": [{ "from": "n1", "to": "n2", "label": "선수 학습" }],
+  "nodes": [{ "node_id": "n1", "title": "TypeScript 기초", "tags": ["typescript"] }],
+  "edges": [{ "source": "n1", "target": "n2", "type": "prerequisite" }],
   "tags": ["typescript", "react", "nextjs"],
   "model_version": "gemini-2.0",
   "prompt_version": "v3",
@@ -1416,10 +1423,10 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
 
 #### GET `/ai/document-roadmap` — 문서 기반 로드맵 분석
 
-| 파라미터   | 타입     | 설명      |
-| ---------- | -------- | --------- |
-| `document` | `string` | 문서 내용 |
-| `goal`     | `string` | 목표      |
+| 파라미터   | 타입     | 설명                 |
+| ---------- | -------- | -------------------- |
+| `document` | `string` | 문서 내용 (optional) |
+| `goal`     | `string` | 목표 (optional)      |
 
 #### POST `/ai/document-roadmap` — 문서 기반 로드맵 분석 (POST)
 
@@ -1431,6 +1438,11 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
   "goal": "프론트엔드 개발자"
 }
 ```
+
+| 필드       | 타입     | 필수 | 설명                 |
+| ---------- | -------- | ---- | -------------------- |
+| `document` | `string` | X    | 문서 내용 (optional) |
+| `goal`     | `string` | X    | 목표 (optional)      |
 
 **Response**
 
@@ -1465,12 +1477,14 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
   "tech_slug": "react",
   "version": "19.x",
   "summary": "UI 빌드를 위한 JavaScript 라이브러리",
-  "why_it_matters": "...",
-  "when_to_use": "...",
+  "why_it_matters": ["..."],
+  "when_to_use": ["..."],
   "pitfalls": ["과도한 리렌더링", "상태 관리 복잡성"],
-  "alternatives": [{ "name": "Vue.js", "comparison": "더 낮은 학습 곡선" }],
-  "learning_path": [{ "stage": "beginner", "topics": ["JSX", "Components", "Props"] }],
-  "sources": [{ "url": "https://react.dev", "type": "official" }]
+  "alternatives": [{ "slug": "vuejs", "why": "더 낮은 학습 곡선" }],
+  "learning_path": [{ "stage": "beginner", "items": ["JSX", "Components", "Props"] }],
+  "sources": [
+    { "title": "React 공식 문서", "url": "https://react.dev", "fetched_at": "2026-04-07T12:00:00Z" }
+  ]
 }
 ```
 
@@ -1517,7 +1531,11 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
   "roadmap_id": "rm_frontend",
   "period": "14d",
   "highlights": ["React hooks에 대한 질문이 가장 많음"],
-  "bottlenecks": [{ "node_id": "n5", "score": 0.85, "top_topics": ["useEffect", "cleanup"] }]
+  "bottlenecks": [{ "node_id": "n5", "score": 0.85, "top_topics": ["useEffect", "cleanup"] }],
+  "generated_by": {
+    "model_version": "gemini-2.0",
+    "prompt_version": "v3"
+  }
 }
 ```
 
@@ -1570,12 +1588,12 @@ STOMP:     /ws/roadmap (SockJS fallback 포함)
 
 #### GET `/ai/web-search` — 웹 검색
 
-| 파라미터       | 타입     | 기본값 | 설명                               |
-| -------------- | -------- | ------ | ---------------------------------- |
-| `query`        | `string` | -      | 검색어 (필수)                      |
-| `top_k`        | `int`    | `5`    | 결과 수 (최대 20)                  |
-| `engine`       | `string` | -      | 검색 엔진 (`tavily`, `exa`, `all`) |
-| `recency_days` | `int`    | -      | 최근 기간 필터                     |
+| 파라미터       | 타입     | 기본값               | 설명                               |
+| -------------- | -------- | -------------------- | ---------------------------------- |
+| `query`        | `string` | `"Python 학습 자료"` | 검색어 (선택, 기본값 있음)         |
+| `top_k`        | `int`    | `5`                  | 결과 수 (최대 20)                  |
+| `engine`       | `string` | `"all"`              | 검색 엔진 (`tavily`, `exa`, `all`) |
+| `recency_days` | `int`    | -                    | 최근 기간 필터                     |
 
 **Response**
 
