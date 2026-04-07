@@ -2,6 +2,8 @@
 
 import { memo, useCallback } from 'react';
 
+import { EDITOR_MESSAGES } from '@/constants/messages';
+
 import { TEXT_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateNode } from '../../../hooks/use-update-node';
 import { ColorSelector } from '../ColorSelector';
@@ -31,6 +33,26 @@ export const TextPropertiesPanel = memo(function TextPropertiesPanel({
     updateNode({ isLocked: !node.data.isLocked });
   }, [updateNode, node.data.isLocked]);
 
+  const handleColorChange = useCallback(
+    (variant: TextColorVariant | string) => {
+      updateNode({ variant: variant as TextColorVariant });
+    },
+    [updateNode],
+  );
+
+  const handleFontSizeChange = useCallback(
+    (value: string) => {
+      if (node.data.isLocked) return;
+      const numValue = Number(value);
+      if (!isNaN(numValue) && numValue > 0) {
+        updateNode({ fontSize: numValue });
+      }
+    },
+    [node.data.isLocked, updateNode],
+  );
+
+  const currentFontSize = String(node.data.fontSize ?? 14);
+
   return (
     <div className="flex h-full w-full flex-col">
       <PanelHeader
@@ -45,9 +67,16 @@ export const TextPropertiesPanel = memo(function TextPropertiesPanel({
         {/* 텍스트 크기 */}
         <div className="border-b border-slate-200 py-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-950">텍스트 크기</label>
+            <label className="text-sm font-medium text-slate-950">
+              {EDITOR_MESSAGES.SIDEBAR_TEXT_SIZE_LABEL}
+            </label>
             <div className="flex items-center gap-2">
-              <EditorInput value="" onChange={() => {}} placeholder="Value" isDisabled />
+              <EditorInput
+                value={currentFontSize}
+                onChange={handleFontSizeChange}
+                placeholder="14"
+                isDisabled={node.data.isLocked}
+              />
               <p className="text-sm text-black">px</p>
             </div>
           </div>
@@ -60,7 +89,7 @@ export const TextPropertiesPanel = memo(function TextPropertiesPanel({
             nodeId={node.id}
             currentVariant={node.data.variant}
             presets={TEXT_PRESET_COLORS}
-            onPresetSelect={(variant) => updateNode({ variant: variant as TextColorVariant })}
+            onPresetSelect={handleColorChange}
           />
         </div>
       </div>
