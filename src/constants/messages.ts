@@ -214,6 +214,10 @@ export const VIEWER_MESSAGES = {
   SIDEBAR_DETAIL_DESCRIPTION: '설명',
   SIDEBAR_DETAIL_RESOURCES: '첨부 자료',
   SIDEBAR_TOTAL_COUNT: '총 {count}개 노드',
+  // Progress
+  PROGRESS_LABEL: '진행률',
+  NODE_COMPLETED: '완료됨',
+  NODE_INCOMPLETE: '미완료',
   // Loading/Error
   LOADING: '로드맵을 불러오는 중...',
   ERROR_NOT_FOUND: '로드맵을 찾을 수 없습니다',

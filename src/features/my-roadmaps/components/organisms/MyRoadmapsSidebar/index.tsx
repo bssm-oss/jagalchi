@@ -1,12 +1,27 @@
-import { useAtom } from 'jotai';
-import { BookOpen, ChevronDown, Clock, Files, LogOut, Search, Star, Users } from 'lucide-react';
+import { useState } from 'react';
 
+import { useAtom } from 'jotai';
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Files,
+  Folder,
+  LogOut,
+  Search,
+  Star,
+  Users,
+} from 'lucide-react';
+
+import type { DirectoryTreeNode } from '@/api/roadmap';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { AUTH_MESSAGES, MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
+import { useDirectoryTree } from '../../../hooks/use-directory-tree';
 import { type SidebarCategory, sidebarCategoryAtom } from '../../../stores/my-roadmaps.atoms';
 
 import type { LucideIcon } from 'lucide-react';
@@ -29,6 +44,35 @@ const SIDEBAR_GROUPS: SidebarItem[][] = [
   [{ icon: Star, label: MY_ROADMAPS_MESSAGES.SIDEBAR_FAVORITES, id: 'favorites' }],
 ];
 
+function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => hasChildren && setIsOpen((prev) => !prev)}
+        className="flex h-7 w-full items-center gap-1.5 rounded-md px-3 text-sm text-slate-700 transition-colors hover:bg-black/5"
+        style={{ paddingLeft: `${12 + depth * 16}px` }}
+      >
+        {hasChildren ? (
+          <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', isOpen && 'rotate-90')} />
+        ) : (
+          <span className="w-3.5" />
+        )}
+        <Folder className="h-4 w-4 text-slate-500" />
+        <span className="truncate">{node.name}</span>
+      </button>
+      {isOpen &&
+        hasChildren &&
+        node.children.map((child) => (
+          <DirectoryNode key={child.id} node={child} depth={depth + 1} />
+        ))}
+    </div>
+  );
+}
+
 interface MyRoadmapsSidebarProps {
   className?: string;
   userName?: string;
@@ -43,6 +87,7 @@ export function MyRoadmapsSidebar({
   onLogout,
 }: MyRoadmapsSidebarProps) {
   const [activeCategory, setActiveCategory] = useAtom(sidebarCategoryAtom);
+  const { data: directoryTree } = useDirectoryTree();
 
   return (
     <div
@@ -99,6 +144,18 @@ export function MyRoadmapsSidebar({
           </div>
         ))}
       </nav>
+
+      {/* Directory Tree */}
+      {directoryTree && directoryTree.length > 0 && (
+        <>
+          <Separator className="my-2" />
+          <div className="flex flex-col gap-0.5">
+            {directoryTree.map((dir) => (
+              <DirectoryNode key={dir.id} node={dir} depth={0} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Logout */}
       {onLogout && (
