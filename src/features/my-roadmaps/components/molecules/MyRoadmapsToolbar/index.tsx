@@ -20,6 +20,7 @@ import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
+import { useCreateDirectory } from '../../../hooks/use-create-directory';
 import { useCreateRoadmap } from '../../../hooks/use-create-roadmap';
 import { breadcrumbPathAtom, searchQueryAtom } from '../../../stores/my-roadmaps.atoms';
 import { AddDirectoryModal } from '../AddDirectoryModal';
@@ -29,6 +30,7 @@ import { MyRoadmapsFilter } from '../MyRoadmapsFilter';
 export function MyRoadmapsToolbar() {
   const router = useRouter();
   const createMutation = useCreateRoadmap();
+  const createDirMutation = useCreateDirectory();
   const [breadcrumbPath, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
   const setSearchQuery = useSetAtom(searchQueryAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -58,8 +60,8 @@ export function MyRoadmapsToolbar() {
     );
   };
 
-  const handleAddDirectory = (_name: string) => {
-    // TODO: createDirectory mutation 연결
+  const handleAddDirectory = (name: string) => {
+    createDirMutation.mutate({ name });
   };
 
   return (
