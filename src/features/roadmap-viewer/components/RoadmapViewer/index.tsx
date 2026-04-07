@@ -96,7 +96,11 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
           {layout === 'cards' ? <CardListMode /> : <ViewerCanvas />}
         </div>
 
-        <ViewerSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <ViewerSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          roadmapId={roadmapId}
+        />
       </div>
 
       {layout === 'page' && <ViewerZoomControls />}

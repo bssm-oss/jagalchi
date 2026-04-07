@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useAtom, useAtomValue } from 'jotai';
-import { Search, X } from 'lucide-react';
+import { CheckCircle2, Circle, Search, X } from 'lucide-react';
 
 import { VIEWER_MESSAGES } from '@/constants/messages';
+import { useCompleteNode, useRoadmapProgress } from '@/hooks/use-roadmap-progress';
 import type { JagalchiNodeData } from '@/types/roadmap.types';
 
 import {
@@ -17,13 +18,22 @@ import {
 interface ViewerSidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+  roadmapId?: string;
 }
 
-export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
+export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSidebarProps) {
   const nodes = useAtomValue(viewerNodesAtom);
   const selectedNode = useAtomValue(selectedViewerNodeAtom);
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedViewerNodeIdAtom);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: progress } = useRoadmapProgress(roadmapId ?? '');
+  const completeMutation = useCompleteNode(roadmapId ?? '');
+
+  const completedIds = useMemo(
+    () => new Set(progress?.completedNodeIds ?? []),
+    [progress?.completedNodeIds],
+  );
 
   const nodeItems = useMemo(() => nodes.filter((n) => n.type === 'jagalchi-node'), [nodes]);
 
@@ -38,7 +48,18 @@ export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
     [nodeItems, searchQuery],
   );
 
+  const handleToggleComplete = useCallback(
+    (nodeId: string) => {
+      if (!roadmapId) return;
+      const isCompleted = !completedIds.has(nodeId);
+      completeMutation.mutate({ nodeId, isCompleted });
+    },
+    [roadmapId, completedIds, completeMutation],
+  );
+
   if (!isOpen) return null;
+
+  const progressPercent = progress?.progressPercentage ?? 0;
 
   return (
     <aside className="bg-card flex h-full w-[320px] shrink-0 flex-col rounded-xl border">
@@ -55,6 +76,22 @@ export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
           </button>
         )}
       </div>
+
+      {/* Progress bar */}
+      {roadmapId && progress && (
+        <div className="border-b px-4 py-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">{VIEWER_MESSAGES.PROGRESS_LABEL}</span>
+            <span className="font-medium">{progressPercent}%</span>
+          </div>
+          <div className="bg-muted mt-1.5 h-2 rounded-full">
+            <div
+              className="h-full rounded-full bg-blue-600 transition-all"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <div className="border-b px-4 py-3">
@@ -81,16 +118,35 @@ export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
             {filteredNodes.map((node) => {
               const data = node.data as JagalchiNodeData;
               const isSelected = node.id === selectedNodeId;
+              const isCompleted = completedIds.has(node.id);
               return (
-                <li key={node.id}>
+                <li key={node.id} className="flex items-center gap-1">
+                  {roadmapId && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleComplete(node.id)}
+                      className="shrink-0 p-1"
+                      aria-label={
+                        isCompleted
+                          ? VIEWER_MESSAGES.NODE_COMPLETED
+                          : VIEWER_MESSAGES.NODE_INCOMPLETE
+                      }
+                    >
+                      {isCompleted ? (
+                        <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                      ) : (
+                        <Circle className="text-muted-foreground h-4 w-4" />
+                      )}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => setSelectedNodeId(node.id)}
-                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                    className={`flex-1 rounded-md px-3 py-2 text-left text-sm transition-colors ${
                       isSelected
                         ? 'bg-accent text-accent-foreground font-medium'
                         : 'text-foreground hover:bg-muted'
-                    }`}
+                    } ${isCompleted ? 'line-through opacity-60' : ''}`}
                   >
                     {data.label}
                   </button>
