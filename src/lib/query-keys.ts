@@ -22,6 +22,12 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.roadmaps.all, 'detail', id] as const,
     events: (id: string, since?: number) =>
       [...queryKeys.roadmaps.all, 'events', id, since] as const,
+    progress: (id: string) => [...queryKeys.roadmaps.all, 'progress', id] as const,
+  },
+
+  directories: {
+    all: ['directories'] as const,
+    tree: () => [...queryKeys.directories.all, 'tree'] as const,
   },
 
   community: {
