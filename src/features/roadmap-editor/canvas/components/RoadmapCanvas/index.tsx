@@ -159,7 +159,7 @@ export function RoadmapCanvas() {
         connectionLineComponent={ConnectionLine}
         multiSelectionKeyCode="Shift"
         selectionKeyCode="Shift"
-        deleteKeyCode="Delete"
+        deleteKeyCode={null}
         panOnDrag={[1, 2]}
         panOnScroll
         fitView

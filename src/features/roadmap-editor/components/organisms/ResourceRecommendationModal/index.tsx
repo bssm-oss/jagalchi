@@ -39,10 +39,7 @@ export const ResourceRecommendationModal = memo(function ResourceRecommendationM
   const handleRecommend = async () => {
     setIsLoading(true);
     try {
-      // TODO: Phase 4 - Implement actual AI resource recommendation
-      // eslint-disable-next-line no-console
-      console.log('AI 자료 추천 요청:', nodeName);
-      // Simulate API call
+      // TODO: Implement actual AI resource recommendation API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Mock data for demonstration
@@ -63,9 +60,8 @@ export const ResourceRecommendationModal = memo(function ResourceRecommendationM
           description: '실무 경험을 바탕으로 한 심화 강의',
         },
       ]);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('자료 추천 실패:', error);
+    } catch {
+      // TODO: Show error toast to user
     } finally {
       setIsLoading(false);
     }

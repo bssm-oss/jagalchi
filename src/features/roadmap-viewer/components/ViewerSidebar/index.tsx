@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useAtom, useAtomValue } from 'jotai';
 import { Search, X } from 'lucide-react';
@@ -25,16 +25,18 @@ export function ViewerSidebar({ isOpen = true, onClose }: ViewerSidebarProps) {
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedViewerNodeIdAtom);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter only jagalchi-node type nodes
-  const nodeItems = nodes.filter((n) => n.type === 'jagalchi-node');
+  const nodeItems = useMemo(() => nodes.filter((n) => n.type === 'jagalchi-node'), [nodes]);
 
-  // Apply search filter
-  const filteredNodes = searchQuery
-    ? nodeItems.filter((n) => {
-        const data = n.data as JagalchiNodeData;
-        return data.label.toLowerCase().includes(searchQuery.toLowerCase());
-      })
-    : nodeItems;
+  const filteredNodes = useMemo(
+    () =>
+      searchQuery
+        ? nodeItems.filter((n) => {
+            const data = n.data as JagalchiNodeData;
+            return data.label.toLowerCase().includes(searchQuery.toLowerCase());
+          })
+        : nodeItems,
+    [nodeItems, searchQuery],
+  );
 
   if (!isOpen) return null;
 

@@ -11,9 +11,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('jagalchi-access-token')?.value;
 
-  // 클라이언트에서 localStorage에 토큰을 저장하므로, 미들웨어에서는
-  // 쿠키 기반으로만 체크. 쿠키가 없으면 클라이언트 측 가드에 위임.
-  // TODO: HttpOnly refresh cookie 기반으로 전환 시 이 로직 활성화
+  // TODO(security): pre-production blocker — 현재 쿠키는 non-httpOnly이며 서명 검증 없음.
+  // httpOnly Secure 쿠키 + jose JWT 서명 검증으로 전환 필요.
+  // 현재는 클라이언트 측 가드에 위임.
 
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
@@ -26,7 +26,10 @@ export function middleware(request: NextRequest) {
   // 비로그인 상태에서 보호 라우트 접근 시 로그인으로 리다이렉트
   if (isProtectedRoute && !token) {
     const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
+    // Open Redirect 방지: PROTECTED_ROUTES에 매칭되는 경로만 redirect 허용
+    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
+      loginUrl.searchParams.set('redirect', pathname);
+    }
     return NextResponse.redirect(loginUrl);
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
@@ -33,21 +33,30 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
 }: NodePropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
 
-  const toggleLock = () => {
+  const toggleLock = useCallback(() => {
     updateNode({ isLocked: !node.data.isLocked });
-  };
+  }, [updateNode, node.data.isLocked]);
 
-  const handleResourceChange = (index: number, value: string) => {
-    // Validate URL to prevent XSS and invalid URLs
-    const validatedUrl = validateUrl(value);
-
-    // Only update if validation passes (null means invalid)
-    if (validatedUrl !== null) {
+  const handleResourceChange = useCallback(
+    (index: number, value: string) => {
       const newResources = [...node.data.resources];
-      newResources[index] = validatedUrl;
+      newResources[index] = value;
       updateNode({ resources: newResources });
-    }
-  };
+    },
+    [node.data.resources, updateNode],
+  );
+
+  const handleResourceBlur = useCallback(
+    (index: number) => {
+      const raw = node.data.resources[index];
+      if (!raw) return;
+      const validated = validateUrl(raw);
+      const newResources = [...node.data.resources];
+      newResources[index] = validated ?? '';
+      updateNode({ resources: newResources });
+    },
+    [node.data.resources, updateNode],
+  );
 
   // Ensure we have exactly 3 resource slots
   const resources = [...node.data.resources];
@@ -97,15 +106,16 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
 
         {/* 형부자료 */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-950">
+          <span className="text-sm font-medium text-slate-950">
             {EDITOR_MESSAGES.SIDEBAR_RESOURCES_LABEL}
-          </label>
+          </span>
           <div className="space-y-2">
             {resources.slice(0, 3).map((resource: string, index: number) => (
               <EditorInput
                 key={index}
                 value={resource}
                 onChange={(value) => handleResourceChange(index, value)}
+                onBlur={() => handleResourceBlur(index)}
                 placeholder="URL을 입력하세요"
                 isDisabled={node.data.isLocked}
               />

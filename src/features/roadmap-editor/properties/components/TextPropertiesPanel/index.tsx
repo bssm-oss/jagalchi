@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 import { TEXT_PRESET_COLORS } from '../../../constants/preset-colors';
 import { useUpdateNode } from '../../../hooks/use-update-node';
@@ -27,9 +27,9 @@ export const TextPropertiesPanel = memo(function TextPropertiesPanel({
 }: TextPropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
 
-  const toggleLock = () => {
+  const toggleLock = useCallback(() => {
     updateNode({ isLocked: !node.data.isLocked });
-  };
+  }, [updateNode, node.data.isLocked]);
 
   return (
     <div className="flex h-full w-full flex-col">
