@@ -83,4 +83,9 @@ export function sendCursorPosition(
   });
 }
 
+/** 커서 숨기기 전송 — 사용자가 캔버스를 떠날 때 호출 */
+export function sendCursorHide(roadmapId: string): void {
+  publishStomp(`/app/roadmap/${roadmapId}/cursor/hide`, {});
+}
+
 export type { StompAction, ActionPayload, ActionType, PayloadType, TargetType, ActionTarget };
