@@ -217,6 +217,17 @@ export const VIEWER_MESSAGES = {
   VIEW_CARDS: '카드',
   // Sidebar toggle
   SIDEBAR_OPEN_BUTTON_LABEL: '노드 목록 열기',
+  // Export image
+  EXPORT_IMAGE_TITLE: '이미지로 저장',
+  EXPORT_PNG: 'PNG로 저장',
+  EXPORT_JPG: 'JPG로 저장',
+  EXPORT_SVG: 'SVG로 저장',
+  // Export data
+  EXPORT_DATA_TITLE: '데이터 내보내기',
+  EXPORT_JSON_DOWNLOAD: 'JSON으로 내보내기',
+  EXPORT_MARKDOWN_DOWNLOAD: 'Markdown으로 내보내기',
+  // Export loading
+  EXPORT_LOADING: '내보내는 중...',
 } as const;
 
 export const EDITOR_MESSAGES = {
