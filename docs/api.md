@@ -1,29 +1,23 @@
 # API Reference - Jagalchi Services
 
-Generated: 2026-04-06T08:20:00Z
+Updated: 2026-04-07
 
-Purpose
-This document is a complete integration specification for frontend teams. It lists all REST endpoints, DTOs, authentication details, error formats, and WebSocket (STOMP) flows so a frontend developer can implement and test clients without reading source code.
+## Base URL
 
-Base URL (recommended)
+- API Gateway: `http://<gateway-host>:8080`
+- WebSocket: `ws://<gateway-host>:8080/ws`
 
-- Use the API Gateway as primary entry: http://<gateway-host>:8080
-- Direct service hosts can be used for debugging: user, node, roadmap hosts listed in environment or deployment docs.
+## Authentication
 
-Authentication
+- Access tokens: Bearer JWT in `Authorization` header
+- Refresh tokens: HttpOnly cookie (set by server on login)
+- WebSocket/STOMP: `Authorization: Bearer <token>` OR `X-User-ID` + `X-User-Role` headers on CONNECT
 
-- Access tokens: Bearer JWT in Authorization header
-  - Header: Authorization: Bearer <accessToken>
-- Refresh tokens: issued as HttpOnly cookies by the server on login
-- WebSocket/STOMP: include headers on CONNECT
-  - X-User-ID: <userId>
-  - X-User-Role: USER | ADMIN | GUEST
+## Global Conventions
 
-Global conventions
-
-- All timestamps are in milliseconds epoch unless noted
-- All JSON keys use camelCase
-- Error response structure (all services):
+- Timestamps: milliseconds epoch unless noted
+- JSON keys: camelCase
+- Error response:
 
 ```json
 {
@@ -36,333 +30,163 @@ Global conventions
 }
 ```
 
-- Common error codes: INVALID_INPUT, AUTH_REQUIRED, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_FAILED, INTERNAL_ERROR
+- Error codes: `INVALID_INPUT`, `AUTH_REQUIRED`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_FAILED`, `INTERNAL_ERROR`
 
-## 1. API Gateway (health proxy & aggregator)
+---
 
-### Endpoints
+## 1. API Gateway
 
-- GET /user/health, /user/healthz
-  - Proxy to USER service (/health,/api/health,/actuator/health)
-  - Success: returns backend body (e.g., {"status":"UP","module":"user"})
-  - Fail: 503 {"status":"DOWN"}
+### Health
 
-- GET /node/health, /node/healthz
-  - Proxy to NODE service
+| Method | Path              | Response                                                     |
+| ------ | ----------------- | ------------------------------------------------------------ |
+| GET    | `/health`         | `{"user":"UP\|DOWN","node":"UP\|DOWN","roadmap":"UP\|DOWN"}` |
+| GET    | `/user/health`    | Proxy to user service                                        |
+| GET    | `/node/health`    | Proxy to node service                                        |
+| GET    | `/roadmap/health` | Proxy to roadmap service                                     |
 
-- GET /roadmap/health, /roadmap/healthz
-  - Proxy to ROADMAP service
+### WebSocket
 
-- GET /health
-  - Aggregates the three services and returns:
-    {"user":"UP|DOWN","node":"UP|DOWN","roadmap":"UP|DOWN"}
+- `ws://<gateway-host>:8080/ws` — STOMP pass-through to node service
+- Forwards `Authorization`, `X-User-ID`, `X-User-Role` headers
 
-Env vars used by gateway
+---
 
-- USER_SERVICE_URL
-- NODE_SERVICE_URL
-- ROADMAP_SERVICE_URL
-  (Defaults are in HealthProxyController source)
+## 2. User Service (base: `/users`)
 
-## 2. User service (base path: /users)
+### Auth
 
-### POST /users
+| Method | Path                                | Request                     | Response                                           |
+| ------ | ----------------------------------- | --------------------------- | -------------------------------------------------- |
+| POST   | `/users/auth/login`                 | `{ email, password }`       | `{ accessToken }` + Set-Cookie (refresh, HttpOnly) |
+| PATCH  | `/users/auth/refresh`               | (HttpOnly cookie auto-sent) | `{ accessToken }`                                  |
+| PATCH  | `/users/auth/password-reset`        | `{ email }`                 | 200 OK                                             |
+| PATCH  | `/users/auth/password-reset/verify` | `{ email, code }`           | 200 OK                                             |
 
-- Purpose: create account
-- Request (201 Created on success):
+### Account
 
-```json
-{
-  "email": "alice@example.com",
-  "name": "alice",
-  "password": "P@ssw0rd"
-}
-```
+| Method | Path                  | Request                     | Response                    |
+| ------ | --------------------- | --------------------------- | --------------------------- |
+| POST   | `/users`              | `{ email, name, password }` | `{ id, email, name }` (201) |
+| POST   | `/users/verification` | `{ email }`                 | 200 OK                      |
+| PATCH  | `/users/verification` | `{ email, code }`           | 200 OK                      |
+| DELETE | `/users`              | (Auth required)             | 204 No Content              |
 
-- Response (201):
+### Profile
 
-```json
-{
-  "id": 123,
-  "email": "alice@example.com",
-  "name": "alice"
-}
-```
+| Method | Path                 | Request                                             | Response                                            |
+| ------ | -------------------- | --------------------------------------------------- | --------------------------------------------------- |
+| GET    | `/users?name={name}` | —                                                   | `{ user: QueryUserDto, streak: StreakResponseDto }` |
+| PATCH  | `/users/profile`     | `{ user: { profileImage?, bio?, externalLinks? } }` | `{ message }`                                       |
 
-- Errors: 400 INVALID_INPUT
+### Follow
 
-### POST /users/verification
+| Method | Path                       | Request               | Response             |
+| ------ | -------------------------- | --------------------- | -------------------- |
+| PATCH  | `/users/{name}/follow`     | `{ toggle: boolean }` | `{ message }`        |
+| GET    | `/users/{name}/followers`  | —                     | `FollowListResponse` |
+| GET    | `/users/{name}/followings` | —                     | `FollowListResponse` |
 
-- Purpose: send signup verification code
-- Request:
+### DTOs
 
-```json
-{ "email": "alice@example.com" }
-```
+- **QueryUserDto**: `{ name, email, profileImageUrl, bio, isFollowed, stats: { followersCount, followingCount }, externalLinks }`
+- **StreakResponseDto**: `{ currentStreak, activities: [{ date, count }] }`
+- **FollowListResponse**: `{ userId, type, totalCount, users: [{ id, name, profileImage, isFollowing }] }`
 
-- Response: 200 OK
+---
 
-### PATCH /users/verification
+## 3. Roadmap Service (base: `/roadmaps`, `/directories`)
 
-- Purpose: verify signup code
-- Request:
+### Roadmap CRUD
 
-```json
-{ "email": "alice@example.com", "code": "123456" }
-```
+| Method | Path                    | Request                                                               | Response                |
+| ------ | ----------------------- | --------------------------------------------------------------------- | ----------------------- |
+| POST   | `/roadmaps`             | `CreateRoadmapRequest`                                                | `RoadmapResponse` (201) |
+| GET    | `/roadmaps/{roadmapId}` | —                                                                     | `RoadmapDetailResponse` |
+| GET    | `/roadmaps`             | Query: `page, size, sort, query, userId, directoryId, isPublic, tags` | `RoadmapListResponse`   |
+| PATCH  | `/roadmaps/{roadmapId}` | `UpdateRoadmapRequest`                                                | `{ id, updatedAt }`     |
+| DELETE | `/roadmaps/{roadmapId}` | —                                                                     | `{ message }`           |
 
-- Response: 200 OK or 400 VALIDATION_FAILED
+### Directory
 
-### PATCH /users/auth/password-reset
+| Method | Path                         | Request              | Response                |
+| ------ | ---------------------------- | -------------------- | ----------------------- |
+| GET    | `/directories/tree`          | —                    | `DirectoryTreeResponse` |
+| POST   | `/directories`               | `{ name, parentId }` | `DirectoryResponse`     |
+| PATCH  | `/directories/{directoryId}` | `{ name }`           | `DirectoryResponse`     |
+| DELETE | `/directories/{directoryId}` | —                    | 204                     |
 
-- Purpose: send password reset code
-- Request: `{ "email":"alice@example.com" }`
+### Progress
 
-### PATCH /users/auth/password-reset/verify
+| Method | Path                                            | Request                 | Response               |
+| ------ | ----------------------------------------------- | ----------------------- | ---------------------- |
+| GET    | `/roadmaps/{roadmapId}/my-progress`             | —                       | `ProgressResponse`     |
+| GET    | `/roadmaps/{roadmapId}/users/{userId}/progress` | —                       | `ProgressResponse`     |
+| POST   | `/roadmaps/{roadmapId}/nodes/{nodeId}/complete` | `{ isCompleted, link }` | `NodeCompleteResponse` |
 
-- Purpose: verify password-reset code
-- Request: `{ "email":"alice@example.com", "code":"123456" }`
+### DTOs
 
-### POST /users/auth/login
+- **CreateRoadmapRequest**: `{ title (required), description?, directoryId?, isPublic?, thumbnailUrl?, tags? }`
+- **UpdateRoadmapRequest**: `{ title?, description?, isPublic?, thumbnailUrl?, tags? }`
+- **RoadmapResponse**: `{ id, title, description, directoryId, ownerId, isPublic, viewCount, createdAt, updatedAt }`
+- **RoadmapDetailResponse**: extends RoadmapResponse + `{ owner, stats, tags }`
+- **RoadmapListResponse**: paginated list of RoadmapResponse
+- **ProgressResponse**: `{ roadmapId, totalNodes, completedNodes, progressPercentage, completedNodeIds, updatedAt }`
+- **NodeCompleteResponse**: `{ nodeId, isCompleted, roadmapProgress, completedAt }`
+- **DirectoryTreeResponse**: nested directory tree
+- **DirectoryResponse**: `{ id, name, parentId }`
 
-- Purpose: login
-- Request:
+---
 
-```json
-{ "email": "alice@example.com", "password": "P@ssw0rd" }
-```
-
-- Response (200): `{ "accessToken":"<jwt>" }`
-- Side-effect: Refresh token cookie is set (HttpOnly)
-- Errors: 401 UNAUTHORIZED
-
-### PATCH /users/auth/refresh
-
-- Purpose: issue new access token using refresh token
-- Request body (if cookie-less): `{ "refreshToken":"<token>" }`
-- Response: `{ "accessToken":"<new-jwt>" }`
-
-### DELETE /users
-
-- Purpose: delete authenticated user's account
-- Auth: Authorization header required
-- Response: 204 No Content
-
-### PATCH /users/profile
-
-- Purpose: update profile
-- Request:
-
-```json
-{
-  "user": {
-    "profileImage": "https://.../img.jpg",
-    "bio": "Hello",
-    "externalLinks": { "github": "https://github.com/alice" }
-  }
-}
-```
-
-- Response: 200 MessageResponse { message }
-
-### GET /users?name={name}
-
-- Purpose: search user by name
-- Response example:
-
-```json
-{
-  "user": {
-    "name": "alice",
-    "email": "alice@example.com",
-    "profileImageUrl": null,
-    "bio": null,
-    "isFollowed": false,
-    "stats": { "followersCount": 10, "followingCount": 5 },
-    "externalLinks": {}
-  },
-  "streak": { "currentStreak": 5, "activities": [{ "date": "2026-04-01", "count": 1 }] }
-}
-```
-
-### PATCH /users/{name}/follow
-
-- Purpose: toggle follow (auth required)
-- Request: `{ "toggle": true }`
-- Response: 200 OK
-
-### GET /users/{name}/followers
-
-### GET /users/{name}/followings
-
-- Purpose: list followers/followings
-- Response: FollowListResponse
-
-```json
-{
-  "userId": 123,
-  "type": "FOLLOWERS",
-  "totalCount": 10,
-  "users": [{ "id": 1, "name": "bob", "profileImage": null, "isFollowing": true }]
-}
-```
-
-### GET /health, /api/health
-
-- Purpose: health check for user service
-- Response: `{ "status":"UP","module":"user" }`
-
-## 3. Node service (REST + WebSocket/STOMP)
+## 4. Node Service (REST + WebSocket/STOMP)
 
 ### REST
 
-#### GET /api/roadmap/{roadmapId}/events?since={sequence}
-
-- Purpose: fetch server-confirmed events after 'since'
-- Response: 200 [ Event ]
-- Event example:
-
-```json
-{
-  "type": "EVENT",
-  "eventId": "evt-301",
-  "sequence": 43,
-  "payload": {
-    "type": "MOVE",
-    "target": { "type": "NODE", "object": "node-1" },
-    "state": { "x": 300, "y": 200 }
-  }
-}
-```
-
-#### GET /health, /api/health
-
-- Response: `{ "status":"UP","module":"node" }`
+| Method | Path                                               | Response  |
+| ------ | -------------------------------------------------- | --------- |
+| GET    | `/api/roadmap/{roadmapId}/events?since={sequence}` | `Event[]` |
 
 ### WebSocket / STOMP
 
-- WS URL (via gateway): ws://<gateway-host>:8080/ws
-- STOMP connect headers: X-User-ID, X-User-Role
+- Connect: `ws://<gateway-host>:8080/ws` with `Authorization: Bearer <token>`
 
-#### Subscription & send patterns
+**Subscriptions:**
 
-- Subscribe to per-user ACKs: `SUBSCRIBE /user/queue/ack`
-- Subscribe to roadmap events: `SUBSCRIBE /topic/roadmap/{roadmapId}/state`
-- Send actions: `SEND /app/roadmap/{roadmapId}/action` with Action JSON
+| Destination                          | Description              |
+| ------------------------------------ | ------------------------ |
+| `/user/queue/ack`                    | Per-user ACK/NACK        |
+| `/topic/roadmap/{roadmapId}/state`   | Roadmap events broadcast |
+| `/topic/roadmap/{roadmapId}/cursors` | Cursor positions         |
 
-#### Action domain (client -> server)
+**Sends:**
 
-Action JSON fields:
+| Destination                       | Payload                                                                    |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| `/app/roadmap/{roadmapId}/action` | `{ actionId, roadmap, action: CREATE\|EDIT\|DELETE\|UNDO\|REDO, payload }` |
+| `/app/roadmap/{roadmapId}/cursor` | `{ userId, userName, x, y, timestamp, state, targetId }`                   |
 
-- actionId: string (client-generated)
-- roadmap: string
-- action: string (CREATE | EDIT | DELETE | UNDO | REDO)
-- payload: object | null (see below)
-
-ActionPayload:
-
-- type: string (INFO | MOVE | SCALE | LOCK | COPY | ...)
-- target: { type: string, object: string }
-- prev: object | null
-- next: object | null
-- data: object | null
-
-#### Ack/Nack
-
-- ACK (to user): `{ "type":"ACK","actionId":"act-123","status":"ACCEPTED" }`
-- NACK (to user): `{ "actionId":"act-123","actionType":"CREATE","errorCode":"VALIDATION_FAILED","errorMessage":"label required" }`
-
-#### Cursor tracking
-
-- SEND `/app/roadmap/{roadmapId}/cursor`
-- Payload CursorPosition:
+### Action Payload
 
 ```json
 {
-  "userId": 123,
-  "userName": "alice",
-  "x": 100.5,
-  "y": 200.25,
-  "timestamp": 1680000000000,
-  "state": "NORMAL",
-  "targetId": null
+  "type": "INFO|MOVE|SCALE|LOCK|COPY",
+  "target": { "type": "NODE|SECTION|EDGE", "object": "id" },
+  "prev": {},
+  "next": {},
+  "data": {}
 }
 ```
 
-- Broadcast to `/topic/roadmap/{roadmapId}/cursors`
+### ACK/NACK
 
-## 4. Roadmap service
+- ACK: `{ "type": "ACK", "actionId": "...", "status": "ACCEPTED" }`
+- NACK: `{ "actionId": "...", "actionType": "...", "errorCode": "...", "errorMessage": "..." }`
 
-- Current source exposes only health endpoints
-- GET /health, /api/health -> `{ "status":"UP","module":"roadmap" }`
-- Roadmap business logic (actions/events) implemented in node service
+---
 
-## DTOs (full shapes & validations)
+## Notes
 
-- **SignUpRequest**: { email: string (email, not blank), name: string (not blank), password: string (not blank) }
-- **SignUpResponse**: { id: long, email: string, name: string }
-- **LoginRequest**: { email: string, password: string }
-- **LoginResponse**: { accessToken: string }
-- **RefreshTokenRequest**: { refreshToken: string }
-- **SendVerificationCodeRequest**: { email: string }
-- **VerifyRequest**: { email: string, code: string }
-- **ChangePasswordRequest**: { email: string, newPassword: string }
-- **UpdateProfileRequest**: { user: { profileImage?: string, bio?: string, externalLinks?: map<string,string> } }
-- **FollowToggleRequest**: { toggle: boolean }
-- **FollowUserResponse**: { id: long, name: string, profileImage?: string, isFollowing: boolean }
-- **FollowListResponse**: { userId, type, totalCount, users: [FollowUserResponse] }
-- **QueryUserResponse**: { user: QueryUserDto, streak: StreakResponseDto }
-- **QueryUserDto**: { name, email, profileImageUrl, bio, isFollowed, stats: { followersCount, followingCount }, externalLinks }
-- **Event**: { type, eventId, sequence, payload: map }
-- **CursorPosition**: { userId?, userName, x, y, timestamp, state, targetId? }
-
-## Examples (summary)
-
-- Create action (client->server):
-
-```json
-{
-  "actionId": "act-123",
-  "roadmap": "roadmap-1",
-  "action": "CREATE",
-  "payload": {
-    "type": "INFO",
-    "target": { "type": "NODE", "object": "tmp-1" },
-    "data": { "label": "New node", "x": 120, "y": 300 }
-  }
-}
-```
-
-- ACK:
-
-```json
-{ "type": "ACK", "actionId": "act-123", "status": "ACCEPTED" }
-```
-
-- NACK:
-
-```json
-{
-  "actionId": "act-123",
-  "actionType": "CREATE",
-  "errorCode": "INVALID_PAYLOAD",
-  "errorMessage": "missing label"
-}
-```
-
-## Integration examples (quick)
-
-- Login:
-  ```bash
-  curl -X POST http://<gateway-host>:8080/users/auth/login -H "Content-Type: application/json" -d '{"email":"alice@example.com","password":"P@ssw0rd"}'
-  ```
-- Health:
-  ```bash
-  curl http://<gateway-host>:8080/health
-  ```
-
-## Next steps (recommended)
-
-- Generate OpenAPI 3.0 YAML from controllers and DTOs
-- Provide example 4xx/5xx responses for each endpoint
-- Create STOMP automated tests (Node.js) to validate ACK/NACK/event broadcast
+- Node service is authoritative for real-time state and event sequencing
+- Roadmap service manages persisted metadata and permissions
+- REST events endpoint is for reconciliation / missed messages
+- Gateway probes multiple health paths per service (`/health`, `/api/health`, `/actuator/health`)
