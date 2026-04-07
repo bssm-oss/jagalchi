@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
+import gajeman.jagalchi.jagalchiserver.application.notification.NotificationService;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class RoadmapService {
     private final RoadmapNodeRepository roadmapNodeRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public RoadmapResponse create(CreateRoadmapRequest request, Long ownerId) {
@@ -281,6 +283,9 @@ public class RoadmapService {
         roadmapNodeRepository.saveAll(forkedNodes);
 
         source.incrementForkCount();
+
+        // Create notification for the original roadmap owner
+        notificationService.createForkNotification(source.getOwnerId(), savedFork.getId(), userId);
 
         return RoadmapResponse.from(savedFork);
     }

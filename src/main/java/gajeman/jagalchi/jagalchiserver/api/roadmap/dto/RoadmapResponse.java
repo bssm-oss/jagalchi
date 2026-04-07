@@ -17,6 +17,7 @@ public class RoadmapResponse {
     private Long ownerId;
     private Boolean isPublic;
     private Long viewCount;
+    private Long forkCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -29,6 +30,7 @@ public class RoadmapResponse {
                 .ownerId(roadmap.getOwnerId())
                 .isPublic(roadmap.getIsPublic())
                 .viewCount(roadmap.getViewCount())
+                .forkCount(roadmap.getForkCount())
                 .createdAt(roadmap.getCreatedAt())
                 .updatedAt(roadmap.getUpdatedAt())
                 .build();
