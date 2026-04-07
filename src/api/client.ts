@@ -47,7 +47,10 @@ export function setAccessToken(token: string): void {
   }
 }
 
-/** 액세스 토큰 삭제 (localStorage + 쿠키) */
+/**
+ * 액세스 토큰 삭제 (localStorage + 쿠키)
+ * TODO(security): pre-production blocker — httpOnly Secure 쿠키 전환 시 함께 제거.
+ */
 export function clearAccessToken(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   if (typeof document !== 'undefined') {

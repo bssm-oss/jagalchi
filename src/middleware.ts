@@ -26,8 +26,8 @@ export function middleware(request: NextRequest) {
   // 비로그인 상태에서 보호 라우트 접근 시 로그인으로 리다이렉트
   if (isProtectedRoute && !token) {
     const loginUrl = new URL('/login', request.url);
-    // 동일 오리진 상대 경로만 허용 (Open Redirect 방지)
-    if (pathname.startsWith('/') && !pathname.startsWith('//')) {
+    // Open Redirect 방지: PROTECTED_ROUTES에 매칭되는 경로만 redirect 허용
+    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
       loginUrl.searchParams.set('redirect', pathname);
     }
     return NextResponse.redirect(loginUrl);

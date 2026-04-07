@@ -51,11 +51,9 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
       const raw = node.data.resources[index];
       if (!raw) return;
       const validated = validateUrl(raw);
-      if (validated === null) {
-        const newResources = [...node.data.resources];
-        newResources[index] = '';
-        updateNode({ resources: newResources });
-      }
+      const newResources = [...node.data.resources];
+      newResources[index] = validated ?? '';
+      updateNode({ resources: newResources });
     },
     [node.data.resources, updateNode],
   );

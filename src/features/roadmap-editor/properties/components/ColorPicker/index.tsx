@@ -6,11 +6,6 @@ import dynamic from 'next/dynamic';
 
 import { useAtom, useSetAtom } from 'jotai';
 
-const HexColorPicker = dynamic(
-  () => import('react-colorful').then((m) => ({ default: m.HexColorPicker })),
-  { ssr: false },
-);
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,6 +22,11 @@ import {
   nodesAtom,
   edgesAtom,
 } from '../../../stores/editor-atoms';
+
+const HexColorPicker = dynamic(
+  () => import('react-colorful').then((m) => ({ default: m.HexColorPicker })),
+  { ssr: false },
+);
 
 export const ColorPicker = memo(function ColorPicker() {
   const [isOpen, setIsOpen] = useAtom(isColorPickerOpenAtom);
