@@ -1,13 +1,27 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 
-import { PROFILE_MESSAGES } from '@/constants/messages';
+import { clearAccessToken } from '@/api/client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { AUTH_MESSAGES, PROFILE_MESSAGES } from '@/constants/messages';
+import { useDeleteAccount } from '@/hooks/use-delete-account';
 
 import { useProfile } from '../../../hooks/use-profile';
 import { profileBioAtom, profileModeAtom } from '../../../stores/profile-atoms';
@@ -26,6 +40,17 @@ export function Profile({ userName = '김선배' }: ProfileProps) {
   const router = useRouter();
   const mode = useAtomValue(profileModeAtom);
   const setBio = useSetAtom(profileBioAtom);
+  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleDeleteAccount = () => {
+    deleteAccount(undefined, {
+      onSuccess: () => {
+        clearAccessToken();
+        router.push('/login');
+      },
+    });
+  };
 
   const { data, isLoading, isError } = useProfile(userName);
 
@@ -89,6 +114,39 @@ export function Profile({ userName = '김선배' }: ProfileProps) {
         <ProfileStreak activities={streak.activities} currentStreak={streak.currentStreak} />
         <ProfileThirdBox />
         <MadeRoadmapList />
+
+        {/* 계정 삭제 섹션 */}
+        <div className="border-t border-slate-200 pt-8">
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                {AUTH_MESSAGES.DELETE_ACCOUNT}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{AUTH_MESSAGES.DELETE_ACCOUNT}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {AUTH_MESSAGES.DELETE_ACCOUNT_CONFIRM}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {isDeleting ? '처리 중...' : AUTH_MESSAGES.DELETE_ACCOUNT}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
     </div>
   );

@@ -10,6 +10,10 @@ export const ERROR_MESSAGES = {
 } as const;
 
 export const AUTH_MESSAGES = {
+  DELETE_ACCOUNT: '계정 삭제',
+  DELETE_ACCOUNT_CONFIRM:
+    '정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없으며 모든 데이터가 삭제됩니다.',
+  DELETE_ACCOUNT_SUCCESS: '계정이 삭제되었습니다',
   LOGIN_EMAIL_NOT_FOUND: '존재하지 않는 이메일입니다',
   LOGIN_PASSWORD_MISMATCH: '비밀번호가 일치하지 않습니다',
   LOGIN_FAILED: '로그인에 실패했습니다',
@@ -88,6 +92,7 @@ export const COMMUNITY_MESSAGES = {
   BACK_ARIA: '뒤로가기',
   // Grid
   SEARCH_EMPTY: '검색 결과가 없습니다.',
+  POPULAR_EMPTY: '인기 로드맵이 없습니다.',
   // Filter
   TAB_POPULAR: '인기',
   TAB_LATEST: '최신',
@@ -201,6 +206,10 @@ export const PROFILE_MESSAGES = {
 } as const;
 
 export const VIEWER_MESSAGES = {
+  // Fork tree
+  FORK_TREE_TITLE: '포크 트리',
+  FORK_TREE_EMPTY: '포크 정보가 없습니다',
+  MENU_FORK_TREE: '포크 트리 보기',
   // Fork
   FORK_BUTTON: '포크',
   FORK_SUCCESS: '로드맵을 포크했습니다',

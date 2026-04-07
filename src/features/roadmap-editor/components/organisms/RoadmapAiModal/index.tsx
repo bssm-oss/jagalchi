@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { nodesAtom, edgesAtom } from '../../../stores/editor-atoms';
+import { createId } from '../../../utils/node-factory';
 import { RoadmapGenerationForm } from '../RoadmapGenerationForm';
 import { RoadmapModificationForm } from '../RoadmapModificationForm';
 
@@ -54,8 +55,8 @@ export const RoadmapAiModal = memo(function RoadmapAiModal({
         },
       }));
 
-      const newEdges: Edge[] = response.edges.map((e, index) => ({
-        id: `ai-edge-${index}`,
+      const newEdges: Edge[] = response.edges.map((e) => ({
+        id: createId(),
         source: e.source,
         target: e.target,
       }));
@@ -100,14 +101,14 @@ export const RoadmapAiModal = memo(function RoadmapAiModal({
         },
       }));
 
-      const newEdges: Edge[] = response.edges.map((e, index) => ({
-        id: `ai-edge-${index}`,
+      const newEdges: Edge[] = response.edges.map((e) => ({
+        id: createId(),
         source: e.source,
         target: e.target,
       }));
 
-      setNodes((prev) => [...prev, ...newNodes]);
-      setEdges((prev) => [...prev, ...newEdges]);
+      setNodes(newNodes);
+      setEdges(newEdges);
       onClose();
     } catch {
       setErrorMessage(EDITOR_MESSAGES.AI_MODIFY_ERROR);

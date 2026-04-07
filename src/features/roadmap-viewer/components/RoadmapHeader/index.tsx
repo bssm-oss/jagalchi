@@ -27,7 +27,7 @@ export function RoadmapHeader({
   const { mutate: forkRoadmap, isPending: isForkPending } = useForkRoadmap();
 
   const handleFork = () => {
-    if (forkStatus?.isForkedByCurrentUser) return;
+    if (!roadmapId || forkStatus?.isForkedByCurrentUser) return;
     forkRoadmap(roadmapId, {
       onSuccess: (data) => {
         router.push(`/editor/${data.id}`);

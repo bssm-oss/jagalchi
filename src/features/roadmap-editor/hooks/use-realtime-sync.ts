@@ -7,7 +7,6 @@ import { useStomp } from '@/hooks/use-stomp';
 import { handleAck, handleNack } from '../services/action-dispatcher';
 import { nodesAtom, edgesAtom, remoteCursorsAtom } from '../stores/editor-atoms';
 
-import type { RemoteCursor } from '../stores/editor-atoms';
 import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
 
@@ -33,38 +32,47 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
 
   // ACK 구독 — 액션 수락 응답 처리
   const handleAckMessage = useCallback((message: { body: string }) => {
-    const data = JSON.parse(message.body) as { type?: string; actionId: string; status?: string };
-    handleAck(data.actionId);
+    try {
+      const data = JSON.parse(message.body) as { type?: string; actionId: string; status?: string };
+      handleAck(data.actionId);
+    } catch {
+      /* invalid JSON — skip */
+    }
   }, []);
 
   // NACK 구독 — 액션 거부 응답 처리
   const handleNackMessage = useCallback((message: { body: string }) => {
-    const data = JSON.parse(message.body) as {
-      actionId: string;
-      actionType: string;
-      errorCode: string;
-      errorMessage: string;
-    };
-    const { isFound } = handleNack(data.actionId);
-    if (isFound) {
-      // TODO: NACK 시 로컬 상태 롤백 또는 사용자에게 에러 알림
+    try {
+      const data = JSON.parse(message.body) as {
+        actionId: string;
+        actionType: string;
+        errorCode: string;
+        errorMessage: string;
+      };
+      const { isFound } = handleNack(data.actionId);
+      if (isFound) {
+        // TODO: NACK 시 로컬 상태 롤백 또는 사용자에게 에러 알림
+      }
+    } catch {
+      /* invalid JSON — skip */
     }
   }, []);
 
   // 스냅샷 구독 — 초기 전체 상태 수신 (/topic/roadmap/{id}/state 구독 시 자동 전송)
   const handleSnapshotMessage = useCallback(
     (message: { body: string }) => {
-      const snapshot = JSON.parse(message.body) as {
-        type: string;
-        version: number;
-        roadmapId: string;
-        nodes: RoadmapNode[];
-        edges: Edge[];
-      };
-
-      if (snapshot.type !== 'SNAPSHOT') return;
-      setNodes(snapshot.nodes);
-      setEdges(snapshot.edges);
+      try {
+        const snapshot = JSON.parse(message.body) as {
+          type: string;
+          nodes: RoadmapNode[];
+          edges: Edge[];
+        };
+        if (snapshot.type !== 'SNAPSHOT') return;
+        setNodes(snapshot.nodes);
+        setEdges(snapshot.edges);
+      } catch {
+        /* invalid JSON — skip */
+      }
     },
     [setNodes, setEdges],
   );
@@ -72,49 +80,50 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
   // 커서 위치 구독 — 다른 유저의 커서 위치 수신
   const handleCursorsMessage = useCallback(
     (message: { body: string }) => {
-      const data = JSON.parse(message.body) as {
-        userId: number;
-        userName: string;
-        x: number;
-        y: number;
-        timestamp: number;
-        state: string;
-        targetId: string | null;
-      };
-
-      setRemoteCursors((prev) => {
-        const next = new Map(prev);
-        const cursor: RemoteCursor = {
-          userName: data.userName,
-          x: data.x,
-          y: data.y,
-          state: data.state,
+      try {
+        const data = JSON.parse(message.body) as {
+          userId: number;
+          userName: string;
+          x: number;
+          y: number;
+          state: string;
         };
-        next.set(String(data.userId), cursor);
-        return next;
-      });
+        setRemoteCursors((prev) => {
+          const next = new Map(prev);
+          next.set(String(data.userId), {
+            userName: data.userName,
+            x: data.x,
+            y: data.y,
+            state: data.state,
+          });
+          return next;
+        });
+      } catch {
+        /* invalid JSON — skip */
+      }
     },
     [setRemoteCursors],
   );
 
-  // 커서 숨김 구독 — 다른 유저가 캔버스를 떠났을 때 해당 커서 제거
   const handleCursorsHideMessage = useCallback(
     (message: { body: string }) => {
-      const data = JSON.parse(message.body) as { userId: number; timestamp: number };
-
-      setRemoteCursors((prev) => {
-        const next = new Map(prev);
-        next.delete(String(data.userId));
-        return next;
-      });
+      try {
+        const data = JSON.parse(message.body) as { userId: number };
+        setRemoteCursors((prev) => {
+          const next = new Map(prev);
+          next.delete(String(data.userId));
+          return next;
+        });
+      } catch {
+        /* invalid JSON — skip */
+      }
     },
     [setRemoteCursors],
   );
 
-  // 로드맵 이벤트 구독 (다른 사용자의 변경사항)
   const handleStateEvent = useCallback(
     (message: { body: string }) => {
-      const event = JSON.parse(message.body) as {
+      let event: {
         type: string;
         payload: {
           type: string;
@@ -122,6 +131,11 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
           state?: Record<string, unknown>;
         };
       };
+      try {
+        event = JSON.parse(message.body);
+      } catch {
+        return;
+      }
 
       // 이벤트 타입에 따라 로컬 상태 업데이트
       const { payload } = event;

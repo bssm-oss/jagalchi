@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { EDITOR_MESSAGES } from '@/constants/messages';
+import { sanitizeUrl } from '@/lib/url-validation';
 
 import { LoadingButton } from '../../atoms/LoadingButton';
 
@@ -103,7 +104,7 @@ export const ResourceRecommendationModal = memo(function ResourceRecommendationM
                   >
                     <div className="flex items-center justify-between gap-2">
                       <a
-                        href={resource.url}
+                        href={sanitizeUrl(resource.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"

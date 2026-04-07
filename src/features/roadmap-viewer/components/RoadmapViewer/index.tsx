@@ -15,6 +15,7 @@ import {
   viewerSidebarOpenAtom,
 } from '../../stores/viewer-atoms';
 import { CardListMode } from '../CardListMode';
+import { ForkTreeDialog } from '../ForkTreeDialog';
 import { HeaderExportMenu } from '../HeaderExportMenu';
 import { HeaderMenu } from '../HeaderMenu';
 import { HeaderSaveAsImageMenu } from '../HeaderSaveAsImageMenu';
@@ -62,6 +63,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
             <HeaderMenu />
             <HeaderExportMenu />
             <HeaderSaveAsImageMenu />
+            <ForkTreeDialog roadmapId={roadmapId} />
             <div className="ml-auto flex items-center gap-1">
               <Button
                 variant={layout === 'page' ? 'default' : 'outline'}

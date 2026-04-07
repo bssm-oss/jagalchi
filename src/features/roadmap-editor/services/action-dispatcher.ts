@@ -59,10 +59,13 @@ export function handleAck(actionId: string): boolean {
 }
 
 /** NACK 처리 — 대기 목록에서 제거 + 에러 정보 반환 */
-export function handleNack(actionId: string): { action: StompAction; isFound: boolean } {
+export function handleNack(actionId: string): {
+  action: StompAction | undefined;
+  isFound: boolean;
+} {
   const action = pendingActions.get(actionId);
   pendingActions.delete(actionId);
-  return { action: action!, isFound: !!action };
+  return { action, isFound: !!action };
 }
 
 /** 대기 중인 액션 수 */
