@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/use-debounce';
 
 import { parseRoadmaps } from '../schemas/roadmap.schema';
+import { dispatchAction } from '../services/action-dispatcher';
 import { STORAGE_KEY } from '../services/roadmap-storage';
 
 import type { RoadmapNode } from '../types/editor.types';
@@ -17,6 +18,7 @@ interface UseAutoSaveProps {
   isEnabled?: boolean;
 }
 
+const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
 const QUOTA_WARNING_THRESHOLD = 0.9; // Warn at 90% usage
 
 /**
@@ -71,6 +73,19 @@ export function useAutoSave({
     const titleChanged = currentTitle !== prevTitleRef.current;
 
     if (!nodesChanged && !edgesChanged && !titleChanged) {
+      return;
+    }
+
+    // Realtime mode: send STOMP action instead of localStorage
+    if (isRealtimeEnabled) {
+      dispatchAction(roadmapId, 'EDIT', {
+        type: 'INFO',
+        target: { type: 'NODE', object: roadmapId },
+        data: { title: debouncedTitle },
+      });
+      prevNodesRef.current = currentNodesHash;
+      prevEdgesRef.current = currentEdgesHash;
+      prevTitleRef.current = currentTitle;
       return;
     }
 

@@ -9,18 +9,22 @@ import type { Roadmap } from '@/types/roadmap.types';
 
 import { viewerErrorAtom, viewerLoadingAtom, viewerRoadmapAtom } from '../stores/viewer-atoms';
 
+const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
+
 /**
  * Attempts to load a roadmap from the API.
- * Currently returns null — real API integration is deferred.
- * Replace this with an actual fetch call when the endpoint is ready.
+ * Falls back to null when API is unavailable.
  */
-async function loadFromApi(_roadmapId: string): Promise<Roadmap | null> {
-  // TODO: Replace with actual API call
-  // Example:
-  //   const res = await fetch(`/api/roadmaps/${roadmapId}`);
-  //   if (!res.ok) return null;
-  //   return res.json() as Promise<Roadmap>;
-  return null;
+async function loadFromApi(roadmapId: string): Promise<Roadmap | null> {
+  if (!isRealtimeEnabled) return null;
+
+  try {
+    const response = await fetch(`/api/roadmaps/${roadmapId}`);
+    if (!response.ok) return null;
+    return (await response.json()) as Roadmap;
+  } catch {
+    return null;
+  }
 }
 
 export function useViewerRoadmapLoader(roadmapId: string) {

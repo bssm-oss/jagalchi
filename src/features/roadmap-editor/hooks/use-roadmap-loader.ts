@@ -35,14 +35,26 @@ interface ApiRoadmap {
   title: string;
 }
 
+const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
+
 /**
  * Attempt to fetch roadmap data from the API.
  * Returns null when the API is unavailable — caller falls back to localStorage.
- * TODO: Implement actual GET /api/roadmap/{id}/events call when API is ready.
  */
-async function loadFromApi(_roadmapId: string): Promise<ApiRoadmap | null> {
-  // API not yet available — always return null so caller uses localStorage
-  return null;
+async function loadFromApi(roadmapId: string): Promise<ApiRoadmap | null> {
+  if (!isRealtimeEnabled) return null;
+
+  try {
+    const { getRoadmapEvents } = await import('@/api/roadmap');
+    const events = await getRoadmapEvents(roadmapId);
+    if (!events || !Array.isArray(events)) return null;
+
+    // TODO: 이벤트 시퀀스를 재생하여 현재 상태 복원
+    // 현재는 단순히 null 반환하여 localStorage 폴백 사용
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 /**
