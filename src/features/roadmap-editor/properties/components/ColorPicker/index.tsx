@@ -103,8 +103,28 @@ export const ColorPicker = memo(function ColorPicker() {
           <HexColorPicker color={tempColor} onChange={setTempColor} />
 
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded border" style={{ backgroundColor: tempColor }} />
-            <span className="font-mono text-sm">{tempColor}</span>
+            <div
+              className="h-8 w-8 shrink-0 rounded border"
+              style={{ backgroundColor: tempColor }}
+            />
+            <input
+              type="text"
+              value={tempColor}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || val === '#') {
+                  setTempColor(val);
+                  return;
+                }
+                const hex = val.startsWith('#') ? val : `#${val}`;
+                if (hex.length <= 7) {
+                  setTempColor(hex);
+                }
+              }}
+              placeholder={EDITOR_MESSAGES.COLOR_PICKER_HEX_PLACEHOLDER}
+              className="bg-background h-8 w-full rounded border px-2 font-mono text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              maxLength={7}
+            />
           </div>
         </div>
 
