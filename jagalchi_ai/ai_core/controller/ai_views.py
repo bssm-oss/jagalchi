@@ -1250,7 +1250,7 @@ class NodeGenerationFromInitAPIView(APIView):
         service = NodeContentService()
         try:
             result = service.generate_nodes_from_init(init_data_id)
-            return Response(result)
+            return _serialize(RoadmapGeneratedSerializer, result)
         except ValueError as e:
             return Response({"error": str(e)}, status=404)
 

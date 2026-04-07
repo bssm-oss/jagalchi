@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from jagalchi_ai.ai_core.client import GeminiClient
@@ -18,6 +19,7 @@ class NodeContentService:
     def generate_nodes_from_init(self, init_data_id: str) -> Dict[str, object]:
         """
         Init 데이터를 기반으로 노드 구조를 생성합니다.
+        RoadmapGeneratedSerializer 스키마에 맞는 전체 응답을 반환합니다.
         """
         try:
             init_data = InitData.objects.get(init_data_id=init_data_id)
@@ -30,20 +32,38 @@ class NodeContentService:
             "노드 목록(nodes)과 연결(edges)을 포함해야 해. "
             f"내용: {content[:1000]}"
         )
-        
-        # LLM 호출 (실제로는 여기서 JSON 파싱 등 처리 필요)
+
+        nodes = []
+        edges = []
+        tags = []
+
         if self._llm_client.available():
             response = self._llm_client.generate_json(prompt)
             if response.data:
-                return response.data
+                nodes = response.data.get("nodes", [])
+                edges = response.data.get("edges", [])
+                tags = response.data.get("tags", [])
 
-        # Fallback (규칙 기반 또는 더미)
-        return {
-            "nodes": [
+        if not nodes:
+            nodes = [
                 {"node_id": "gen_1", "title": "기초 개념", "tags": ["basic"]},
                 {"node_id": "gen_2", "title": "심화 응용", "tags": ["advanced"]},
-            ],
-            "edges": [{"source": "gen_1", "target": "gen_2"}],
+            ]
+            edges = [{"source": "gen_1", "target": "gen_2"}]
+            tags = ["generated"]
+
+        now = datetime.now(timezone.utc).isoformat()
+        return {
+            "roadmap_id": f"rm_init_{init_data_id}",
+            "title": f"Generated from {init_data_id}",
+            "description": content[:200] if content else "",
+            "nodes": nodes,
+            "edges": edges,
+            "tags": tags,
+            "model_version": self._llm_client.model_name if self._llm_client.available() else "fallback",
+            "prompt_version": "v1",
+            "created_at": now,
+            "retrieval_evidence": [],
         }
 
     def generate_node_description(self, node_title: str, context: Optional[str] = None) -> str:
