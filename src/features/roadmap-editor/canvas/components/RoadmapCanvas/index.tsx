@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   ReactFlow,
@@ -25,6 +25,10 @@ import { useAtom, useSetAtom } from 'jotai';
 import '@xyflow/react/dist/style.css';
 
 import {
+  sendCursorHide,
+  sendCursorPosition,
+} from '@/features/roadmap-editor/services/action-dispatcher';
+import {
   nodesAtom,
   edgesAtom,
   selectedNodeIdsAtom,
@@ -40,6 +44,7 @@ import { DetailNode } from '../DetailNode';
 import { JagalchiNode } from '../JagalchiNode';
 import { JagalchiSection } from '../JagalchiSection';
 import { JagalchiText } from '../JagalchiText';
+import { RemoteCursors } from '../RemoteCursors';
 
 const nodeTypes: NodeTypes = {
   'jagalchi-node': JagalchiNode,
@@ -48,7 +53,12 @@ const nodeTypes: NodeTypes = {
   'detail-node': DetailNode,
 };
 
-export function RoadmapCanvas() {
+interface RoadmapCanvasProps {
+  roadmapId?: string;
+  userName?: string;
+}
+
+export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvasProps) {
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const setSelectedNodeIds = useSetAtom(selectedNodeIdsAtom);
@@ -59,8 +69,19 @@ export function RoadmapCanvas() {
   // Line tool: source 노드를 기억
   const lineSourceRef = useRef<string | null>(null);
 
+  // throttle용 타이머 ref (50ms)
+  const throttleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // 키보드 단축키 활성화
   useKeyboardShortcuts();
+
+  // 언마운트 시 커서 숨기기
+  useEffect(() => {
+    if (!roadmapId) return;
+    return () => {
+      sendCursorHide(roadmapId);
+    };
+  }, [roadmapId]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -167,6 +188,23 @@ export function RoadmapCanvas() {
     [screenToFlowPosition, setNodes, setEdges],
   );
 
+  /** 마우스 이동 시 flow 좌표계로 변환 후 50ms throttle 전송 */
+  const onMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!roadmapId) return;
+      if (throttleTimerRef.current !== null) return;
+
+      throttleTimerRef.current = setTimeout(() => {
+        throttleTimerRef.current = null;
+      }, 50);
+
+      const { clientX, clientY } = event;
+      const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
+      sendCursorPosition(roadmapId, { x: flowPos.x, y: flowPos.y, userName });
+    },
+    [roadmapId, userName, screenToFlowPosition],
+  );
+
   const defaultEdgeOptions = useMemo(
     () => ({
       type: 'smoothstep',
@@ -178,7 +216,10 @@ export function RoadmapCanvas() {
   );
 
   return (
-    <div className={`h-full w-full ${activeTool === 'line' ? 'cursor-crosshair' : ''}`}>
+    <div
+      className={`relative h-full w-full ${activeTool === 'line' ? 'cursor-crosshair' : ''}`}
+      onMouseMove={onMouseMove}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -205,6 +246,7 @@ export function RoadmapCanvas() {
       >
         <Controls position="bottom-left" />
       </ReactFlow>
+      <RemoteCursors />
     </div>
   );
 }
