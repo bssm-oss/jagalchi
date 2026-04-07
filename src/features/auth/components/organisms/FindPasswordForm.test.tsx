@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FindPasswordForm } from './FindPasswordForm';
 
@@ -17,26 +17,28 @@ vi.mock('../../hooks/use-reset-password', () => ({
   }),
 }));
 
-vi.mock('../../hooks/use-send-verification-code', () => ({
-  useSendVerificationCode: () => ({
-    mutate: (_data: unknown, options?: { onSuccess?: () => void }) => {
-      options?.onSuccess?.();
+let mockIsCodeSent = false;
+vi.mock('../../hooks/use-password-reset-code', () => ({
+  usePasswordResetCode: () => ({
+    get isCodeSent() {
+      return mockIsCodeSent;
     },
-    isPending: false,
-  }),
-}));
-
-vi.mock('../../hooks/use-verify-code', () => ({
-  useVerifyCode: () => ({
-    mutate: (_data: unknown, options?: { onSuccess?: () => void }) => {
-      options?.onSuccess?.();
-    },
-    mutateAsync: vi.fn().mockResolvedValue({}),
-    isPending: false,
+    handleSendCode: vi.fn((_email: string, onSuccess?: () => void) => {
+      mockIsCodeSent = true;
+      onSuccess?.();
+    }),
+    handleVerifyCode: vi.fn().mockResolvedValue(undefined),
+    isSendingCode: false,
+    isCooldownActive: false,
+    cooldownSeconds: 0,
   }),
 }));
 
 describe('FindPasswordForm', () => {
+  beforeEach(() => {
+    mockIsCodeSent = false;
+  });
+
   it('초기에 step 1 (이메일/인증번호) 폼을 렌더링한다', () => {
     render(<FindPasswordForm />);
 

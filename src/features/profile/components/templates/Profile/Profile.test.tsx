@@ -1,7 +1,10 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { Provider, type WritableAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -53,9 +56,11 @@ const HydrateAtoms = ({ initialValues, children }: WrapperProps) => {
 };
 
 const TestProvider = ({ initialValues, children }: WrapperProps) => (
-  <Provider>
-    <HydrateAtoms initialValues={initialValues}>{children}</HydrateAtoms>
-  </Provider>
+  <QueryClientProvider client={queryClient}>
+    <Provider>
+      <HydrateAtoms initialValues={initialValues}>{children}</HydrateAtoms>
+    </Provider>
+  </QueryClientProvider>
 );
 
 const defaultAtoms: (readonly [WritableAtom<unknown, any[], any>, unknown])[] = [
