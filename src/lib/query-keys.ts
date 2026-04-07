@@ -23,6 +23,9 @@ export const queryKeys = {
     events: (id: string, since?: number) =>
       [...queryKeys.roadmaps.all, 'events', id, since] as const,
     progress: (id: string) => [...queryKeys.roadmaps.all, 'progress', id] as const,
+    forkTree: (id: string) => [...queryKeys.roadmaps.all, 'fork-tree', id] as const,
+    forkStatus: (id: string) => [...queryKeys.roadmaps.all, 'fork-status', id] as const,
+    popular: (params?: object) => [...queryKeys.roadmaps.all, 'popular', params] as const,
   },
 
   directories: {

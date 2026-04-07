@@ -1,5 +1,7 @@
 import { apiClient } from './client';
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+
 // === Request Types (aligned with docs/api.md) ===
 
 interface LoginRequest {
@@ -68,17 +70,17 @@ export const sendVerificationCode = (data: SendVerificationCodeRequest) =>
 export const verifyCode = (data: VerifyCodeRequest) =>
   apiClient.patch<MessageResponse>('/users/verification', data);
 
-/** PATCH /users/auth/password-reset — 비밀번호 리셋 코드 전송 */
+/** POST /users/auth/password-reset — 비밀번호 리셋 코드 전송 */
 export const sendPasswordResetCode = (data: SendVerificationCodeRequest) =>
-  apiClient.patch<MessageResponse>('/users/auth/password-reset', data);
+  apiClient.post<MessageResponse>('/users/auth/password-reset', data);
 
 /** PATCH /users/auth/password-reset/verify — 비밀번호 리셋 코드 확인 */
 export const verifyPasswordResetCode = (data: VerifyCodeRequest) =>
   apiClient.patch<MessageResponse>('/users/auth/password-reset/verify', data);
 
-/** POST /users/auth/reset-password — 비밀번호 변경 (레거시, MSW용) */
+/** PATCH /users/auth/password-reset — 비밀번호 변경 */
 export const resetPassword = (data: ChangePasswordRequest) =>
-  apiClient.post<MessageResponse>('/users/auth/reset-password', data);
+  apiClient.patch<MessageResponse>('/users/auth/password-reset', data);
 
 /** PATCH /users/auth/refresh — 토큰 갱신 */
 export const refreshToken = (data?: RefreshTokenRequest) =>
@@ -86,6 +88,16 @@ export const refreshToken = (data?: RefreshTokenRequest) =>
 
 /** DELETE /users — 계정 삭제 */
 export const deleteAccount = () => apiClient.delete<void>('/users');
+
+/** GET /users/auth/login/google — Google OAuth2 로그인 URL (302 리다이렉트) */
+export function getGoogleOAuthUrl(): string {
+  return `${BASE_URL}/users/auth/login/google`;
+}
+
+/** GET /users/auth/login/github — GitHub OAuth2 로그인 URL (302 리다이렉트) */
+export function getGithubOAuthUrl(): string {
+  return `${BASE_URL}/users/auth/login/github`;
+}
 
 // === Type Exports ===
 

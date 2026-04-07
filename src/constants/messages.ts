@@ -68,6 +68,9 @@ export const AUTH_MESSAGES = {
   VERIFICATION_FAILED: '인증에 실패했습니다',
   PROCESSING: '처리 중...',
   COMPLETE: '완료',
+  // OAuth
+  OAUTH_GOOGLE: 'Google로 로그인',
+  OAUTH_GITHUB: 'GitHub로 로그인',
 } as const;
 
 export const COMMUNITY_MESSAGES = {

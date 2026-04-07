@@ -165,10 +165,101 @@ export const completeNode = (
   data: { isCompleted: boolean; link?: string },
 ) => apiClient.post<NodeCompleteResponse>(`/roadmaps/${roadmapId}/nodes/${nodeId}/complete`, data);
 
+// === Fork Types ===
+
+interface ForkRoadmapResponse {
+  id: string;
+  title: string;
+  description: string | null;
+  directoryId: string | null;
+  ownerId: string;
+  isPublic: boolean;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ForkTreeNode {
+  id: string;
+  title: string;
+  ownerId: string;
+  ownerName: string;
+  forkCount: number;
+  children: ForkTreeNode[];
+}
+
+interface ForkStatusResponse {
+  roadmapId: string;
+  forkCount: number;
+  isForkedByCurrentUser: boolean;
+  originalRoadmapId: string | null;
+  originalRoadmapTitle: string | null;
+}
+
+// === Popular Types ===
+
+interface PopularRoadmapItem {
+  id: string;
+  title: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  isPublic: boolean;
+  viewCount: number;
+  forkCount: number;
+  tags: string[];
+  owner: {
+    id: string;
+    nickname: string;
+    profileImageUrl: string | null;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PopularRoadmapsResponse {
+  content: PopularRoadmapItem[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+  };
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+}
+
+interface PopularRoadmapsParams {
+  page?: number;
+  size?: number;
+  sortBy?: 'forks' | 'views';
+}
+
 // === Events (Node Service) ===
 
 export const getRoadmapEvents = (roadmapId: string, since = 0) =>
   apiClient.get<RoadmapEvent[]>(`/roadmap/${roadmapId}/events?since=${since}`);
+
+// === Fork ===
+
+export const forkRoadmap = (roadmapId: string) =>
+  apiClient.post<ForkRoadmapResponse>(`/roadmaps/${roadmapId}/fork`);
+
+export const getForkTree = (roadmapId: string) =>
+  apiClient.get<ForkTreeNode>(`/roadmaps/${roadmapId}/fork-tree`);
+
+export const getForkStatus = (roadmapId: string) =>
+  apiClient.get<ForkStatusResponse>(`/roadmaps/${roadmapId}/fork-status`);
+
+// === Popular ===
+
+export const getPopularRoadmaps = (params: PopularRoadmapsParams = {}) => {
+  const searchParams = new URLSearchParams();
+  if (params.page !== undefined) searchParams.set('page', String(params.page));
+  if (params.size !== undefined) searchParams.set('size', String(params.size));
+  if (params.sortBy) searchParams.set('sortBy', params.sortBy);
+
+  const qs = searchParams.toString();
+  return apiClient.get<PopularRoadmapsResponse>(`/roadmaps/popular${qs ? `?${qs}` : ''}`);
+};
 
 // === Type Exports ===
 
@@ -187,4 +278,10 @@ export type {
   ProgressResponse,
   NodeCompleteResponse,
   RoadmapEvent,
+  ForkRoadmapResponse,
+  ForkTreeNode,
+  ForkStatusResponse,
+  PopularRoadmapItem,
+  PopularRoadmapsResponse,
+  PopularRoadmapsParams,
 };
