@@ -1,10 +1,12 @@
 import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
 
-import { ACCESS_TOKEN_KEY, setAccessToken, clearAccessToken } from '@/api/client';
+import { setAccessToken, clearAccessToken } from '@/api/client';
 
-/** 액세스 토큰 atom — localStorage와 자동 동기화 (SSR 안전) */
-const accessTokenAtom = atomWithStorage<string | null>(ACCESS_TOKEN_KEY, null);
+/** 액세스 토큰 atom — 메모리에만 저장 (XSS 방어) */
+const accessTokenAtom = atom<string | null>(null);
+
+/** 인증 초기화 완료 여부 (refresh 시도 후 true) */
+export const isAuthInitializedAtom = atom<boolean>(false);
 
 /** 현재 로그인 상태 (토큰 존재 여부 기반) */
 export const isAuthenticatedAtom = atom<boolean>((get) => {
