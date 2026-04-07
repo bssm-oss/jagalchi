@@ -5,6 +5,8 @@ import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.CreateRoadmapRequest;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDeleteResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapDetailResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapForkStatusResponse;
+import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapForkTreeResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapListResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.RoadmapUpdateResponse;
 import gajeman.jagalchi.jagalchiserver.api.roadmap.dto.UpdateRoadmapRequest;
@@ -41,6 +43,38 @@ public class RoadmapController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/{roadmapId}/fork")
+    public ResponseEntity<RoadmapResponse> fork(
+            @PathVariable Long roadmapId,
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal) {
+        RoadmapResponse response = roadmapService.fork(roadmapId, principal.userId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<RoadmapListResponse> getPopularRoadmaps(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "forks") String sortBy) {
+        RoadmapListResponse response = roadmapService.getPopularRoadmaps(page, size, sortBy);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roadmapId}/fork-tree")
+    public ResponseEntity<RoadmapForkTreeResponse> getForkTree(
+            @PathVariable Long roadmapId) {
+        RoadmapForkTreeResponse response = roadmapService.getForkTree(roadmapId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roadmapId}/fork-status")
+    public ResponseEntity<RoadmapForkStatusResponse> getForkStatus(
+            @PathVariable Long roadmapId,
+            @RequestAttribute(AuthPrincipal.ATTRIBUTE_NAME) AuthPrincipal principal) {
+        RoadmapForkStatusResponse response = roadmapService.getForkStatus(roadmapId, principal.userId());
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{roadmapId}")
     public ResponseEntity<RoadmapDetailResponse> getDetail(
             @PathVariable Long roadmapId,
@@ -55,13 +89,14 @@ public class RoadmapController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "latest") String sort,
+            @RequestParam(required = false) String period,
             @RequestParam(required = false) String query,
             @RequestParam(name = "userId", required = false) Long userId,
             @RequestParam(required = false) Long directoryId,
             @RequestParam(required = false) Boolean isPublic,
             @RequestParam(required = false) List<String> tags) {
         RoadmapListResponse response = roadmapService.getList(
-                principal.userId(), page, size, sort, query, userId, directoryId, isPublic, tags);
+                principal.userId(), page, size, sort, period, query, userId, directoryId, isPublic, tags);
         return ResponseEntity.ok(response);
     }
 

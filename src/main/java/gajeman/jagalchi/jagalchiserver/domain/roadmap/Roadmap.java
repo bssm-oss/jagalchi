@@ -54,6 +54,9 @@ public class Roadmap {
     @Column(name = "fork_count")
     private Long forkCount = 0L;
 
+    @Column(name = "original_roadmap_id")
+    private Long originalRoadmapId;
+
     @Lob
     @Column(name = "tags")
     private String tags;
@@ -68,7 +71,7 @@ public class Roadmap {
 
     @Builder
     public Roadmap(String title, String description, Long directoryId, Long ownerId, String thumbnailUrl,
-            String tags, Boolean isPublic, Long forkCount) {
+            String tags, Boolean isPublic, Long forkCount, Long originalRoadmapId) {
         this.title = title;
         this.description = description;
         this.directoryId = directoryId;
@@ -78,6 +81,7 @@ public class Roadmap {
         this.isPublic = isPublic != null ? isPublic : true;
         this.viewCount = 0L;
         this.forkCount = forkCount != null ? forkCount : 0L;
+        this.originalRoadmapId = originalRoadmapId;
     }
 
     public void update(String title, String description, Boolean isPublic, String thumbnailUrl) {
@@ -113,5 +117,13 @@ public class Roadmap {
 
     public void incrementViewCount() {
         this.viewCount++;
+    }
+
+    public void incrementForkCount() {
+        this.forkCount++;
+    }
+
+    public boolean isForked() {
+        return this.originalRoadmapId != null;
     }
 }

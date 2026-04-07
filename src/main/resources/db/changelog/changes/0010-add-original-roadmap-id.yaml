@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0010-add-original-roadmap-id
+      author: jagalchi
+      changes:
+        - addColumn:
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: original_roadmap_id
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseTableName: roadmaps
+            baseColumnNames: original_roadmap_id
+            referencedTableName: roadmaps
+            referencedColumnNames: id
+            constraintName: fk_roadmaps_original_roadmap
+            onDelete: SET NULL
