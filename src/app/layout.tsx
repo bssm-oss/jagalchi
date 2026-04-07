@@ -2,6 +2,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { MSWProvider } from '@/components/MswProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { AuthProvider } from '@/features/auth';
 
 import type { Metadata } from 'next';
 
@@ -32,7 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <MSWProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryProvider>
         </MSWProvider>
       </body>
     </html>

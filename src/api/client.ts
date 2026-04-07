@@ -1,6 +1,6 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
-export const ACCESS_TOKEN_KEY = 'jagalchi-access-token';
+export const SESSION_COOKIE_KEY = 'jagalchi-session';
 
 interface ApiError {
   message: string;
@@ -25,44 +25,70 @@ class ApiClientError extends Error {
   }
 }
 
-/**
- * localStorage에서 액세스 토큰 읽기
- * TODO(security): pre-production blocker — httpOnly Secure 쿠키로 전환 필요.
- * 현재 localStorage + non-httpOnly 쿠키 저장은 XSS 시 토큰 탈취 가능.
- * 백엔드 Set-Cookie 발급 방식으로 전환 후 이 함수 제거.
- */
-function getAccessToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+// --- Token Management (in-memory only) ---
+
+let accessToken: string | null = null;
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+export function getAccessToken(): string | null {
+  return accessToken;
 }
 
-/**
- * 액세스 토큰 저장 (localStorage + 미들웨어용 쿠키)
- * TODO(security): pre-production blocker — httpOnly Secure 쿠키로 전환 필요.
- */
+/** 액세스 토큰 저장 (메모리 + 미들웨어용 세션 플래그 쿠키) */
 export function setAccessToken(token: string): void {
-  localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  accessToken = token;
   if (typeof document !== 'undefined') {
-    document.cookie = `${ACCESS_TOKEN_KEY}=${token}; path=/; SameSite=Strict`;
+    document.cookie = `${SESSION_COOKIE_KEY}=1; path=/; SameSite=Strict`;
   }
 }
 
-/**
- * 액세스 토큰 삭제 (localStorage + 쿠키)
- * TODO(security): pre-production blocker — httpOnly Secure 쿠키 전환 시 함께 제거.
- */
+/** 액세스 토큰 삭제 (메모리 + 세션 쿠키) */
 export function clearAccessToken(): void {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  accessToken = null;
   if (typeof document !== 'undefined') {
-    document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; max-age=0`;
+    document.cookie = `${SESSION_COOKIE_KEY}=; path=/; max-age=0`;
   }
 }
 
-/** 인증 엔드포인트 여부 (401 시 리다이렉트 스킵) */
+/** 인증 엔드포인트 여부 (401 시 refresh 스킵) */
 const isAuthEndpoint = (endpoint: string): boolean =>
   endpoint.includes('/users/auth/') ||
   endpoint === '/users' ||
   endpoint.includes('/users/verification');
+
+/** 리프레시 토큰으로 새 액세스 토큰 획득 */
+async function tryRefreshToken(): Promise<string | null> {
+  // 이미 리프레시 중이면 같은 Promise 공유 (중복 요청 방지)
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const url = `${BASE_URL}/users/auth/refresh`;
+      const response = await fetch(url, {
+        method: 'PATCH',
+        credentials: 'include', // httpOnly 리프레시 쿠키 자동 전송
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) return null;
+
+      const data = (await response.json()) as { accessToken: string };
+      setAccessToken(data.accessToken);
+      return data.accessToken;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
 
 async function request<T>(
   endpoint: string,
@@ -89,7 +115,29 @@ async function request<T>(
   });
 
   if (!response.ok) {
+    // 401 + 비인증 엔드포인트 → refresh 시도 후 재요청
     if (response.status === 401 && !isAuthEndpoint(endpoint)) {
+      const newToken = await tryRefreshToken();
+
+      if (newToken) {
+        // 새 토큰으로 원래 요청 재시도
+        const retryResponse = await fetch(url, {
+          ...init,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${newToken}`,
+            ...init.headers,
+          },
+        });
+
+        if (retryResponse.ok) {
+          if (retryResponse.status === 204) return undefined as T;
+          return retryResponse.json() as Promise<T>;
+        }
+      }
+
+      // refresh 실패 → 로그아웃
       clearAccessToken();
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
