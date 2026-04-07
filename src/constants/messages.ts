@@ -185,6 +185,10 @@ export const PROFILE_MESSAGES = {
   SEARCH_EMPTY: '검색 결과가 없습니다.',
   CANCEL: '취소',
   CONFIRM: '확인',
+  // Profile template
+  LOADING: '프로필을 불러오는 중...',
+  ERROR: '프로필을 불러올 수 없습니다.',
+  BACK_BUTTON: '프로필',
 } as const;
 
 export const VIEWER_MESSAGES = {
