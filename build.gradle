@@ -22,16 +22,43 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    compileOnly 'org.projectlombok:lombok:1.18.44'
-    annotationProcessor 'org.projectlombok:lombok:1.18.44'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-test-autoconfigure'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.register('generateDevTokens', JavaExec) {
+    group = 'development'
+    description = 'Prints dev JWT tokens for local testing (.env friendly)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gajeman.jagalchi.jagalchiserver.tools.DevJwtTokenCli'
+}
+
+bootJar {
+    mainClass = 'gajeman.jagalchi.jagalchiserver.JagalchiServerApplication'
 }
