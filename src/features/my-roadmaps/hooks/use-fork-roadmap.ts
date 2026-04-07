@@ -1,17 +1,2 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-import { forkRoadmap } from '@/api/roadmap';
-import { queryKeys } from '@/lib/query-keys';
-
-export function useForkRoadmap() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (roadmapId: string) => forkRoadmap(roadmapId),
-    onSuccess: (_data, roadmapId) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.forkStatus(roadmapId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.forkTree(roadmapId) });
-    },
-  });
-}
+// 공유 훅으로 이동됨 — src/hooks/use-fork-roadmap.ts
+export { useForkRoadmap } from '@/hooks/use-fork-roadmap';

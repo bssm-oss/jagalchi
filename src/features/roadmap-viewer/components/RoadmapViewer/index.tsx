@@ -53,7 +53,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
   return (
     <div className="bg-background min-h-screen">
-      <RoadmapHeader roadmapTitle={`Roadmap · ${roadmapId}`} />
+      <RoadmapHeader roadmapId={roadmapId} roadmapTitle={`Roadmap · ${roadmapId}`} />
 
       <div className="mx-auto flex w-full max-w-[2011px] gap-4 px-4 py-4">
         <div className="relative flex-1">

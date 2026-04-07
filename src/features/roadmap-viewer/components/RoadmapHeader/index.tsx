@@ -2,22 +2,38 @@
 
 import { useRouter } from 'next/navigation';
 
-import { ArrowLeft, ChevronDown, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, ChevronDown, GitFork, Search, Sparkles } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { VIEWER_MESSAGES } from '@/constants/messages';
+import { useForkRoadmap } from '@/hooks/use-fork-roadmap';
+import { useForkStatus } from '@/hooks/use-fork-status';
 
 interface RoadmapHeaderProps {
+  roadmapId?: string;
   roadmapTitle?: string;
   onAiFeedback?: () => void;
 }
 
 export function RoadmapHeader({
+  roadmapId = '',
   roadmapTitle = "Jagalchi's Roadmap",
   onAiFeedback,
 }: RoadmapHeaderProps) {
   const router = useRouter();
+  const { data: forkStatus } = useForkStatus(roadmapId);
+  const { mutate: forkRoadmap, isPending: isForkPending } = useForkRoadmap();
+
+  const handleFork = () => {
+    if (forkStatus?.isForkedByCurrentUser) return;
+    forkRoadmap(roadmapId, {
+      onSuccess: (data) => {
+        router.push(`/editor/${data.id}`);
+      },
+    });
+  };
 
   return (
     <header className="flex h-12 w-full items-center justify-between bg-white px-5">
@@ -46,7 +62,7 @@ export function RoadmapHeader({
         <AvatarFallback>U</AvatarFallback>
       </Avatar>
 
-      {/* Right: Search + AI button */}
+      {/* Right: Search + Fork + AI button */}
       <div className="flex items-center gap-3">
         <div className="relative">
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
@@ -56,6 +72,22 @@ export function RoadmapHeader({
             className="h-9 w-[200px] rounded-lg border-slate-200 bg-white pl-9 text-sm"
           />
         </div>
+        <Button
+          onClick={handleFork}
+          disabled={isForkPending || forkStatus?.isForkedByCurrentUser}
+          variant="outline"
+          className="h-9 rounded-lg px-4 text-sm font-semibold"
+          title={
+            forkStatus?.isForkedByCurrentUser
+              ? VIEWER_MESSAGES.FORK_ALREADY_FORKED
+              : VIEWER_MESSAGES.FORK_BUTTON
+          }
+        >
+          <GitFork className="mr-1.5 h-4 w-4" />
+          {forkStatus?.isForkedByCurrentUser
+            ? VIEWER_MESSAGES.FORK_ALREADY_FORKED
+            : VIEWER_MESSAGES.FORK_BUTTON}
+        </Button>
         <Button
           onClick={onAiFeedback}
           className="h-9 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800"
