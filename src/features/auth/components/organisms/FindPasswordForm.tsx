@@ -19,8 +19,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { AUTH_MESSAGES } from '@/constants/messages';
 
+import { usePasswordResetCode } from '../../hooks/use-password-reset-code';
 import { useResetPassword } from '../../hooks/use-reset-password';
-import { useVerificationCode } from '../../hooks/use-verification-code';
 import {
   findPasswordStep1Schema,
   findPasswordStep2Schema,
@@ -47,7 +47,7 @@ export function FindPasswordForm({ onStepChange }: FindPasswordFormProps) {
     isSendingCode,
     isCooldownActive,
     cooldownSeconds,
-  } = useVerificationCode();
+  } = usePasswordResetCode();
   const resetPasswordMutation = useResetPassword();
 
   const step1Form = useForm<FindPasswordStep1Schema>({

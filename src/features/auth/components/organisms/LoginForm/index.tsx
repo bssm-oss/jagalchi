@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSetAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 
+import { getGithubOAuthUrl, getGoogleOAuthUrl } from '@/api/auth';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -53,11 +54,11 @@ export function LoginForm() {
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Google OAuth
+    window.location.href = getGoogleOAuthUrl();
   };
 
   const handleGitHubLogin = () => {
-    // TODO: GitHub OAuth
+    window.location.href = getGithubOAuthUrl();
   };
 
   return (
