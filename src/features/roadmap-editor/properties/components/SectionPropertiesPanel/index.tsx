@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
@@ -29,9 +29,9 @@ export const SectionPropertiesPanel = memo(function SectionPropertiesPanel({
 }: SectionPropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
 
-  const toggleLock = () => {
+  const toggleLock = useCallback(() => {
     updateNode({ isLocked: !node.data.isLocked });
-  };
+  }, [updateNode, node.data.isLocked]);
 
   return (
     <div className="flex h-full w-full flex-col">

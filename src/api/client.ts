@@ -25,13 +25,21 @@ class ApiClientError extends Error {
   }
 }
 
-/** localStorage에서 액세스 토큰 읽기 */
+/**
+ * localStorage에서 액세스 토큰 읽기
+ * TODO(security): pre-production blocker — httpOnly Secure 쿠키로 전환 필요.
+ * 현재 localStorage + non-httpOnly 쿠키 저장은 XSS 시 토큰 탈취 가능.
+ * 백엔드 Set-Cookie 발급 방식으로 전환 후 이 함수 제거.
+ */
 function getAccessToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
-/** 액세스 토큰 저장 (localStorage + 미들웨어용 쿠키) */
+/**
+ * 액세스 토큰 저장 (localStorage + 미들웨어용 쿠키)
+ * TODO(security): pre-production blocker — httpOnly Secure 쿠키로 전환 필요.
+ */
 export function setAccessToken(token: string): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, token);
   if (typeof document !== 'undefined') {

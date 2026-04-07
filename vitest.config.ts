@@ -40,6 +40,8 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
+          pool: 'forks',
+          poolOptions: { forks: { maxForks: 2 } },
           setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },

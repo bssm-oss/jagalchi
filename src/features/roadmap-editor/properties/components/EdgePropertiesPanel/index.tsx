@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
@@ -36,30 +36,36 @@ export const EdgePropertiesPanel = memo(function EdgePropertiesPanel({
   const currentStyle = (edge.style?.strokeDasharray ? 'dashed' : 'solid') as LineStyle;
   const currentColor = (edge.style?.stroke as string) || NODE_PRESET_COLORS[0].hex;
 
-  const toggleLock = () => {
-    setIsLocked(!isLocked);
-  };
+  const toggleLock = useCallback(() => {
+    setIsLocked((prev) => !prev);
+  }, []);
 
-  const handleStyleChange = (style: LineStyle) => {
-    const strokeDasharray = style === 'dashed' ? '5 5' : style === 'dotted' ? '2 2' : undefined;
-    updateEdge({
-      style: {
-        ...edge.style,
-        strokeDasharray,
-      },
-    });
-  };
+  const handleStyleChange = useCallback(
+    (style: LineStyle) => {
+      const strokeDasharray = style === 'dashed' ? '5 5' : style === 'dotted' ? '2 2' : undefined;
+      updateEdge({
+        style: {
+          ...edge.style,
+          strokeDasharray,
+        },
+      });
+    },
+    [updateEdge, edge.style],
+  );
 
-  const handleColorChange = (variant: NodeColorVariant | string) => {
-    if (isLocked) return;
-    const hex = NODE_PRESET_COLORS.find((p) => p.variant === variant)?.hex ?? '#000000';
-    updateEdge({
-      style: {
-        ...edge.style,
-        stroke: hex,
-      },
-    });
-  };
+  const handleColorChange = useCallback(
+    (variant: NodeColorVariant | string) => {
+      if (isLocked) return;
+      const hex = NODE_PRESET_COLORS.find((p) => p.variant === variant)?.hex ?? '#000000';
+      updateEdge({
+        style: {
+          ...edge.style,
+          stroke: hex,
+        },
+      });
+    },
+    [isLocked, updateEdge, edge.style],
+  );
 
   // Find current variant based on color
   const currentVariant =

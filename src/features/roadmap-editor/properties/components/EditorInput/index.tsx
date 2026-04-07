@@ -8,6 +8,7 @@ export interface EditorInputProps {
   value?: string;
   placeholder?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
   isMultiline?: boolean;
   hasError?: boolean;
   errorMessage?: string;
@@ -38,6 +39,7 @@ export const EditorInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, Ed
       value,
       placeholder,
       onChange,
+      onBlur,
       isMultiline = false,
       hasError = false,
       errorMessage,
@@ -86,6 +88,7 @@ export const EditorInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, Ed
           value={value}
           placeholder={placeholder}
           onChange={handleChange}
+          onBlur={onBlur}
           disabled={isDisabled}
           aria-invalid={hasError}
           aria-describedby={hasError && errorMessage ? errorId : undefined}

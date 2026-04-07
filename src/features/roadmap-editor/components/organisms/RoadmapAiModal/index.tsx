@@ -23,35 +23,27 @@ export const RoadmapAiModal = memo(function RoadmapAiModal({
 }: RoadmapAiModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGenerate = async (prompt: string) => {
+  const handleGenerate = async (_prompt: string) => {
     setIsLoading(true);
     try {
-      // TODO: Phase 4 - Implement actual AI roadmap generation
-      // eslint-disable-next-line no-console
-      console.log('AI 로드맵 생성 요청:', prompt);
-      // Simulate API call
+      // TODO: Implement actual AI roadmap generation API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('로드맵 생성 실패:', error);
+    } catch {
+      // TODO: Show error toast to user
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleModify = async (prompt: string) => {
+  const handleModify = async (_prompt: string) => {
     setIsLoading(true);
     try {
-      // TODO: Phase 4 - Implement actual AI roadmap modification
-      // eslint-disable-next-line no-console
-      console.log('AI 로드맵 수정 요청:', prompt);
-      // Simulate API call
+      // TODO: Implement actual AI roadmap modification API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('로드맵 수정 실패:', error);
+    } catch {
+      // TODO: Show error toast to user
     } finally {
       setIsLoading(false);
     }

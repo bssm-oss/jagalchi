@@ -2,8 +2,14 @@
 
 import { memo, useState } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { useAtom, useSetAtom } from 'jotai';
-import { HexColorPicker } from 'react-colorful';
+
+const HexColorPicker = dynamic(
+  () => import('react-colorful').then((m) => ({ default: m.HexColorPicker })),
+  { ssr: false },
+);
 
 import { Button } from '@/components/ui/button';
 import {
