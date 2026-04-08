@@ -1,9 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'jotai';
+import { useHydrateAtoms } from 'jotai/utils';
 import { describe, it, expect, vi } from 'vitest';
 
+import { activeTabAtom } from '../../../stores/community.atoms';
+
 import { Community } from './index';
+
+function HydrateAtoms({ children }: { children: React.ReactNode }) {
+  useHydrateAtoms([[activeTabAtom, 'latest']]);
+  return children;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -34,7 +42,9 @@ describe('Community Template', () => {
     render(
       <QueryClientProvider client={queryClient}>
         <Provider>
-          <Community />
+          <HydrateAtoms>
+            <Community />
+          </HydrateAtoms>
         </Provider>
       </QueryClientProvider>,
     );
