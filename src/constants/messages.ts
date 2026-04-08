@@ -222,6 +222,7 @@ export const VIEWER_MESSAGES = {
   COACH_SOURCES: '참고 자료',
   COACH_QA_EMPTY: '학습 관련 질문을 해보세요',
   COACH_CLOSE: '닫기',
+  COACH_ERROR: 'AI 분석에 실패했습니다. 다시 시도해주세요.',
   // Fork tree
   FORK_TREE_TITLE: '포크 트리',
   FORK_TREE_EMPTY: '포크 정보가 없습니다',

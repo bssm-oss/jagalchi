@@ -57,7 +57,7 @@ function FeedbackTab({
     return (
       <div className="flex flex-col items-center gap-3 py-10">
         <BookOpen className="h-10 w-10 text-slate-300" />
-        <p className="text-sm text-slate-500">{VIEWER_MESSAGES.COACH_FEEDBACK_EMPTY}</p>
+        <p className="text-muted-foreground text-sm">{VIEWER_MESSAGES.COACH_FEEDBACK_EMPTY}</p>
         <Button onClick={onRequest} size="sm">
           {VIEWER_MESSAGES.COACH_FEEDBACK_REQUEST}
         </Button>
@@ -68,7 +68,7 @@ function FeedbackTab({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <p className="text-sm text-slate-500">{VIEWER_MESSAGES.COACH_LOADING}</p>
+        <p className="text-muted-foreground text-sm">{VIEWER_MESSAGES.COACH_LOADING}</p>
       </div>
     );
   }
@@ -177,7 +177,7 @@ function CoachTab({
 
       {isLoading && (
         <div className="flex items-center justify-center py-8">
-          <p className="text-sm text-slate-500">{VIEWER_MESSAGES.COACH_LOADING}</p>
+          <p className="text-muted-foreground text-sm">{VIEWER_MESSAGES.COACH_LOADING}</p>
         </div>
       )}
 
@@ -204,7 +204,7 @@ function CoachTab({
       {!data && !isLoading && (
         <div className="flex flex-col items-center gap-2 py-8">
           <MessageSquare className="h-8 w-8 text-slate-300" />
-          <p className="text-sm text-slate-500">{VIEWER_MESSAGES.COACH_QA_EMPTY}</p>
+          <p className="text-muted-foreground text-sm">{VIEWER_MESSAGES.COACH_QA_EMPTY}</p>
         </div>
       )}
     </div>
@@ -219,6 +219,7 @@ export const LearningCoachModal = memo(function LearningCoachModal({
 }: LearningCoachModalProps) {
   const [tab, setTab] = useState<TabType>('feedback');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [feedbackData, setFeedbackData] = useState<RecordCoachResponse | null>(null);
   const [coachData, setCoachData] = useState<LearningCoachResponse | null>(null);
   const [question, setQuestion] = useState('');
@@ -232,8 +233,9 @@ export const LearningCoachModal = memo(function LearningCoachModal({
         compose_level: 'quick',
       });
       setFeedbackData(response);
+      setErrorMessage('');
     } catch {
-      /* error handled by empty state */
+      setErrorMessage(VIEWER_MESSAGES.COACH_ERROR);
     } finally {
       setIsLoading(false);
     }
@@ -249,19 +251,32 @@ export const LearningCoachModal = memo(function LearningCoachModal({
         compose_level: 'quick',
       });
       setCoachData(response);
+      setErrorMessage('');
     } catch {
-      /* error handled by empty state */
+      setErrorMessage(VIEWER_MESSAGES.COACH_ERROR);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setErrorMessage('');
+        onClose();
+      }}
+    >
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{VIEWER_MESSAGES.COACH_TITLE}</DialogTitle>
         </DialogHeader>
+
+        {errorMessage && (
+          <p className="text-destructive text-sm" role="alert">
+            {errorMessage}
+          </p>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
