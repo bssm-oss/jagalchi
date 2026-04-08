@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { ReactFlowProvider } from '@xyflow/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { LayoutGrid, Map, PanelRight } from 'lucide-react';
@@ -19,6 +21,7 @@ import { ForkTreeDialog } from '../ForkTreeDialog';
 import { HeaderExportMenu } from '../HeaderExportMenu';
 import { HeaderMenu } from '../HeaderMenu';
 import { HeaderSaveAsImageMenu } from '../HeaderSaveAsImageMenu';
+import { LearningCoachModal } from '../LearningCoachModal';
 import { RoadmapHeader } from '../RoadmapHeader';
 import { ViewerCanvas } from '../ViewerCanvas';
 import { ViewerSidebar } from '../ViewerSidebar';
@@ -35,6 +38,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   const error = useAtomValue(viewerErrorAtom);
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
+  const [isCoachOpen, setIsCoachOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -54,7 +58,11 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
   return (
     <div className="bg-background min-h-screen">
-      <RoadmapHeader roadmapId={roadmapId} roadmapTitle={`Roadmap · ${roadmapId}`} />
+      <RoadmapHeader
+        roadmapId={roadmapId}
+        roadmapTitle={`Roadmap · ${roadmapId}`}
+        onAiFeedback={() => setIsCoachOpen(true)}
+      />
 
       <div className="mx-auto flex w-full max-w-[2011px] gap-4 px-4 py-4">
         <div className="relative flex-1">
@@ -106,6 +114,12 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
       </div>
 
       {layout === 'page' && <ViewerZoomControls />}
+
+      <LearningCoachModal
+        isOpen={isCoachOpen}
+        onClose={() => setIsCoachOpen(false)}
+        roadmapId={roadmapId}
+      />
     </div>
   );
 }

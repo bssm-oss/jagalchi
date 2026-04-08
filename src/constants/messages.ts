@@ -206,6 +206,22 @@ export const PROFILE_MESSAGES = {
 } as const;
 
 export const VIEWER_MESSAGES = {
+  // Learning Coach
+  COACH_TITLE: 'AI 학습 코치',
+  COACH_TAB_FEEDBACK: '학습 피드백',
+  COACH_TAB_QA: '질문하기',
+  COACH_LOADING: 'AI가 분석 중...',
+  COACH_FEEDBACK_EMPTY: '선택한 노드의 학습 피드백을 받아보세요',
+  COACH_FEEDBACK_REQUEST: '피드백 받기',
+  COACH_SCORES: '학습 점수',
+  COACH_STRENGTHS: '잘한 점',
+  COACH_GAPS: '보완할 점',
+  COACH_NEXT_ACTIONS: '다음 학습 추천',
+  COACH_QUESTION_PLACEHOLDER: '학습 관련 질문을 입력하세요',
+  COACH_ASK: '질문',
+  COACH_SOURCES: '참고 자료',
+  COACH_QA_EMPTY: '학습 관련 질문을 해보세요',
+  COACH_CLOSE: '닫기',
   // Fork tree
   FORK_TREE_TITLE: '포크 트리',
   FORK_TREE_EMPTY: '포크 정보가 없습니다',
