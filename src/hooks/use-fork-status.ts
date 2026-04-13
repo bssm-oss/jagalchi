@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getForkStatus } from '@/api/roadmap';
-import type { ForkStatusResponse } from '@/api/roadmap';
+import { getForkStatus, type ForkStatusResponse } from '@/api/roadmap';
 import { queryKeys } from '@/lib/query-keys';
 
 export function useForkStatus(roadmapId: string) {

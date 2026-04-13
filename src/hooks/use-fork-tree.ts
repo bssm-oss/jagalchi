@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getForkTree } from '@/api/roadmap';
-import type { ForkTreeNode } from '@/api/roadmap';
+import { getForkTree, type ForkTreeNode } from '@/api/roadmap';
 import { queryKeys } from '@/lib/query-keys';
 
 export function useForkTree(roadmapId: string) {

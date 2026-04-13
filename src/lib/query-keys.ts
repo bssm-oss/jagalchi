@@ -35,7 +35,7 @@ export const queryKeys = {
 
   community: {
     all: ['community'] as const,
-    lists: () => [...queryKeys.community.all, 'list'] as const,
+    lists: (params?: object) => [...queryKeys.community.all, 'list', params] as const,
     detail: (id: string) => [...queryKeys.community.all, 'detail', id] as const,
   },
 } as const;

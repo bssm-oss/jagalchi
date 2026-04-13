@@ -1,5 +1,12 @@
 import DOMPurify from 'isomorphic-dompurify';
 
+// target="_blank" 링크에 rel="noopener noreferrer" 강제 적용 (리버스 탭내핑 방지)
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 /**
  * HTML 문자열에서 위험한 스크립트/이벤트 핸들러를 제거
  * 사용자 입력이 innerHTML 등으로 렌더링될 때 사용

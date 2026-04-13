@@ -27,10 +27,7 @@ export function getStompClient(options?: StompClientOptions): Client {
 
   client = new Client({
     brokerURL: WS_URL,
-    connectHeaders: {
-      'X-User-ID': 'user-1', // TODO: 실제 userId로 교체
-      'X-User-Role': 'USER',
-    },
+    connectHeaders: {},
     reconnectDelay: 3000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,
@@ -51,12 +48,11 @@ export function getStompClient(options?: StompClientOptions): Client {
     },
 
     beforeConnect: () => {
-      // 연결 직전에 최신 토큰 주입
+      // 연결 직전에 최신 토큰 + userId 주입
       const token = getAccessToken();
-      if (token && client) {
+      if (client) {
         client.connectHeaders = {
-          ...client.connectHeaders,
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         };
       }
     },
@@ -74,9 +70,9 @@ export function connectStomp(options?: StompClientOptions): void {
 }
 
 /** STOMP 연결 해제 */
-export function disconnectStomp(): void {
+export async function disconnectStomp(): Promise<void> {
   if (client?.active) {
-    client.deactivate();
+    await client.deactivate();
   }
   client = null;
   isConnecting = false;

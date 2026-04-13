@@ -75,6 +75,9 @@ export const AUTH_MESSAGES = {
   // OAuth
   OAUTH_GOOGLE: 'Google로 로그인',
   OAUTH_GITHUB: 'GitHub로 로그인',
+  // Common
+  CANCEL: '취소',
+  DELETING: '처리 중...',
 } as const;
 
 export const COMMUNITY_MESSAGES = {
@@ -86,6 +89,13 @@ export const COMMUNITY_MESSAGES = {
   ABOUT: 'About',
   MADE_BY: 'Made by',
   LAST_UPDATED: '마지막 업데이트',
+  LOADING: '불러오는 중...',
+  LOADING_DETAIL: '로드맵 정보를 불러오는 중...',
+  ERROR_LOAD_FAILED: '로드맵을 불러오는데 실패했습니다.',
+  FORK_SUCCESS: '로드맵을 내 로드맵에 추가했습니다.',
+  FORK_FAILED: '로드맵 추가에 실패했습니다.',
+  FORK_COUNT_LABEL: '포크',
+  SAVED_EMPTY: '저장된 로드맵이 없습니다.',
   // Hero
   HERO_TITLE: '어떤 로드맵을 찾고있나요?',
   SEARCH_ARIA: '검색',
@@ -223,14 +233,26 @@ export const VIEWER_MESSAGES = {
   COACH_QA_EMPTY: '학습 관련 질문을 해보세요',
   COACH_CLOSE: '닫기',
   COACH_ERROR: 'AI 분석에 실패했습니다. 다시 시도해주세요.',
+  COACH_SCORE_EVIDENCE: '증거 수준',
+  COACH_SCORE_STRUCTURE: '구조',
+  COACH_SCORE_SPECIFICITY: '구체성',
+  COACH_SCORE_REPRODUCIBILITY: '재현성',
+  COACH_SCORE_OVERALL: '종합',
   // Fork tree
   FORK_TREE_TITLE: '포크 트리',
   FORK_TREE_EMPTY: '포크 정보가 없습니다',
+  FORK_TREE_LOADING: '불러오는 중...',
+  FORK_TREE_COLLAPSE: '접기',
+  FORK_TREE_EXPAND: '펼치기',
   MENU_FORK_TREE: '포크 트리 보기',
   // Fork
   FORK_BUTTON: '포크',
   FORK_SUCCESS: '로드맵을 포크했습니다',
   FORK_ALREADY_FORKED: '이미 포크한 로드맵입니다',
+  // Header
+  AI_FEEDBACK_BUTTON: 'AI 학습 피드백',
+  SEARCH_PLACEHOLDER: '로드맵 안에서 검색',
+  DEFAULT_ROADMAP_TITLE: "Jagalchi's Roadmap",
   // Header menus
   MENU_STATISTICS: '로드맵 통계',
   MENU_DARK_MODE: '다크모드 전환',
@@ -369,5 +391,15 @@ export const EDITOR_MESSAGES = {
   AI_MODIFY_ERROR: 'AI 로드맵 수정에 실패했습니다',
   AI_DESC_LOADING: 'AI 생성 중...',
   AI_DESC_BUTTON: 'AI 생성',
+  AI_DESC_ERROR: 'AI 설명 생성에 실패했습니다',
   AI_RECOMMEND_BUTTON: 'AI 추천',
+  // NodePropertiesPanel
+  NODE_NAME_PLACEHOLDER: '노드 이름을 입력하세요',
+  NODE_DESC_PLACEHOLDER: '노드 설명을 입력하세요',
+  RESOURCE_URL_PLACEHOLDER: 'URL을 입력하세요',
+  NODE_SUBTITLE: '노드',
+  // ResourceRecommendationModal
+  DEFAULT_RESOURCE_QUERY: 'programming',
+  // RoadmapCanvas
+  NEW_NODE_LABEL: 'New Node',
 } as const;
