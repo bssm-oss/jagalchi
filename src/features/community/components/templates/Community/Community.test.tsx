@@ -9,7 +9,7 @@ import { activeTabAtom } from '../../../stores/community.atoms';
 import { Community } from './index';
 
 function HydrateAtoms({ children }: { children: React.ReactNode }) {
-  useHydrateAtoms([[activeTabAtom, 'latest']]);
+  useHydrateAtoms([[activeTabAtom, 'latest' as const]]);
   return children;
 }
 

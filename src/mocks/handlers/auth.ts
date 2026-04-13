@@ -69,7 +69,7 @@ function verifyCode(
   email: string | undefined,
   code: string | undefined,
   path: string,
-): HttpResponse | null {
+): HttpResponse<ErrorResponse> | null {
   if (!email || !code) {
     return HttpResponse.json(
       createErrorResponse(400, 'INVALID_INPUT', '이메일과 인증 코드를 입력해주세요', path),
