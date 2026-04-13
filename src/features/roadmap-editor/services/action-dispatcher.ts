@@ -28,6 +28,7 @@ interface StompAction {
 
 /** 전송 대기 중인 액션 (ACK 미수신) */
 const pendingActions = new Map<string, StompAction>();
+const MAX_PENDING_ACTIONS = 500;
 
 /** 액션 전송 */
 export function dispatchAction(
@@ -43,6 +44,12 @@ export function dispatchAction(
     action,
     payload,
   };
+
+  // 대기 큐 오버플로우 방지 — 가장 오래된 액션 제거
+  if (pendingActions.size >= MAX_PENDING_ACTIONS) {
+    const oldestKey = pendingActions.keys().next().value;
+    if (oldestKey) pendingActions.delete(oldestKey);
+  }
 
   pendingActions.set(actionId, stompAction);
   publishStomp(

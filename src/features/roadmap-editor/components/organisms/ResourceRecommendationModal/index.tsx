@@ -40,7 +40,7 @@ export const ResourceRecommendationModal = memo(function ResourceRecommendationM
     setIsLoading(true);
     setErrorMessage('');
     try {
-      const query = nodeName || 'programming';
+      const query = nodeName || EDITOR_MESSAGES.DEFAULT_RESOURCE_QUERY;
       const response = await getResourceRecommendation({ query, top_k: 5 });
       setResources(response.items);
     } catch {

@@ -5,7 +5,7 @@ import { useSetAtom } from 'jotai';
 import { useStomp } from '@/hooks/use-stomp';
 
 import { handleAck, handleNack } from '../services/action-dispatcher';
-import { nodesAtom, edgesAtom, remoteCursorsAtom } from '../stores/editor-atoms';
+import { nodesAtom, edgesAtom, remoteCursorsAtom, type RemoteCursor } from '../stores/editor-atoms';
 
 import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
@@ -86,7 +86,7 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
           userName: string;
           x: number;
           y: number;
-          state: string;
+          state: RemoteCursor['state'];
         };
         setRemoteCursors((prev) => {
           const next = new Map(prev);

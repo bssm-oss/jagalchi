@@ -3,7 +3,9 @@
 import { useReactFlow } from '@xyflow/react';
 import { useAtomValue } from 'jotai';
 
-import { remoteCursorsAtom } from '@/features/roadmap-editor/stores/editor-atoms';
+import { remoteCursorsAtom, type RemoteCursor } from '../../../stores/editor-atoms';
+
+type CursorState = RemoteCursor['state'];
 
 /** userId 문자열을 해시해서 HSL 색상 반환 */
 function getUserColor(userId: string): string {
@@ -16,13 +18,13 @@ function getUserColor(userId: string): string {
 }
 
 /** state에 따른 커서 opacity 조정 */
-function getCursorOpacity(state: string): number {
+function getCursorOpacity(state: CursorState): number {
   if (state === 'EDITING') return 0.6;
   return 1;
 }
 
 /** state에 따른 커서 scale */
-function getCursorScale(state: string): number {
+function getCursorScale(state: CursorState): number {
   if (state === 'DRAGGING') return 1.2;
   if (state === 'SELECTING') return 1.1;
   return 1;

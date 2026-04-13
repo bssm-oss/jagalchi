@@ -24,27 +24,26 @@ import { useAtom, useSetAtom } from 'jotai';
 
 import '@xyflow/react/dist/style.css';
 
-import {
-  sendCursorHide,
-  sendCursorPosition,
-} from '@/features/roadmap-editor/services/action-dispatcher';
+import { EDITOR_MESSAGES } from '@/constants/messages';
+
+import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
+import { sendCursorHide, sendCursorPosition } from '../../../services/action-dispatcher';
 import {
   nodesAtom,
   edgesAtom,
   selectedNodeIdsAtom,
   selectedEdgeIdsAtom,
   activeToolAtom,
-} from '@/features/roadmap-editor/stores/editor-atoms';
-import type { RoadmapNode } from '@/features/roadmap-editor/types/editor.types';
-import { createId } from '@/features/roadmap-editor/utils/node-factory';
-
-import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
+} from '../../../stores/editor-atoms';
+import { createId } from '../../../utils/node-factory';
 import { ConnectionLine } from '../ConnectionLine';
 import { DetailNode } from '../DetailNode';
 import { JagalchiNode } from '../JagalchiNode';
 import { JagalchiSection } from '../JagalchiSection';
 import { JagalchiText } from '../JagalchiText';
 import { RemoteCursors } from '../RemoteCursors';
+
+import type { RoadmapNode } from '../../../types/editor.types';
 
 const nodeTypes: NodeTypes = {
   'jagalchi-node': JagalchiNode,
@@ -163,7 +162,7 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
         type: 'jagalchi-node',
         position: { x: position.x - 100, y: position.y - 24 }, // Center the node
         data: {
-          label: 'New Node',
+          label: EDITOR_MESSAGES.NEW_NODE_LABEL,
           description: '',
           resources: [],
           variant: 'white',

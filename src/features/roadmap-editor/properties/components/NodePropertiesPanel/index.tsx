@@ -36,6 +36,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
 }: NodePropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
   const [isDescLoading, setIsDescLoading] = useState(false);
+  const [descError, setDescError] = useState('');
   const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
 
   const toggleLock = useCallback(() => {
@@ -66,11 +67,12 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
   const handleGenerateDescription = useCallback(async () => {
     if (!node.data.label) return;
     setIsDescLoading(true);
+    setDescError('');
     try {
       const response = await getNodeDescription({ node_title: node.data.label });
       updateNode({ description: response.description });
     } catch {
-      // 에러 시 기존 설명 유지
+      setDescError(EDITOR_MESSAGES.AI_DESC_ERROR);
     } finally {
       setIsDescLoading(false);
     }
@@ -96,7 +98,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
     <div className="flex h-full w-full flex-col">
       <PanelHeader
         title={node.data.label}
-        subtitle="노드"
+        subtitle={EDITOR_MESSAGES.NODE_SUBTITLE}
         isLocked={node.data.isLocked}
         onToggleLock={toggleLock}
       />
@@ -108,7 +110,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
           label={EDITOR_MESSAGES.SIDEBAR_NODE_NAME_LABEL}
           value={node.data.label}
           onChange={(value) => updateNode({ label: value })}
-          placeholder="노드 이름을 입력하세요"
+          placeholder={EDITOR_MESSAGES.NODE_NAME_PLACEHOLDER}
           isDisabled={node.data.isLocked}
         />
 
@@ -117,10 +119,11 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
           label={EDITOR_MESSAGES.SIDEBAR_NODE_DESC_LABEL}
           value={node.data.description}
           onChange={(value) => updateNode({ description: value })}
-          placeholder="노드 설명을 입력하세요"
+          placeholder={EDITOR_MESSAGES.NODE_DESC_PLACEHOLDER}
           isMultiline
           isDisabled={node.data.isLocked || isDescLoading}
         />
+        {descError && <p className="text-destructive text-xs">{descError}</p>}
         <div className="flex justify-end">
           <LoadingButton
             variant="ghost"
@@ -155,7 +158,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
                 value={resource}
                 onChange={(value) => handleResourceChange(index, value)}
                 onBlur={() => handleResourceBlur(index)}
-                placeholder="URL을 입력하세요"
+                placeholder={EDITOR_MESSAGES.RESOURCE_URL_PLACEHOLDER}
                 isDisabled={node.data.isLocked}
               />
             ))}

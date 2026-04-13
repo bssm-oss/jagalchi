@@ -9,7 +9,7 @@ export interface RemoteCursor {
   userName: string;
   x: number;
   y: number;
-  state: string;
+  state: 'NORMAL' | 'EDITING' | 'DRAGGING' | 'SELECTING' | 'IDLE';
 }
 
 /**
