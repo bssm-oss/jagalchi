@@ -45,10 +45,16 @@ export const roadmapHandlers = [
         id: r.id,
         title: r.title,
         description: r.description,
+        thumbnailUrl: null,
         directoryId: null,
         ownerId: r.author?.id ?? 'user-1',
         isPublic: r.isPublic,
         viewCount: Math.floor(Math.random() * 100),
+        owner: {
+          id: r.author?.id ?? 'user-1',
+          nickname: r.author?.name ?? '김선배',
+          profileImageUrl: null,
+        },
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,
       })),
@@ -56,6 +62,41 @@ export const roadmapHandlers = [
       totalPages: Math.ceil(filtered.length / size),
       page,
       size,
+    });
+  }),
+
+  // GET /api/roadmaps/popular — 인기 로드맵 조회 (페이지네이션)
+  http.get('/api/roadmaps/popular', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page') ?? '0');
+    const size = Number(url.searchParams.get('size') ?? '20');
+
+    const publicRoadmaps = roadmapStore.filter((r) => r.isPublic);
+    const start = page * size;
+    const content = publicRoadmaps.slice(start, start + size);
+
+    return HttpResponse.json({
+      content: content.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        thumbnailUrl: null,
+        isPublic: r.isPublic,
+        viewCount: Math.floor(Math.random() * 100),
+        forkCount: Math.floor(Math.random() * 20),
+        tags: [],
+        owner: {
+          id: r.author?.id ?? 'user-1',
+          nickname: r.author?.name ?? '김선배',
+          profileImageUrl: null,
+        },
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      })),
+      pageable: { pageNumber: page, pageSize: size },
+      totalElements: publicRoadmaps.length,
+      totalPages: Math.ceil(publicRoadmaps.length / size),
+      hasNext: start + size < publicRoadmaps.length,
     });
   }),
 
@@ -241,6 +282,33 @@ export const roadmapHandlers = [
       });
     },
   ),
+
+  // GET /api/roadmap/:id/events — 로드맵 이벤트 조회 (에디터)
+  http.get<{ roadmapId: string }>('/api/roadmap/:roadmapId/events', ({ params }) => {
+    const roadmap = roadmapStore.find((r) => r.id === params.roadmapId);
+
+    if (!roadmap) {
+      return HttpResponse.json({ message: '로드맵을 찾을 수 없습니다' }, { status: 404 });
+    }
+
+    // 노드/엣지를 이벤트 형태로 변환
+    const events = [
+      ...roadmap.nodes.map((node, i) => ({
+        type: 'NODE_CREATED',
+        eventId: `evt-node-${i}`,
+        sequence: i + 1,
+        payload: node,
+      })),
+      ...roadmap.edges.map((edge, i) => ({
+        type: 'EDGE_CREATED',
+        eventId: `evt-edge-${i}`,
+        sequence: roadmap.nodes.length + i + 1,
+        payload: edge,
+      })),
+    ];
+
+    return HttpResponse.json(events);
+  }),
 ];
 
 export const resetRoadmapStore = (): void => {

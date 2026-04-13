@@ -169,8 +169,8 @@ export const authHandlers = [
     },
   ),
 
-  // PATCH /api/users/auth/password-reset — 비밀번호 리셋 코드 전송
-  http.patch<Record<string, never>, SendVerificationCodeRequest>(
+  // POST /api/users/auth/password-reset — 비밀번호 리셋 코드 전송
+  http.post<Record<string, never>, SendVerificationCodeRequest>(
     '/api/users/auth/password-reset',
     async ({ request }) => {
       const body = await request.json();
@@ -227,9 +227,9 @@ export const authHandlers = [
     },
   ),
 
-  // POST /api/users/auth/reset-password — 비밀번호 변경
-  http.post<Record<string, never>, ResetPasswordRequest>(
-    '/api/users/auth/reset-password',
+  // PATCH /api/users/auth/password-reset — 비밀번호 변경
+  http.patch<Record<string, never>, ResetPasswordRequest>(
+    '/api/users/auth/password-reset',
     async ({ request }) => {
       const body = await request.json();
       const { email, newPassword } = body;
@@ -255,7 +255,14 @@ export const authHandlers = [
   ),
 
   // PATCH /api/users/auth/refresh — 토큰 갱신
-  http.patch('/api/users/auth/refresh', () => {
+  // 세션 쿠키가 있어야만 토큰 갱신 성공 (로그인 후 설정됨)
+  http.patch('/api/users/auth/refresh', ({ cookies }) => {
+    if (!cookies['jagalchi-session']) {
+      return HttpResponse.json(
+        createErrorResponse(401, 'UNAUTHORIZED', '인증이 만료되었습니다', '/users/auth/refresh'),
+        { status: 401 },
+      );
+    }
     return HttpResponse.json({ accessToken: createMockToken('refreshed') });
   }),
 
