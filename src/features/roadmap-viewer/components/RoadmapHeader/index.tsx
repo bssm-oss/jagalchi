@@ -19,7 +19,7 @@ interface RoadmapHeaderProps {
 
 export function RoadmapHeader({
   roadmapId = '',
-  roadmapTitle = "Jagalchi's Roadmap",
+  roadmapTitle = VIEWER_MESSAGES.DEFAULT_ROADMAP_TITLE,
   onAiFeedback,
 }: RoadmapHeaderProps) {
   const router = useRouter();
@@ -68,7 +68,7 @@ export function RoadmapHeader({
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <Input
             type="text"
-            placeholder="로드맵 안에서 검색"
+            placeholder={VIEWER_MESSAGES.SEARCH_PLACEHOLDER}
             className="h-9 w-[200px] rounded-lg border-slate-200 bg-white pl-9 text-sm"
           />
         </div>
@@ -93,7 +93,7 @@ export function RoadmapHeader({
           className="h-9 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800"
         >
           <Sparkles className="mr-1.5 h-4 w-4" />
-          AI 학습 피드백
+          {VIEWER_MESSAGES.AI_FEEDBACK_BUTTON}
         </Button>
       </div>
     </header>

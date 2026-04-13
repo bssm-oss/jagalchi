@@ -84,11 +84,23 @@ function FeedbackTab({
           {VIEWER_MESSAGES.COACH_SCORES}
         </h4>
         <div className="space-y-1.5">
-          <ScoreBar label="증거 수준" value={data.scores.evidence_level} />
-          <ScoreBar label="구조" value={data.scores.structure_score} />
-          <ScoreBar label="구체성" value={data.scores.specificity_score} />
-          <ScoreBar label="재현성" value={data.scores.reproducibility_score} />
-          <ScoreBar label="종합" value={data.scores.quality_score} />
+          <ScoreBar
+            label={VIEWER_MESSAGES.COACH_SCORE_EVIDENCE}
+            value={data.scores.evidence_level}
+          />
+          <ScoreBar
+            label={VIEWER_MESSAGES.COACH_SCORE_STRUCTURE}
+            value={data.scores.structure_score}
+          />
+          <ScoreBar
+            label={VIEWER_MESSAGES.COACH_SCORE_SPECIFICITY}
+            value={data.scores.specificity_score}
+          />
+          <ScoreBar
+            label={VIEWER_MESSAGES.COACH_SCORE_REPRODUCIBILITY}
+            value={data.scores.reproducibility_score}
+          />
+          <ScoreBar label={VIEWER_MESSAGES.COACH_SCORE_OVERALL} value={data.scores.quality_score} />
         </div>
       </div>
 
@@ -246,7 +258,6 @@ export const LearningCoachModal = memo(function LearningCoachModal({
     setIsLoading(true);
     try {
       const response = await getLearningCoach({
-        user_id: '',
         question: question.trim(),
         compose_level: 'quick',
       });

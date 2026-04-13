@@ -37,7 +37,9 @@ function ForkTreeNodeItem({ node, depth }: ForkTreeNodeItemProps) {
             type="button"
             onClick={() => setIsExpanded((prev) => !prev)}
             className="flex h-4 w-4 shrink-0 items-center justify-center text-slate-400"
-            aria-label={isExpanded ? '접기' : '펼치기'}
+            aria-label={
+              isExpanded ? VIEWER_MESSAGES.FORK_TREE_COLLAPSE : VIEWER_MESSAGES.FORK_TREE_EXPAND
+            }
           >
             <ChevronRight
               className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -90,7 +92,7 @@ export function ForkTreeDialog({ roadmapId }: ForkTreeDialogProps) {
         <ScrollArea className="max-h-[400px]">
           {isLoading ? (
             <div className="flex h-[200px] items-center justify-center">
-              <p className="text-sm text-slate-500">불러오는 중...</p>
+              <p className="text-sm text-slate-500">{VIEWER_MESSAGES.FORK_TREE_LOADING}</p>
             </div>
           ) : !forkTree ? (
             <div className="flex h-[200px] items-center justify-center">
