@@ -15,9 +15,20 @@ import {
   Star,
   Trash2,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
 
 import type { DirectoryTreeNode } from '@/api/roadmap';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -27,15 +38,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { AUTH_MESSAGES, MY_ROADMAPS_MESSAGES } from '@/constants/messages';
+import { AUTH_MESSAGES, EDITOR_MESSAGES, MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 import { useDeleteDirectory } from '../../../hooks/use-delete-directory';
 import { useDirectoryTree } from '../../../hooks/use-directory-tree';
 import { useUpdateDirectory } from '../../../hooks/use-update-directory';
 import { type SidebarCategory, sidebarCategoryAtom } from '../../../stores/my-roadmaps.atoms';
-
-import type { LucideIcon } from 'lucide-react';
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -58,6 +67,7 @@ const SIDEBAR_GROUPS: SidebarItem[][] = [
 function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(node.name);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasChildren = node.children && node.children.length > 0;
@@ -84,10 +94,9 @@ function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number
     if (e.key === 'Escape') setIsRenaming(false);
   };
 
-  const handleDelete = () => {
-    if (window.confirm(MY_ROADMAPS_MESSAGES.DIR_DELETE_CONFIRM)) {
-      deleteDirectory(node.id);
-    }
+  const handleDeleteConfirm = () => {
+    deleteDirectory(node.id);
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -141,7 +150,10 @@ function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number
               <Pencil className="mr-2 h-3.5 w-3.5" />
               {MY_ROADMAPS_MESSAGES.DIR_RENAME}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete} className="text-red-600 focus:text-red-600">
+            <DropdownMenuItem
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="text-red-600 focus:text-red-600"
+            >
               <Trash2 className="mr-2 h-3.5 w-3.5" />
               {MY_ROADMAPS_MESSAGES.DIR_DELETE}
             </DropdownMenuItem>
@@ -153,6 +165,23 @@ function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number
         node.children.map((child) => (
           <DirectoryNode key={child.id} node={child} depth={depth + 1} />
         ))}
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{MY_ROADMAPS_MESSAGES.DIR_DELETE}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {MY_ROADMAPS_MESSAGES.DIR_DELETE_CONFIRM}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{EDITOR_MESSAGES.AI_MODAL_CANCEL}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>
+              {MY_ROADMAPS_MESSAGES.DIR_DELETE}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

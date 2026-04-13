@@ -10,9 +10,10 @@ import { Heart, FilePlus2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { COMMUNITY_MESSAGES } from '@/constants/messages';
+import { useForkRoadmap } from '@/hooks/use-fork-roadmap';
+import { useRoadmapDetail } from '@/hooks/use-roadmap-detail';
 import { cn } from '@/lib/utils';
 
-import { MOCK_COMMUNITY_DATA } from '../../../constants/community.mock';
 import { ContributorItem } from '../../atoms/ContributorItem';
 import { CommunityHeader } from '../../molecules/CommunityHeader';
 
@@ -22,12 +23,22 @@ interface RoadmapDetailProps {
 
 export function RoadmapDetail({ id }: RoadmapDetailProps) {
   const router = useRouter();
-  const item = MOCK_COMMUNITY_DATA.find((i) => i.id === id);
+  const { data: item, isLoading, isError } = useRoadmapDetail(id);
+  const { mutate: fork, isPending: isForking } = useForkRoadmap();
 
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState<number>(item?.likes ?? 0);
+  const [likeCount, setLikeCount] = useState(0);
+  const [forkMessage, setForkMessage] = useState('');
 
-  if (!item) {
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-lg font-medium text-slate-500">{COMMUNITY_MESSAGES.LOADING_DETAIL}</p>
+      </div>
+    );
+  }
+
+  if (isError || !item) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-lg font-medium text-slate-500">{COMMUNITY_MESSAGES.NOT_FOUND}</p>
@@ -43,13 +54,27 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
     });
   };
 
+  const handleFork = () => {
+    setForkMessage('');
+    fork(id, {
+      onSuccess: () => setForkMessage(COMMUNITY_MESSAGES.FORK_SUCCESS),
+      onError: () => setForkMessage(COMMUNITY_MESSAGES.FORK_FAILED),
+    });
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-white">
       <CommunityHeader />
 
       <div className="relative h-[400px] w-full bg-slate-100">
-        {item.imageUrl && (
-          <NextImage src={item.imageUrl} alt={item.title} fill className="object-cover" priority />
+        {item.thumbnailUrl && (
+          <NextImage
+            src={item.thumbnailUrl}
+            alt={item.title}
+            fill
+            className="object-cover"
+            priority
+          />
         )}
       </div>
 
@@ -83,12 +108,25 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
               <Button
                 variant="default"
                 className="h-[32px] items-center gap-[8px] rounded-lg bg-slate-900 px-3 py-[5.5px] text-[14px] font-semibold text-white hover:bg-slate-800"
-                onClick={() => window.alert(COMMUNITY_MESSAGES.LOGIN_REQUIRED)}
+                onClick={handleFork}
+                disabled={isForking}
               >
                 <FilePlus2 className="h-[13px] w-[13px]" />
                 {COMMUNITY_MESSAGES.ADD_TO_MY_ROADMAPS}
               </Button>
             </div>
+            {forkMessage && (
+              <p
+                className={cn(
+                  'text-sm font-medium',
+                  forkMessage === COMMUNITY_MESSAGES.FORK_SUCCESS
+                    ? 'text-green-600'
+                    : 'text-destructive',
+                )}
+              >
+                {forkMessage}
+              </p>
+            )}
           </div>
 
           <section className="flex flex-col gap-[16px]">
@@ -111,9 +149,7 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
               {COMMUNITY_MESSAGES.MADE_BY}
             </h3>
             <div className="flex flex-col gap-[16px]">
-              <ContributorItem name={item.author} />
-              <ContributorItem name="Co-author" />
-              <ContributorItem name="Contributor" />
+              <ContributorItem name={item.owner.name} />
             </div>
           </div>
 
@@ -123,8 +159,33 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
             <span className="text-xs font-normal text-neutral-500">
               {COMMUNITY_MESSAGES.LAST_UPDATED}
             </span>
-            <span className="text-xs font-normal text-slate-950">2달 전</span>
+            <span className="text-xs font-normal text-slate-950">{item.updatedAt}</span>
           </div>
+
+          {item.stats.forkCount > 0 && (
+            <div className="flex flex-col gap-0">
+              <span className="text-xs font-normal text-neutral-500">
+                {COMMUNITY_MESSAGES.FORK_COUNT_LABEL}
+              </span>
+              <span className="text-xs font-normal text-slate-950">{item.stats.forkCount}</span>
+            </div>
+          )}
+
+          {item.tags.length > 0 && (
+            <>
+              <Separator className="bg-border" />
+              <div className="flex flex-wrap gap-2">
+                {item.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-600"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </aside>
       </div>
     </div>

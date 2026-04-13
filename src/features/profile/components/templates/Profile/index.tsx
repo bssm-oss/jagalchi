@@ -36,7 +36,7 @@ interface ProfileProps {
   userName?: string;
 }
 
-export function Profile({ userName = '김선배' }: ProfileProps) {
+export function Profile({ userName = '' }: ProfileProps) {
   const router = useRouter();
   const mode = useAtomValue(profileModeAtom);
   const setBio = useSetAtom(profileBioAtom);
@@ -135,13 +135,13 @@ export function Profile({ userName = '김선배' }: ProfileProps) {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
+                <AlertDialogCancel disabled={isDeleting}>{AUTH_MESSAGES.CANCEL}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDeleteAccount}
                   disabled={isDeleting}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  {isDeleting ? '처리 중...' : AUTH_MESSAGES.DELETE_ACCOUNT}
+                  {isDeleting ? AUTH_MESSAGES.DELETING : AUTH_MESSAGES.DELETE_ACCOUNT}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
