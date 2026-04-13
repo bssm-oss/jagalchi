@@ -90,14 +90,10 @@ export const refreshToken = (data?: RefreshTokenRequest) =>
 export const deleteAccount = () => apiClient.delete<void>('/users');
 
 /** GET /users/auth/login/google — Google OAuth2 로그인 URL (302 리다이렉트) */
-export function getGoogleOAuthUrl(): string {
-  return `${BASE_URL}/users/auth/login/google`;
-}
+export const getGoogleOAuthUrl = (): string => `${BASE_URL}/users/auth/login/google`;
 
 /** GET /users/auth/login/github — GitHub OAuth2 로그인 URL (302 리다이렉트) */
-export function getGithubOAuthUrl(): string {
-  return `${BASE_URL}/users/auth/login/github`;
-}
+export const getGithubOAuthUrl = (): string => `${BASE_URL}/users/auth/login/github`;
 
 // === Type Exports ===
 

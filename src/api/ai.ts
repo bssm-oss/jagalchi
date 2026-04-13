@@ -96,7 +96,8 @@ interface LearningCoachResponse {
 
 interface LearningCoachParams {
   question: string;
-  user_id: string;
+  /** 서버가 인증 토큰에서 추론 가능 — 생략 시 현재 로그인 사용자 */
+  user_id?: string;
   compose_level?: 'quick' | 'full';
 }
 
@@ -525,7 +526,7 @@ export const getRecordCoach = (params: RecordCoachParams) => {
 export const getLearningCoach = (params: LearningCoachParams) => {
   const searchParams = new URLSearchParams();
   searchParams.set('question', params.question);
-  searchParams.set('user_id', params.user_id);
+  if (params.user_id) searchParams.set('user_id', params.user_id);
   if (params.compose_level) searchParams.set('compose_level', params.compose_level);
 
   return apiClient.get<LearningCoachResponse>(`/ai/learning-coach?${searchParams.toString()}`);

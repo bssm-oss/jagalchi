@@ -32,13 +32,25 @@ interface RoadmapResponse {
 }
 
 interface RoadmapDetailResponse extends RoadmapResponse {
+  thumbnailUrl: string | null;
   owner: { id: string; name: string };
-  stats: { viewCount: number; forkCount: number };
+  stats: { totalNodes: number; totalEdges: number; forkCount: number };
   tags: string[];
 }
 
+interface RoadmapListItem extends RoadmapResponse {
+  thumbnailUrl: string | null;
+  forkCount: number;
+  tags: string[];
+  owner: {
+    id: string;
+    nickname: string;
+    profileImageUrl: string | null;
+  };
+}
+
 interface RoadmapListResponse {
-  content: RoadmapResponse[];
+  content: RoadmapListItem[];
   totalElements: number;
   totalPages: number;
   page: number;
@@ -167,17 +179,7 @@ export const completeNode = (
 
 // === Fork Types ===
 
-interface ForkRoadmapResponse {
-  id: string;
-  title: string;
-  description: string | null;
-  directoryId: string | null;
-  ownerId: string;
-  isPublic: boolean;
-  viewCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
+type ForkRoadmapResponse = RoadmapResponse;
 
 interface ForkTreeNode {
   id: string;
@@ -268,6 +270,7 @@ export type {
   UpdateRoadmapRequest,
   RoadmapResponse,
   RoadmapDetailResponse,
+  RoadmapListItem,
   RoadmapListResponse,
   RoadmapListParams,
   RoadmapUpdateResponse,
