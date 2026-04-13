@@ -30,9 +30,10 @@ export const config = defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'pnpm start' : 'pnpm dev --port 3100',
+    command: process.env.CI ? 'PORT=3100 pnpm start' : 'pnpm dev --port 3100',
     url: 'http://localhost:3100',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });
 
