@@ -55,11 +55,35 @@ const createErrorResponse = (
 ): ErrorResponse => ({
   timestamp: new Date().toISOString(),
   status,
-  error: status === 400 ? 'Bad Request' : status === 401 ? 'Unauthorized' : 'Not Found',
+  error:
+    ({ 400: 'Bad Request', 401: 'Unauthorized', 404: 'Not Found' } as Record<number, string>)[
+      status
+    ] ?? 'Internal Server Error',
   code,
   message,
   path,
 });
+
+/** 이메일+인증코드 검증 공통 헬퍼 */
+function verifyCode(
+  email: string | undefined,
+  code: string | undefined,
+  path: string,
+): HttpResponse | null {
+  if (!email || !code) {
+    return HttpResponse.json(
+      createErrorResponse(400, 'INVALID_INPUT', '이메일과 인증 코드를 입력해주세요', path),
+      { status: 400 },
+    );
+  }
+  if (code !== MOCK_VERIFICATION_CODE) {
+    return HttpResponse.json(
+      createErrorResponse(400, 'VALIDATION_FAILED', '인증 코드가 올바르지 않습니다', path),
+      { status: 400 },
+    );
+  }
+  return null;
+}
 
 /** Auth API 핸들러 (endpoints aligned with docs/api.md) */
 export const authHandlers = [
@@ -138,34 +162,11 @@ export const authHandlers = [
   http.patch<Record<string, never>, VerifyCodeRequest>(
     '/api/users/verification',
     async ({ request }) => {
-      const body = await request.json();
-      const { email, code } = body;
-
-      if (!email || !code) {
-        return HttpResponse.json(
-          createErrorResponse(
-            400,
-            'INVALID_INPUT',
-            '이메일과 인증 코드를 입력해주세요',
-            '/users/verification',
-          ),
-          { status: 400 },
-        );
-      }
-
-      if (code !== MOCK_VERIFICATION_CODE) {
-        return HttpResponse.json(
-          createErrorResponse(
-            400,
-            'VALIDATION_FAILED',
-            '인증 코드가 올바르지 않습니다',
-            '/users/verification',
-          ),
-          { status: 400 },
-        );
-      }
-
-      return HttpResponse.json({ message: '인증 완료' });
+      const { email, code } = await request.json();
+      return (
+        verifyCode(email, code, '/users/verification') ??
+        HttpResponse.json({ message: '인증 완료' })
+      );
     },
   ),
 
@@ -196,34 +197,11 @@ export const authHandlers = [
   http.patch<Record<string, never>, VerifyCodeRequest>(
     '/api/users/auth/password-reset/verify',
     async ({ request }) => {
-      const body = await request.json();
-      const { email, code } = body;
-
-      if (!email || !code) {
-        return HttpResponse.json(
-          createErrorResponse(
-            400,
-            'INVALID_INPUT',
-            '이메일과 인증 코드를 입력해주세요',
-            '/users/auth/password-reset/verify',
-          ),
-          { status: 400 },
-        );
-      }
-
-      if (code !== MOCK_VERIFICATION_CODE) {
-        return HttpResponse.json(
-          createErrorResponse(
-            400,
-            'VALIDATION_FAILED',
-            '인증 코드가 올바르지 않습니다',
-            '/users/auth/password-reset/verify',
-          ),
-          { status: 400 },
-        );
-      }
-
-      return HttpResponse.json({ message: '인증 완료' });
+      const { email, code } = await request.json();
+      return (
+        verifyCode(email, code, '/users/auth/password-reset/verify') ??
+        HttpResponse.json({ message: '인증 완료' })
+      );
     },
   ),
 

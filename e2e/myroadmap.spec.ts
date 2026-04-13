@@ -91,7 +91,7 @@ test.describe('My Roadmaps E2E', () => {
       const cards = page.locator('[role="article"]');
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
 
-      cards.first().getByLabel('더 보기').click();
+      await cards.first().getByLabel('더 보기').click();
       await page.getByRole('menuitem', { name: '이름수정' }).click();
 
       await expect(page.getByText('이름 수정')).toBeVisible({ timeout: 5000 });
@@ -102,7 +102,7 @@ test.describe('My Roadmaps E2E', () => {
       const cards = page.locator('[role="article"]');
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
 
-      cards.first().getByLabel('더 보기').click();
+      await cards.first().getByLabel('더 보기').click();
       await page.getByRole('menuitem', { name: '삭제' }).click();
 
       await expect(page.getByText('정말 삭제하시겠습니까?')).toBeVisible({ timeout: 5000 });
@@ -128,7 +128,9 @@ test.describe('My Roadmaps E2E', () => {
     test('search with no results shows empty grid', async ({ page }) => {
       const searchInput = page.getByPlaceholder('로드맵 검색');
       await searchInput.fill('존재하지않는로드맵이름xyz');
-      await page.waitForTimeout(500);
+      await page
+        .waitForSelector('[role="article"]', { state: 'detached', timeout: 5000 })
+        .catch(() => {});
 
       const cards = page.locator('[role="article"]');
       await expect(cards).toHaveCount(0);
@@ -138,7 +140,7 @@ test.describe('My Roadmaps E2E', () => {
       const cards = page.locator('[role="article"]');
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
 
-      cards.first().getByLabel('더 보기').click();
+      await cards.first().getByLabel('더 보기').click();
       await page.getByRole('menuitem', { name: '이름수정' }).click();
 
       await expect(page.getByText('이름 수정')).toBeVisible({ timeout: 5000 });
@@ -154,7 +156,7 @@ test.describe('My Roadmaps E2E', () => {
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
       const initialCount = await cards.count();
 
-      cards.first().getByLabel('더 보기').click();
+      await cards.first().getByLabel('더 보기').click();
       await page.getByRole('menuitem', { name: '삭제' }).click();
 
       await expect(page.getByText('정말 삭제하시겠습니까?')).toBeVisible({ timeout: 5000 });

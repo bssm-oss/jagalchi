@@ -4,7 +4,13 @@ import { getAccessToken } from '@/api/client';
 
 import type { IFrame, IMessage, StompSubscription } from '@stomp/stompjs';
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? 'ws://localhost:8080/ws';
+const WS_URL =
+  process.env.NEXT_PUBLIC_WS_URL ??
+  (process.env.NODE_ENV === 'production' ? undefined : 'ws://localhost:8080/ws');
+
+if (!WS_URL && typeof window !== 'undefined') {
+  console.warn('[stomp] NEXT_PUBLIC_WS_URL is not set. Real-time features will be disabled.');
+}
 
 let client: Client | null = null;
 let isConnecting = false;

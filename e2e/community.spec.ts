@@ -69,7 +69,6 @@ test.describe('Community E2E', () => {
 
       // Switch to 최신 — cards should still render
       await page.getByText('최신').click();
-      await page.waitForTimeout(1000);
       const cards = page.locator('a[href^="/community/"]');
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
     });

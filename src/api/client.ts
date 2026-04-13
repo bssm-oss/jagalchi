@@ -39,7 +39,8 @@ export function getAccessToken(): string | null {
 export function setAccessToken(token: string): void {
   accessToken = token;
   if (typeof document !== 'undefined') {
-    document.cookie = `${SESSION_COOKIE_KEY}=1; path=/; SameSite=Strict`;
+    const secureFlag = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${SESSION_COOKIE_KEY}=1; path=/; SameSite=Strict${secureFlag}`;
   }
 }
 

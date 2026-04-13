@@ -49,7 +49,7 @@ export const roadmapHandlers = [
         directoryId: null,
         ownerId: r.author?.id ?? 'user-1',
         isPublic: r.isPublic,
-        viewCount: Math.floor(Math.random() * 100),
+        viewCount: 42,
         owner: {
           id: r.author?.id ?? 'user-1',
           nickname: r.author?.name ?? '김선배',
@@ -82,8 +82,8 @@ export const roadmapHandlers = [
         description: r.description,
         thumbnailUrl: null,
         isPublic: r.isPublic,
-        viewCount: Math.floor(Math.random() * 100),
-        forkCount: Math.floor(Math.random() * 20),
+        viewCount: 42,
+        forkCount: 5,
         tags: [],
         owner: {
           id: r.author?.id ?? 'user-1',
@@ -207,7 +207,13 @@ export const roadmapHandlers = [
 
   // GET /api/directories/tree — 디렉토리 트리 조회
   http.get('/api/directories/tree', () => {
-    const buildTree = (parentId: string | null): typeof directoryStore => {
+    type DirectoryNode = {
+      id: string;
+      name: string;
+      parentId: string | null;
+      children: DirectoryNode[];
+    };
+    const buildTree = (parentId: string | null): DirectoryNode[] => {
       return directoryStore
         .filter((d) => d.parentId === parentId)
         .map((d) => ({ ...d, children: buildTree(d.id) }));

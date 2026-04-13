@@ -17,11 +17,12 @@ test.describe('Profile E2E', () => {
   });
 
   test('delete account button is visible', async ({ page }) => {
-    // Navigate to profile — shows error state but delete button might still render
     await page.goto('/profile');
-    // Wait for page to settle
-    await page.waitForTimeout(3000);
-    // The page shows error state, so we just verify navigation worked
+    await expect(
+      page
+        .getByText('프로필을 불러올 수 없습니다.')
+        .or(page.getByRole('button', { name: '계정 삭제' })),
+    ).toBeVisible({ timeout: 10000 });
     await expect(page).toHaveURL(/\/profile/);
   });
 });
