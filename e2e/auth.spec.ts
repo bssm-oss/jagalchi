@@ -117,7 +117,7 @@ test.describe('Auth E2E', () => {
       await expect(page.getByPlaceholder('사용자 이름 입력')).toBeVisible({ timeout: 10000 });
     });
 
-    test.fixme('Step 1 → Step 2 → Step 3 → complete registration', async ({ page }) => {
+    test('Step 1 → Step 2 → Step 3 → complete registration', async ({ page }) => {
       await page.getByPlaceholder('이메일 입력').fill('fullflow@example.com');
       await page.getByPlaceholder('비밀번호 지정').fill('NewPass1234!');
       await page.getByRole('button', { name: '인증번호 전송' }).click();
@@ -136,8 +136,8 @@ test.describe('Auth E2E', () => {
       await expect(skipButton).toBeVisible({ timeout: 10000 });
       await skipButton.click();
 
-      // / → /myroadmap 리다이렉트
-      await expect(page).toHaveURL(/\/myroadmap/, { timeout: 10000 });
+      // 회원가입 완료 후 /login으로 리다이렉트 (RegisterForm.tsx: router.push('/login'))
+      await expect(page).toHaveURL(/\/login/, { timeout: 10000 });
     });
   });
 

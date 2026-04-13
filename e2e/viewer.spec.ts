@@ -5,7 +5,7 @@ import { loginAsTestUser } from './helpers/auth';
 // Viewer는 NEXT_PUBLIC_REALTIME_ENABLED=true일 때 API, 아닐 때 localStorage 사용.
 // 현재 dev 환경에서는 localStorage fallback이므로 별도 seeding 필요.
 test.describe('Viewer E2E', () => {
-  test.fixme('viewer page loads with seeded localStorage data', async ({ page }) => {
+  test('viewer page loads with seeded localStorage data', async ({ page }) => {
     await loginAsTestUser(page);
 
     await page.evaluate(() => {
