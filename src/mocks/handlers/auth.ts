@@ -245,7 +245,13 @@ export const authHandlers = [
   }),
 
   // DELETE /api/users — 계정 삭제
-  http.delete('/api/users', () => {
+  http.delete('/api/users', ({ request }) => {
+    if (!request.headers.get('Authorization')) {
+      return HttpResponse.json(
+        createErrorResponse(401, 'UNAUTHORIZED', '인증이 필요합니다', '/users'),
+        { status: 401 },
+      );
+    }
     return new HttpResponse(null, { status: 204 });
   }),
 ];

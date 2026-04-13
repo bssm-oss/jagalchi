@@ -10,7 +10,6 @@ import {
   getAiSchema,
   getCommentDigest,
   getCommentDuplicates,
-  getDocumentRoadmap,
   getGraphRag,
   getInitData,
   getInitDataList,
@@ -44,7 +43,7 @@ vi.mock('./client', () => ({
 import { apiClient } from './client';
 
 describe('ai API exports', () => {
-  it('exports all 29 API functions', () => {
+  it('exports all 28 API functions', () => {
     expect(typeof getAiHealth).toBe('function');
     expect(typeof getAiSchema).toBe('function');
     expect(typeof getAiDocs).toBe('function');
@@ -56,7 +55,6 @@ describe('ai API exports', () => {
     expect(typeof getRelatedRoadmaps).toBe('function');
     expect(typeof getRoadmapGenerated).toBe('function');
     expect(typeof getRoadmapRecommendation).toBe('function');
-    expect(typeof getDocumentRoadmap).toBe('function');
     expect(typeof postDocumentRoadmap).toBe('function');
     expect(typeof getTechCards).toBe('function');
     expect(typeof getTechFingerprint).toBe('function');

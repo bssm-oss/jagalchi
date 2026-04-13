@@ -211,11 +211,6 @@ interface DocumentRoadmapResponse {
   created_at: string;
 }
 
-interface DocumentRoadmapGetParams {
-  document: string;
-  goal?: string;
-}
-
 interface DocumentRoadmapPostRequest {
   document: string;
   goal?: string;
@@ -571,15 +566,6 @@ export const getRoadmapRecommendation = (params: RoadmapRecommendationParams) =>
   );
 };
 
-/** GET /ai/document-roadmap */
-export const getDocumentRoadmap = (params: DocumentRoadmapGetParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('document', params.document);
-  if (params.goal) searchParams.set('goal', params.goal);
-
-  return apiClient.get<DocumentRoadmapResponse>(`/ai/document-roadmap?${searchParams.toString()}`);
-};
-
 /** POST /ai/document-roadmap */
 export const postDocumentRoadmap = (data: DocumentRoadmapPostRequest) =>
   apiClient.post<DocumentRoadmapResponse>('/ai/document-roadmap', data);
@@ -735,7 +721,6 @@ export type {
   RoadmapRecommendationParams,
   DocumentRoadmapRecommendedItem,
   DocumentRoadmapResponse,
-  DocumentRoadmapGetParams,
   DocumentRoadmapPostRequest,
   TechAlternative,
   TechLearningPathStage,
