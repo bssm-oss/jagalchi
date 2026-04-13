@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   reactCompiler: true,
 
   // Security headers to protect against common vulnerabilities
