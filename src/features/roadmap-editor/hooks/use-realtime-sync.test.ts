@@ -17,7 +17,7 @@ const mockSubscribe = vi.fn((destination: string, callback: MessageHandler) => {
   return { unsubscribe: vi.fn() };
 });
 
-const mockUseStomp = vi.fn(() => ({
+const mockUseStomp = vi.fn((_options?: unknown) => ({
   isConnected: true,
   subscribe: mockSubscribe,
   publish: vi.fn(),
@@ -26,7 +26,7 @@ const mockUseStomp = vi.fn(() => ({
 }));
 
 vi.mock('@/hooks/use-stomp', () => ({
-  useStomp: (...args: unknown[]) => mockUseStomp(...args),
+  useStomp: (options?: unknown) => mockUseStomp(options),
 }));
 
 // Mock action dispatcher

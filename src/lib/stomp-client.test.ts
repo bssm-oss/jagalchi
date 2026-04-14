@@ -122,7 +122,7 @@ describe('stomp-client', () => {
       // Need a connected client to test publish
       const client = getStompClient();
       // Simulate connected state
-      (client as Record<string, unknown>).connected = true;
+      (client as unknown as Record<string, unknown>).connected = true;
 
       publishStomp('/app/test', { data: 'hello' }, { 'X-User-ID': '42' });
 
