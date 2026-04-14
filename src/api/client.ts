@@ -143,9 +143,12 @@ async function request<T>(
         }
       }
 
-      // refresh 실패 → 로그아웃
+      // refresh 실패 → 토큰 클리어 (보호 라우트에서만 리다이렉트)
       clearAccessToken();
-      if (typeof window !== 'undefined') {
+      const isProtectedRoute =
+        typeof window !== 'undefined' &&
+        ['/myroadmap', '/profile', '/editor'].some((r) => window.location.pathname.startsWith(r));
+      if (isProtectedRoute) {
         window.location.href = '/login';
       }
       throw new ApiClientError({

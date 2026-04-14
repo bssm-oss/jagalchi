@@ -1,23 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock @stomp/stompjs Client
+// Mock @stomp/stompjs Client as a class constructor
 const mockActivate = vi.fn();
 const mockDeactivate = vi.fn().mockResolvedValue(undefined);
 const mockSubscribe = vi.fn().mockReturnValue({ unsubscribe: vi.fn() });
 const mockPublish = vi.fn();
 
-vi.mock('@stomp/stompjs', () => ({
-  Client: vi.fn().mockImplementation((config: Record<string, unknown>) => ({
-    ...config,
-    connected: false,
-    active: false,
-    activate: mockActivate,
-    deactivate: mockDeactivate,
-    subscribe: mockSubscribe,
-    publish: mockPublish,
-    connectHeaders: {},
-  })),
-}));
+vi.mock('@stomp/stompjs', () => {
+  const MockClient = vi.fn(function (
+    this: Record<string, unknown>,
+    config: Record<string, unknown>,
+  ) {
+    Object.assign(this, config);
+    this.connected = false;
+    this.active = false;
+    this.activate = mockActivate;
+    this.deactivate = mockDeactivate;
+    this.subscribe = mockSubscribe;
+    this.publish = mockPublish;
+    if (!this.connectHeaders) this.connectHeaders = {};
+  });
+  return { Client: MockClient };
+});
 
 vi.mock('@/api/client', () => ({
   getAccessToken: vi.fn().mockReturnValue('test-token'),
@@ -32,10 +36,10 @@ import {
 } from './stomp-client';
 
 describe('stomp-client', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     // Reset singleton by disconnecting
-    disconnectStomp();
+    await disconnectStomp();
   });
 
   describe('getStompClient', () => {

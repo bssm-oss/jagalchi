@@ -5,6 +5,11 @@ import { createTestWrapper } from '@/test-utils';
 
 import type { MessageHandler } from '@/lib/stomp-client';
 
+// Set env BEFORE module import via vi.hoisted (runs before all vi.mock and imports)
+vi.hoisted(() => {
+  process.env.NEXT_PUBLIC_REALTIME_ENABLED = 'true';
+});
+
 // Mock useStomp
 const subscribeCallbacks = new Map<string, MessageHandler>();
 const mockSubscribe = vi.fn((destination: string, callback: MessageHandler) => {
@@ -12,14 +17,16 @@ const mockSubscribe = vi.fn((destination: string, callback: MessageHandler) => {
   return { unsubscribe: vi.fn() };
 });
 
+const mockUseStomp = vi.fn(() => ({
+  isConnected: true,
+  subscribe: mockSubscribe,
+  publish: vi.fn(),
+  connect: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
 vi.mock('@/hooks/use-stomp', () => ({
-  useStomp: () => ({
-    isConnected: true,
-    subscribe: mockSubscribe,
-    publish: vi.fn(),
-    connect: vi.fn(),
-    disconnect: vi.fn(),
-  }),
+  useStomp: (...args: unknown[]) => mockUseStomp(...args),
 }));
 
 // Mock action dispatcher
@@ -27,9 +34,6 @@ vi.mock('../services/action-dispatcher', () => ({
   handleAck: vi.fn(() => true),
   handleNack: vi.fn(() => ({ action: undefined, isFound: true })),
 }));
-
-// Enable realtime
-vi.stubEnv('NEXT_PUBLIC_REALTIME_ENABLED', 'true');
 
 import { handleAck, handleNack } from '../services/action-dispatcher';
 
