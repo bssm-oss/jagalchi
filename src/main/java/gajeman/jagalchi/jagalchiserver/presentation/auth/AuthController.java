@@ -6,7 +6,6 @@ import gajeman.jagalchi.jagalchiserver.domain.user.Users;
 import gajeman.jagalchi.jagalchiserver.infrastructure.cookie.CookieUtil;
 import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
 import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
-import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.RefreshTokenRequest;
 import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SignUpRequest;
 import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.LoginResponse;
 import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.SignUpResponse;
@@ -98,17 +97,17 @@ public class AuthController {
 
     /**
      * 리프레시 토큰 재발급 메서드
-     * @param request 리프레시 토큰
      */
     @PatchMapping("/auth/refresh")
     public ResponseEntity<LoginResponse> refreshToken(
-            @Valid @RequestBody RefreshTokenRequest request,
+            @CookieValue(name = "refreshToken") String refreshToken,
             HttpServletResponse httpServletResponse
     ){
-        LoginResult result = refreshAccessTokenCommand.refreshAccessToken(request.getRefreshToken());
+        LoginResult result = refreshAccessTokenCommand.refreshAccessToken(refreshToken);
 
         LoginResponse response = LoginResponse.from(result.accessToken());
 
+        cookieUtil.addAccessToken(httpServletResponse, result.accessToken(), true);
         cookieUtil.addRefreshToken(httpServletResponse, result.refreshToken(), true);
 
         return ResponseEntity.ok(response);
