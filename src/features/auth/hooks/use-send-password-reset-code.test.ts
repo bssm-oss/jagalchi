@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createTestWrapper } from '@/test-utils';
 
 vi.mock('@/api/auth', () => ({
-  sendPasswordResetCode: vi.fn().mockResolvedValue({ message: 'ok' }),
+  sendPasswordResetCode: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { sendPasswordResetCode } from '@/api/auth';

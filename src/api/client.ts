@@ -139,7 +139,9 @@ async function request<T>(
 
         if (retryResponse.ok) {
           if (retryResponse.status === 204) return undefined as T;
-          return retryResponse.json() as Promise<T>;
+          const retryText = await retryResponse.text();
+          if (!retryText) return undefined as T;
+          return JSON.parse(retryText) as T;
         }
       }
 
@@ -173,7 +175,9 @@ async function request<T>(
     return undefined as T;
   }
 
-  return response.json() as Promise<T>;
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }
 
 export const apiClient = {

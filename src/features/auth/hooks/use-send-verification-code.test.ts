@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createTestWrapper } from '@/test-utils';
 
 vi.mock('@/api/auth', () => ({
-  sendVerificationCode: vi.fn().mockResolvedValue({ message: 'ok' }),
+  sendVerificationCode: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { sendVerificationCode } from '@/api/auth';
