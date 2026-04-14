@@ -1,7 +1,19 @@
 import type { NextConfig } from 'next';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.jagalchi.dev';
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
+
+  // /api/* → api.jagalchi.dev/* 프록시 (CORS 우회)
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${API_URL}/:path*`,
+      },
+    ];
+  },
 
   // Security headers to protect against common vulnerabilities
   async headers() {
