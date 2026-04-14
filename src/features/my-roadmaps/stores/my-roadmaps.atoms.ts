@@ -5,7 +5,7 @@ import type { SortOrder, SortBy, FilterCategory } from '@/types/sort.types';
 export type SidebarCategory = 'recent' | 'community' | 'my-roadmap' | 'shared' | 'favorites';
 
 export interface BreadcrumbSegment {
-  id: string;
+  id: number;
   name: string;
 }
 

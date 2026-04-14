@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { ChevronRight, GitBranch } from 'lucide-react';
 
-import type { ForkTreeNode } from '@/api/roadmap';
+import type { RoadmapForkTreeResponse } from '@/api/roadmap';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { VIEWER_MESSAGES } from '@/constants/messages';
 import { useForkTree } from '@/hooks/use-fork-tree';
 
 interface ForkTreeNodeItemProps {
-  node: ForkTreeNode;
+  node: RoadmapForkTreeResponse;
   depth: number;
 }
 
@@ -67,7 +67,7 @@ function ForkTreeNodeItem({ node, depth }: ForkTreeNodeItemProps) {
 }
 
 interface ForkTreeDialogProps {
-  roadmapId: string;
+  roadmapId: number;
 }
 
 export function ForkTreeDialog({ roadmapId }: ForkTreeDialogProps) {

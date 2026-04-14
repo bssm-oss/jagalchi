@@ -7,7 +7,7 @@ export function useCreateDirectory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { name: string; parentId?: string }) => createDirectory(data),
+    mutationFn: (data: { name: string; parentId?: number }) => createDirectory(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.directories.tree() });
       queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.lists() });

@@ -38,10 +38,10 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
   const updateMutation = useUpdateRoadmap();
 
   // Delete dialog state
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
 
   // Rename dialog state
-  const [renameTarget, setRenameTarget] = useState<{ id: string; title: string } | null>(null);
+  const [renameTarget, setRenameTarget] = useState<{ id: number; title: string } | null>(null);
   const [renameInput, setRenameInput] = useState('');
 
   const handleDeleteConfirm = () => {
@@ -50,7 +50,7 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
     setDeleteTarget(null);
   };
 
-  const handleRenameOpen = (id: string, title: string) => {
+  const handleRenameOpen = (id: number, title: string) => {
     setRenameTarget({ id, title });
     setRenameInput(title);
   };

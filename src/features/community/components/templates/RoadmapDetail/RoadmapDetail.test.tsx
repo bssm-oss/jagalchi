@@ -52,9 +52,9 @@ vi.mock('@/components/ui/separator', () => ({
   ),
 }));
 
-// MOCK_COMMUNITY_DATA ids: '1' through '15'
-const VALID_ID = '1';
-const INVALID_ID = 'does-not-exist';
+// MOCK_COMMUNITY_DATA ids: 1 through 15
+const VALID_ID = 1;
+const INVALID_ID = -1;
 
 describe('RoadmapDetail', () => {
   beforeEach(() => {

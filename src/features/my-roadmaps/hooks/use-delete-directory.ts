@@ -7,7 +7,7 @@ export function useDeleteDirectory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteDirectory(id),
+    mutationFn: (id: number) => deleteDirectory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.directories.tree() });
     },

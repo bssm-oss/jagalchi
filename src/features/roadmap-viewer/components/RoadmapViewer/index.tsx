@@ -59,7 +59,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   return (
     <div className="bg-background min-h-screen">
       <RoadmapHeader
-        roadmapId={roadmapId}
+        roadmapId={Number(roadmapId)}
         roadmapTitle={`Roadmap · ${roadmapId}`}
         onAiFeedback={() => setIsCoachOpen(true)}
       />
@@ -71,7 +71,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
             <HeaderMenu />
             <HeaderExportMenu />
             <HeaderSaveAsImageMenu />
-            <ForkTreeDialog roadmapId={roadmapId} />
+            <ForkTreeDialog roadmapId={Number(roadmapId)} />
             <div className="ml-auto flex items-center gap-1">
               <Button
                 variant={layout === 'page' ? 'default' : 'outline'}

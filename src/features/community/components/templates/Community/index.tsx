@@ -39,7 +39,6 @@ export function Community() {
       id: item.id,
       title: item.title,
       author: item.owner.nickname,
-      imageUrl: item.thumbnailUrl ?? undefined,
     }));
   }, [popularData]);
 
@@ -49,7 +48,6 @@ export function Community() {
       id: item.id,
       title: item.title,
       author: item.owner.nickname,
-      imageUrl: item.thumbnailUrl ?? undefined,
     }));
   }, [latestData]);
 

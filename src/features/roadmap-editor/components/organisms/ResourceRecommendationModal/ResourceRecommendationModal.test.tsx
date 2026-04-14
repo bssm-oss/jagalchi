@@ -15,9 +15,33 @@ vi.mock('@/api/ai', async (importOriginal) => {
 });
 
 const mockItems = [
-  { title: '공식 문서', url: 'https://example.com/docs', source: 'web', score: 0.9 },
-  { title: '입문 튜토리얼', url: 'https://example.com/tutorial', source: 'web', score: 0.8 },
-  { title: '유튜브 강의', url: 'https://example.com/youtube', source: 'web', score: 0.7 },
+  {
+    title: '공식 문서',
+    url: 'https://example.com/docs',
+    source: 'web',
+    score: 0.9,
+    why_recommended: '공식 문서는 가장 정확한 정보를 제공합니다',
+    difficulty: 'beginner' as const,
+    estimated_minutes: 30,
+  },
+  {
+    title: '입문 튜토리얼',
+    url: 'https://example.com/tutorial',
+    source: 'web',
+    score: 0.8,
+    why_recommended: '단계별로 학습할 수 있는 튜토리얼입니다',
+    difficulty: 'beginner' as const,
+    estimated_minutes: 60,
+  },
+  {
+    title: '유튜브 강의',
+    url: 'https://example.com/youtube',
+    source: 'web',
+    score: 0.7,
+    why_recommended: '영상으로 쉽게 학습할 수 있습니다',
+    difficulty: 'intermediate' as const,
+    estimated_minutes: null,
+  },
 ];
 
 describe('ResourceRecommendationModal', () => {

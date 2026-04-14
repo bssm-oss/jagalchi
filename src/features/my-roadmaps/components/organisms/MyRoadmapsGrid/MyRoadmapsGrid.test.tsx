@@ -14,9 +14,9 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('MyRoadmapsGrid', () => {
   const mockRoadmaps = [
-    { id: '1', title: 'Roadmap 1' },
-    { id: '2', title: 'Roadmap 2' },
-    { id: '3', title: 'Roadmap 3' },
+    { id: 1, title: 'Roadmap 1' },
+    { id: 2, title: 'Roadmap 2' },
+    { id: 3, title: 'Roadmap 3' },
   ];
 
   it('renders correctly', () => {

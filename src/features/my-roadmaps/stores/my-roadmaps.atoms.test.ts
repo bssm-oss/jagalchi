@@ -18,8 +18,8 @@ describe('my-roadmaps atoms', () => {
 
   it('breadcrumbPathAtom can be updated', () => {
     const store = createStore();
-    store.set(breadcrumbPathAtom, [{ id: '1', name: 'Frontend' }]);
-    expect(store.get(breadcrumbPathAtom)).toEqual([{ id: '1', name: 'Frontend' }]);
+    store.set(breadcrumbPathAtom, [{ id: 1, name: 'Frontend' }]);
+    expect(store.get(breadcrumbPathAtom)).toEqual([{ id: 1, name: 'Frontend' }]);
   });
 
   it('searchQueryAtom defaults to empty string', () => {

@@ -4,7 +4,7 @@ import { completeNode, getMyProgress } from '@/api/roadmap';
 import type { ProgressResponse } from '@/api/roadmap';
 import { queryKeys } from '@/lib/query-keys';
 
-export function useRoadmapProgress(roadmapId: string) {
+export function useRoadmapProgress(roadmapId: number) {
   return useQuery<ProgressResponse>({
     queryKey: queryKeys.roadmaps.progress(roadmapId),
     queryFn: () => getMyProgress(roadmapId),
@@ -12,7 +12,7 @@ export function useRoadmapProgress(roadmapId: string) {
   });
 }
 
-export function useCompleteNode(roadmapId: string) {
+export function useCompleteNode(roadmapId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -21,7 +21,7 @@ export function useCompleteNode(roadmapId: string) {
       isCompleted,
       link,
     }: {
-      nodeId: string;
+      nodeId: number;
       isCompleted: boolean;
       link?: string;
     }) => completeNode(roadmapId, nodeId, { isCompleted, link }),

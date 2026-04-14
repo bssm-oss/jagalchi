@@ -7,7 +7,7 @@ export function useDeleteRoadmap() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (roadmapId: string) => deleteRoadmap(roadmapId),
+    mutationFn: (roadmapId: number) => deleteRoadmap(roadmapId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.lists() });
     },

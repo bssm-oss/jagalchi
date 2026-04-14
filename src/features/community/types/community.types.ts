@@ -3,7 +3,7 @@ export type { SortOrder, SortBy, FilterCategory } from '@/types/sort.types';
 export type ActiveTab = 'popular' | 'latest' | 'saved';
 
 export interface CommunityItem {
-  id: string;
+  id: number;
   title: string;
   author: string;
   imageUrl?: string;

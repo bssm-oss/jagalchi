@@ -6,7 +6,7 @@ import { SquareDashed } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RoadmapCardProps {
-  id: string;
+  id: number;
   title: string;
   author: string;
   imageUrl?: string;

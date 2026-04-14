@@ -19,8 +19,8 @@ describe('forkRoadmap', () => {
   });
 
   it('calls POST /roadmaps/{id}/fork', () => {
-    forkRoadmap('rm-abc');
-    expect(apiClient.post).toHaveBeenCalledWith('/roadmaps/rm-abc/fork');
+    forkRoadmap(123);
+    expect(apiClient.post).toHaveBeenCalledWith('/roadmaps/123/fork');
   });
 });
 
@@ -30,8 +30,8 @@ describe('getForkTree', () => {
   });
 
   it('calls GET /roadmaps/{id}/fork-tree', () => {
-    getForkTree('rm-xyz');
-    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/rm-xyz/fork-tree');
+    getForkTree(456);
+    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/456/fork-tree');
   });
 });
 
@@ -41,8 +41,8 @@ describe('getForkStatus', () => {
   });
 
   it('calls GET /roadmaps/{id}/fork-status', () => {
-    getForkStatus('rm-999');
-    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/rm-999/fork-status');
+    getForkStatus(999);
+    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/999/fork-status');
   });
 });
 

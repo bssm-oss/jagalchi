@@ -8,7 +8,7 @@ export function useUpdateRoadmap() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ roadmapId, data }: { roadmapId: string; data: UpdateRoadmapRequest }) =>
+    mutationFn: ({ roadmapId, data }: { roadmapId: number; data: UpdateRoadmapRequest }) =>
       updateRoadmap(roadmapId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.all });

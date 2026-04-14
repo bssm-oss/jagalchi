@@ -27,8 +27,9 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedViewerNodeIdAtom);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: progress } = useRoadmapProgress(roadmapId ?? '');
-  const completeMutation = useCompleteNode(roadmapId ?? '');
+  const numericRoadmapId = roadmapId ? Number(roadmapId) : 0;
+  const { data: progress } = useRoadmapProgress(numericRoadmapId);
+  const completeMutation = useCompleteNode(numericRoadmapId);
 
   const completedIds = useMemo(
     () => new Set(progress?.completedNodeIds ?? []),
@@ -51,8 +52,9 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
   const handleToggleComplete = useCallback(
     (nodeId: string) => {
       if (!roadmapId) return;
-      const isCompleted = !completedIds.has(nodeId);
-      completeMutation.mutate({ nodeId, isCompleted });
+      const numericNodeId = Number(nodeId);
+      const isCompleted = !completedIds.has(numericNodeId);
+      completeMutation.mutate({ nodeId: numericNodeId, isCompleted });
     },
     [roadmapId, completedIds, completeMutation],
   );
@@ -118,7 +120,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
             {filteredNodes.map((node) => {
               const data = node.data as JagalchiNodeData;
               const isSelected = node.id === selectedNodeId;
-              const isCompleted = completedIds.has(node.id);
+              const isCompleted = completedIds.has(Number(node.id));
               return (
                 <li key={node.id} className="flex items-center gap-1">
                   {roadmapId && (

@@ -105,34 +105,34 @@ const MOCK_EDGES_BACKEND: Edge[] = [{ id: 'edge-b1-b2', source: 'node-b1', targe
 
 export const MOCK_ROADMAPS: Roadmap[] = [
   {
-    id: 'roadmap-1',
+    id: 1,
     title: '프론트엔드 개발자 로드맵',
     description: 'HTML/CSS부터 React까지 프론트엔드 개발의 학습 경로입니다',
     nodes: MOCK_NODES_FRONTEND,
     edges: MOCK_EDGES_FRONTEND,
-    author: { id: 'user-1', name: '김선배' },
+    author: { id: 1, name: '김선배' },
     isPublic: true,
     createdAt: '2025-07-01T10:00:00.000Z',
     updatedAt: '2025-12-15T14:30:00.000Z',
   },
   {
-    id: 'roadmap-2',
+    id: 2,
     title: '백엔드 개발자 로드맵',
     description: 'Python과 Django를 활용한 백엔드 개발 학습 경로입니다',
     nodes: MOCK_NODES_BACKEND,
     edges: MOCK_EDGES_BACKEND,
-    author: { id: 'user-3', name: '이멘토' },
+    author: { id: 3, name: '이멘토' },
     isPublic: true,
     createdAt: '2025-08-15T11:00:00.000Z',
     updatedAt: '2025-11-20T09:00:00.000Z',
   },
   {
-    id: 'roadmap-3',
+    id: 3,
     title: '나의 학습 노트',
     description: '개인 학습 기록용 비공개 로드맵',
     nodes: [],
     edges: [],
-    author: { id: 'user-2', name: '박후배' },
+    author: { id: 2, name: '박후배' },
     isPublic: false,
     createdAt: '2025-10-01T08:00:00.000Z',
     updatedAt: '2025-10-01T08:00:00.000Z',
@@ -140,5 +140,5 @@ export const MOCK_ROADMAPS: Roadmap[] = [
 ];
 
 /** ID로 로드맵 검색 */
-export const findRoadmapById = (id: string): Roadmap | undefined =>
+export const findRoadmapById = (id: number): Roadmap | undefined =>
   MOCK_ROADMAPS.find((roadmap) => roadmap.id === id);

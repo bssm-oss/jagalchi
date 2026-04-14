@@ -275,7 +275,7 @@ interface TechCardResponse {
   relationships: TechCardRelationships;
   reliability_metrics: TechCardReliabilityMetrics;
   latest_changes: TechCardLatestChanges;
-  reel_evidence: RetrievalEvidence[];
+  reel_evidence: { query: string; snippet: string }[];
   sources: TechCardSource[];
   generated_by: {
     model_version: string;
@@ -346,6 +346,9 @@ interface ResourceItem {
   url: string;
   source: string;
   score: number;
+  why_recommended: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'unknown';
+  estimated_minutes: number | null;
 }
 
 interface ResourceRecommendationResponse {
@@ -360,6 +363,7 @@ interface ResourceRecommendationParams {
   query: string;
   top_k?: number;
   recency_days?: number;
+  lang?: 'ko_first' | 'ko_only' | 'global';
 }
 
 interface WebSearchResult {
@@ -369,6 +373,9 @@ interface WebSearchResult {
   score: number;
   source: string;
   fetched_at: string;
+  why_recommended: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'unknown';
+  estimated_minutes: number | null;
 }
 
 interface WebSearchResponse {
@@ -382,8 +389,9 @@ interface WebSearchResponse {
 interface WebSearchParams {
   query: string;
   top_k?: number;
-  engine?: 'tavily' | 'exa' | 'all';
+  engine?: 'apify' | 'tavily' | 'exa' | 'all';
   recency_days?: number;
+  lang?: 'ko_first' | 'ko_only' | 'global';
 }
 
 interface GraphRagNode {
@@ -612,6 +620,7 @@ export const getResourceRecommendation = (params: ResourceRecommendationParams) 
   if (params.top_k !== undefined) searchParams.set('top_k', String(params.top_k));
   if (params.recency_days !== undefined)
     searchParams.set('recency_days', String(params.recency_days));
+  if (params.lang) searchParams.set('lang', params.lang);
 
   return apiClient.get<ResourceRecommendationResponse>(
     `/ai/resource-recommendation?${searchParams.toString()}`,
@@ -626,6 +635,7 @@ export const getWebSearch = (params: WebSearchParams) => {
   if (params.engine) searchParams.set('engine', params.engine);
   if (params.recency_days !== undefined)
     searchParams.set('recency_days', String(params.recency_days));
+  if (params.lang) searchParams.set('lang', params.lang);
 
   return apiClient.get<WebSearchResponse>(`/ai/web-search?${searchParams.toString()}`);
 };

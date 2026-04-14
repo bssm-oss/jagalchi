@@ -16,7 +16,7 @@ import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 interface RoadmapCardProps {
-  id?: string;
+  id?: number;
   title: string;
   type?: 'Roadmap' | 'Directory';
   author?: string;

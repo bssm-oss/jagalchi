@@ -102,13 +102,14 @@ export function useAutoSave({
       const stored = localStorage.getItem(STORAGE_KEY);
       // Use Zod validation to prevent corruption/security issues
       const roadmaps = parseRoadmaps(stored) as Roadmap[];
-      const roadmap = roadmaps.find((r) => r.id === roadmapId);
+      const numericId = Number(roadmapId);
+      const roadmap = roadmaps.find((r) => r.id === numericId);
       const now = new Date().toISOString();
 
       // Upsert: Create if not exists, update if exists
       const updated: Roadmap = {
         ...(roadmap ?? {
-          id: roadmapId,
+          id: numericId,
           isPublic: false,
           createdAt: now,
         }),
@@ -120,7 +121,7 @@ export function useAutoSave({
 
       // Save back to localStorage
       const updatedRoadmaps = roadmap
-        ? roadmaps.map((r) => (r.id === roadmapId ? updated : r))
+        ? roadmaps.map((r) => (r.id === numericId ? updated : r))
         : [...roadmaps, updated];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRoadmaps));
 

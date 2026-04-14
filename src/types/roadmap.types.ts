@@ -55,12 +55,12 @@ export type RoadmapNode =
 // === Roadmap Entity Types ===
 
 export interface RoadmapAuthor {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Roadmap {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   nodes: RoadmapNode[];
@@ -89,7 +89,7 @@ export interface UpdateRoadmapInput {
 
 /** 로드맵 목록에서 사용하는 경량 타입 (Roadmap에서 파생) */
 export interface RoadmapSummary {
-  id: string;
+  id: number;
   title: string;
   type?: 'Roadmap' | 'Directory';
   author?: string;

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useSetAtom } from 'jotai';
-import { nanoid } from 'nanoid';
 
 import {
   createEmptyRoadmap,
@@ -69,7 +68,7 @@ async function loadRoadmapData(roadmapId: string): Promise<ApiRoadmap | null> {
   }
 
   // Fallback to localStorage
-  const local = loadRoadmapFromLocalStorage(roadmapId);
+  const local = loadRoadmapFromLocalStorage(Number(roadmapId));
   if (!local) return null;
 
   return {
@@ -99,7 +98,7 @@ export function useRoadmapLoader({ roadmapId }: UseRoadmapLoaderProps): UseRoadm
 
         // Check if roadmapId is 'new' - create new roadmap
         if (roadmapId === 'new') {
-          const newId = nanoid();
+          const newId = Date.now();
           const newRoadmap = createEmptyRoadmap(newId);
           saveRoadmapToLocalStorage(newRoadmap);
 

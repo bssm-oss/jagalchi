@@ -7,7 +7,7 @@ export function useForkRoadmap() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (roadmapId: string) => forkRoadmap(roadmapId),
+    mutationFn: (roadmapId: number) => forkRoadmap(roadmapId),
     onSuccess: (_data, roadmapId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.lists() });
       queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.forkStatus(roadmapId) });

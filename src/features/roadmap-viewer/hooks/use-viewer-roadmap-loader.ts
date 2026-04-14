@@ -51,7 +51,7 @@ export function useViewerRoadmapLoader(roadmapId: string) {
       }
 
       // 2. Fallback to localStorage
-      const localRoadmap = loadRoadmapFromLocalStorage(roadmapId);
+      const localRoadmap = loadRoadmapFromLocalStorage(Number(roadmapId));
 
       if (isCancelled) return;
 

@@ -12,13 +12,13 @@ import { useForkRoadmap } from '@/hooks/use-fork-roadmap';
 import { useForkStatus } from '@/hooks/use-fork-status';
 
 interface RoadmapHeaderProps {
-  roadmapId?: string;
+  roadmapId?: number;
   roadmapTitle?: string;
   onAiFeedback?: () => void;
 }
 
 export function RoadmapHeader({
-  roadmapId = '',
+  roadmapId = 0,
   roadmapTitle = VIEWER_MESSAGES.DEFAULT_ROADMAP_TITLE,
   onAiFeedback,
 }: RoadmapHeaderProps) {
@@ -27,7 +27,7 @@ export function RoadmapHeader({
   const { mutate: forkRoadmap, isPending: isForkPending } = useForkRoadmap();
 
   const handleFork = () => {
-    if (!roadmapId || forkStatus?.isForkedByCurrentUser) return;
+    if (!roadmapId || forkStatus?.forkedByCurrentUser) return;
     forkRoadmap(roadmapId, {
       onSuccess: (data) => {
         router.push(`/editor/${data.id}`);
@@ -74,17 +74,17 @@ export function RoadmapHeader({
         </div>
         <Button
           onClick={handleFork}
-          disabled={isForkPending || forkStatus?.isForkedByCurrentUser}
+          disabled={isForkPending || forkStatus?.forkedByCurrentUser}
           variant="outline"
           className="h-9 rounded-lg px-4 text-sm font-semibold"
           title={
-            forkStatus?.isForkedByCurrentUser
+            forkStatus?.forkedByCurrentUser
               ? VIEWER_MESSAGES.FORK_ALREADY_FORKED
               : VIEWER_MESSAGES.FORK_BUTTON
           }
         >
           <GitFork className="mr-1.5 h-4 w-4" />
-          {forkStatus?.isForkedByCurrentUser
+          {forkStatus?.forkedByCurrentUser
             ? VIEWER_MESSAGES.FORK_ALREADY_FORKED
             : VIEWER_MESSAGES.FORK_BUTTON}
         </Button>

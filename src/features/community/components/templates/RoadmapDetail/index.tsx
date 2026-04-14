@@ -18,7 +18,7 @@ import { ContributorItem } from '../../atoms/ContributorItem';
 import { CommunityHeader } from '../../molecules/CommunityHeader';
 
 interface RoadmapDetailProps {
-  id: string;
+  id: number;
 }
 
 export function RoadmapDetail({ id }: RoadmapDetailProps) {
@@ -149,7 +149,7 @@ export function RoadmapDetail({ id }: RoadmapDetailProps) {
               {COMMUNITY_MESSAGES.MADE_BY}
             </h3>
             <div className="flex flex-col gap-[16px]">
-              <ContributorItem name={item.owner.name} />
+              <ContributorItem name={item.owner.nickname} />
             </div>
           </div>
 

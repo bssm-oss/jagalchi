@@ -4,7 +4,6 @@ import { useAtom } from 'jotai';
 import {
   BookOpen,
   ChevronDown,
-  ChevronRight,
   Clock,
   Files,
   Folder,
@@ -18,7 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-import type { DirectoryTreeNode } from '@/api/roadmap';
+import type { DirectoryTreeItem } from '@/api/roadmap';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,13 +63,14 @@ const SIDEBAR_GROUPS: SidebarItem[][] = [
   [{ icon: Star, label: MY_ROADMAPS_MESSAGES.SIDEBAR_FAVORITES, id: 'favorites' }],
 ];
 
-function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number }) {
-  const [isOpen, setIsOpen] = useState(false);
+function DirectoryNode({ node }: { node: DirectoryTreeItem }) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(node.name);
   const inputRef = useRef<HTMLInputElement>(null);
-  const hasChildren = node.children && node.children.length > 0;
+
+  /** path 기반 depth 계산 (e.g. "/a/b" → depth 1) */
+  const depth = node.path ? node.path.split('/').filter(Boolean).length - 1 : 0;
 
   const { mutate: updateDirectory, isPending: isUpdating } = useUpdateDirectory();
   const { mutate: deleteDirectory } = useDeleteDirectory();
@@ -105,18 +105,8 @@ function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number
         className="group flex h-7 w-full items-center gap-1.5 rounded-md text-sm text-slate-700 transition-colors hover:bg-black/5"
         style={{ paddingLeft: `${12 + depth * 16}px`, paddingRight: '4px' }}
       >
-        <button
-          type="button"
-          onClick={() => hasChildren && setIsOpen((prev) => !prev)}
-          className="flex min-w-0 flex-1 items-center gap-1.5"
-        >
-          {hasChildren ? (
-            <ChevronRight
-              className={cn('h-3.5 w-3.5 shrink-0 transition-transform', isOpen && 'rotate-90')}
-            />
-          ) : (
-            <span className="w-3.5 shrink-0" />
-          )}
+        <button type="button" className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="w-3.5 shrink-0" />
           <Folder className="h-4 w-4 shrink-0 text-slate-500" />
           {isRenaming ? (
             <input
@@ -160,11 +150,6 @@ function DirectoryNode({ node, depth }: { node: DirectoryTreeNode; depth: number
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {isOpen &&
-        hasChildren &&
-        node.children.map((child) => (
-          <DirectoryNode key={child.id} node={child} depth={depth + 1} />
-        ))}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
@@ -264,7 +249,7 @@ export function MyRoadmapsSidebar({
           <Separator className="my-2" />
           <div className="flex flex-col gap-0.5">
             {directoryTree.map((dir) => (
-              <DirectoryNode key={dir.id} node={dir} depth={0} />
+              <DirectoryNode key={dir.id} node={dir} />
             ))}
           </div>
         </>

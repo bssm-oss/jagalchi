@@ -40,9 +40,7 @@ export default function MyRoadmapsPage() {
       id: r.id,
       title: r.title,
       type: 'Roadmap' as const,
-      author: r.ownerId,
-      updatedAt: r.updatedAt,
-      category: r.isPublic ? ('community' as const) : ('my-roadmap' as const),
+      author: r.owner.nickname,
     }));
   }, [data]);
 
