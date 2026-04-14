@@ -15,11 +15,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "https://jagalchi.dev"
+                        "https://jagalchi.dev",
+                        "https://www.jagalchi.dev"
                 )
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.HEAD.name(),
+                        HttpMethod.OPTIONS.name(),
                         HttpMethod.POST.name(),
                         HttpMethod.PUT.name(),
                         HttpMethod.DELETE.name(),
