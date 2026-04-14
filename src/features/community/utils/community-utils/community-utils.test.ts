@@ -57,7 +57,7 @@ describe('filterAndSortCommunityItems', () => {
     expect(result[0].type).toBe('directory');
   });
 
-  it('sorts by likes (using name for now in mock logic, let me check)', () => {
+  it('sorts by size in descending order', () => {
     const result = filterAndSortCommunityItems(mockItems, {
       searchQuery: '',
       filterCategory: 'all',

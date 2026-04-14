@@ -21,6 +21,26 @@ vi.mock('@/hooks/use-popular-roadmaps', () => ({
   usePopularRoadmaps: () => ({ data: undefined, isLoading: false }),
 }));
 
+vi.mock('@/hooks/use-community-roadmaps', () => ({
+  useCommunityRoadmaps: () => ({
+    data: {
+      content: [
+        {
+          id: 1,
+          title: 'Test Roadmap',
+          tags: [],
+          owner: { id: 1, nickname: '홍길동', profileImageUrl: null },
+        },
+      ],
+      pageable: { pageNumber: 0, pageSize: 12 },
+      totalElements: 1,
+      totalPages: 1,
+      hasNext: false,
+    },
+    isLoading: false,
+  }),
+}));
+
 vi.mock('../../molecules/CommunityHeader', () => ({
   CommunityHeader: () => <div data-testid="community-header">Header</div>,
 }));

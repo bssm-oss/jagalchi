@@ -59,10 +59,10 @@ export default function MyRoadmapsPage() {
               categoryMatch = true;
               break;
             case 'community':
-              categoryMatch = roadmap.category === 'community';
+              categoryMatch = true;
               break;
             case 'my-roadmap':
-              categoryMatch = roadmap.category === 'my-roadmap';
+              categoryMatch = true;
               break;
             case 'shared':
               categoryMatch = !!roadmap.isShared;

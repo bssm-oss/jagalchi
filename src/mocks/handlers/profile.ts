@@ -60,6 +60,10 @@ export const profileHandlers = [
       return HttpResponse.json({ message: 'name parameter is required' }, { status: 400 });
     }
 
+    if (name === 'nonexistent') {
+      return HttpResponse.json({ message: '사용자를 찾을 수 없습니다' }, { status: 404 });
+    }
+
     const user = MOCK_USERS.find((u) => u.username === name);
     if (!user) {
       return HttpResponse.json({ message: '사용자를 찾을 수 없습니다' }, { status: 404 });

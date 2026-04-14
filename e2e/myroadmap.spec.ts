@@ -112,12 +112,12 @@ test.describe('My Roadmaps E2E', () => {
 
   test.describe('Directory Tree', () => {
     test('directory tree is rendered in sidebar', async ({ page }) => {
-      await expect(page.getByText('프론트엔드')).toBeVisible({ timeout: 10000 });
-      await expect(page.getByText('백엔드')).toBeVisible();
+      await expect(page.getByText('프론트엔드', { exact: true })).toBeVisible({ timeout: 10000 });
+      await expect(page.getByText('백엔드', { exact: true })).toBeVisible();
     });
 
     test('directory has context menu with rename and delete', async ({ page }) => {
-      await expect(page.getByText('프론트엔드')).toBeVisible({ timeout: 10000 });
+      await expect(page.getByText('프론트엔드', { exact: true })).toBeVisible({ timeout: 10000 });
       await page.getByLabel('프론트엔드 더보기').click();
       await expect(page.getByRole('menuitem', { name: '이름 변경' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: '삭제' })).toBeVisible();

@@ -8,6 +8,12 @@ import type { StompSubscription } from '@stomp/stompjs';
 interface UseStompOptions {
   /** 자동 연결 여부 (기본: true) */
   isAutoConnect?: boolean;
+  /** CONNECT 헤더: X-User-ID */
+  userId?: string;
+  /** CONNECT 헤더: X-User-Role */
+  userRole?: string;
+  /** CONNECT 헤더: X-Roadmap-ID */
+  roadmapId?: string;
 }
 
 interface UseStompReturn {
@@ -22,7 +28,12 @@ interface UseStompReturn {
  * STOMP WebSocket 연결 라이프사이클 관리 훅.
  * 컴포넌트 마운트 시 연결, 언마운트 시 해제.
  */
-export function useStomp({ isAutoConnect = true }: UseStompOptions = {}): UseStompReturn {
+export function useStomp({
+  isAutoConnect = true,
+  userId,
+  userRole,
+  roadmapId,
+}: UseStompOptions = {}): UseStompReturn {
   const [isConnected, setIsConnected] = useState(false);
   const subscriptionsRef = useRef<StompSubscription[]>([]);
 
@@ -31,11 +42,13 @@ export function useStomp({ isAutoConnect = true }: UseStompOptions = {}): UseSto
       onConnect: () => setIsConnected(true),
       onDisconnect: () => setIsConnected(false),
       onError: () => setIsConnected(false),
+      userId,
+      userRole,
+      roadmapId,
     });
-  }, []);
+  }, [userId, userRole, roadmapId]);
 
   const disconnect = useCallback(() => {
-    // 모든 구독 해제
     subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
     subscriptionsRef.current = [];
     disconnectStomp();

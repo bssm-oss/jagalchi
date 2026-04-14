@@ -29,10 +29,6 @@ interface ChangePasswordRequest {
   newPassword: string;
 }
 
-interface RefreshTokenRequest {
-  refreshToken?: string;
-}
-
 // === Response Types ===
 
 interface LoginResponse {
@@ -43,10 +39,6 @@ interface SignUpResponse {
   id: number;
   email: string;
   name: string;
-}
-
-interface MessageResponse {
-  message: string;
 }
 
 interface RefreshTokenResponse {
@@ -64,27 +56,26 @@ export const signUp = (data: SignUpRequest) => apiClient.post<SignUpResponse>('/
 
 /** POST /users/verification — 회원가입 인증코드 전송 */
 export const sendVerificationCode = (data: SendVerificationCodeRequest) =>
-  apiClient.post<MessageResponse>('/users/verification', data);
+  apiClient.post<void>('/users/verification', data);
 
 /** PATCH /users/verification — 회원가입 인증코드 확인 */
 export const verifyCode = (data: VerifyCodeRequest) =>
-  apiClient.patch<MessageResponse>('/users/verification', data);
+  apiClient.patch<void>('/users/verification', data);
 
 /** POST /users/auth/password-reset — 비밀번호 리셋 코드 전송 */
 export const sendPasswordResetCode = (data: SendVerificationCodeRequest) =>
-  apiClient.post<MessageResponse>('/users/auth/password-reset', data);
+  apiClient.post<void>('/users/auth/password-reset', data);
 
 /** PATCH /users/auth/password-reset/verify — 비밀번호 리셋 코드 확인 */
 export const verifyPasswordResetCode = (data: VerifyCodeRequest) =>
-  apiClient.patch<MessageResponse>('/users/auth/password-reset/verify', data);
+  apiClient.patch<void>('/users/auth/password-reset/verify', data);
 
 /** PATCH /users/auth/password-reset — 비밀번호 변경 */
 export const resetPassword = (data: ChangePasswordRequest) =>
-  apiClient.patch<MessageResponse>('/users/auth/password-reset', data);
+  apiClient.patch<void>('/users/auth/password-reset', data);
 
-/** PATCH /users/auth/refresh — 토큰 갱신 */
-export const refreshToken = (data?: RefreshTokenRequest) =>
-  apiClient.patch<RefreshTokenResponse>('/users/auth/refresh', data);
+/** PATCH /users/auth/refresh — 토큰 갱신 (httpOnly 쿠키 기반) */
+export const refreshToken = () => apiClient.patch<RefreshTokenResponse>('/users/auth/refresh');
 
 /** DELETE /users — 계정 삭제 */
 export const deleteAccount = () => apiClient.delete<void>('/users');
@@ -103,9 +94,7 @@ export type {
   SendVerificationCodeRequest,
   VerifyCodeRequest,
   ChangePasswordRequest,
-  RefreshTokenRequest,
   LoginResponse,
   SignUpResponse,
-  MessageResponse,
   RefreshTokenResponse,
 };

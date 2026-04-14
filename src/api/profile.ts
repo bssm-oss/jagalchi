@@ -76,7 +76,7 @@ export const updateProfile = (data: UpdateProfileRequest) =>
 
 /** PATCH /users/{name}/follow — 팔로우 토글 */
 export const toggleFollow = (name: string, data: FollowToggleRequest) =>
-  apiClient.patch<MessageResponse>(`/users/${encodeURIComponent(name)}/follow`, data);
+  apiClient.patch<void>(`/users/${encodeURIComponent(name)}/follow`, data);
 
 /** GET /users/{name}/followers — 팔로워 목록 */
 export const getFollowers = (name: string) =>

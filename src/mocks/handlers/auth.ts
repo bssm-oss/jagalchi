@@ -56,9 +56,14 @@ const createErrorResponse = (
   timestamp: new Date().toISOString(),
   status,
   error:
-    ({ 400: 'Bad Request', 401: 'Unauthorized', 404: 'Not Found' } as Record<number, string>)[
-      status
-    ] ?? 'Internal Server Error',
+    (
+      {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        429: 'Too Many Requests',
+      } as Record<number, string>
+    )[status] ?? 'Internal Server Error',
   code,
   message,
   path,
@@ -91,6 +96,19 @@ export const authHandlers = [
   http.post<Record<string, never>, LoginRequest>('/api/users/auth/login', async ({ request }) => {
     const body = await request.json();
     const { email, password } = body;
+
+    // Rate limit 시나리오
+    if (email === 'ratelimit@example.com') {
+      return HttpResponse.json(
+        createErrorResponse(
+          429,
+          'TOO_MANY_REQUESTS',
+          '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+          '/users/auth/login',
+        ),
+        { status: 429 },
+      );
+    }
 
     const user = registeredUsers.find((u) => u.email === email);
 

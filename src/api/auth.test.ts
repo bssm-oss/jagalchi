@@ -84,7 +84,7 @@ describe('auth API', () => {
 
   it('refreshToken calls PATCH /users/auth/refresh', () => {
     refreshToken();
-    expect(apiClient.patch).toHaveBeenCalledWith('/users/auth/refresh', undefined);
+    expect(apiClient.patch).toHaveBeenCalledWith('/users/auth/refresh');
   });
 
   it('deleteAccount calls DELETE /users', () => {
