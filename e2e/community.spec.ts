@@ -45,8 +45,8 @@ test.describe('Community E2E', () => {
 
   test.describe('Community Detail Page', () => {
     test.beforeEach(async ({ page }) => {
-      // MSW fixture: roadmap-1
-      await page.goto('/community/roadmap-1');
+      // MSW fixture: id=1
+      await page.goto('/community/1');
       await page.waitForSelector('h1', { timeout: 30000 });
     });
 
@@ -83,12 +83,12 @@ test.describe('Community E2E', () => {
     });
 
     test('community detail for non-existent roadmap shows error', async ({ page }) => {
-      await page.goto('/community/non-existent-id');
+      await page.goto('/community/99999');
       await expect(page.getByText('로드맵을 찾을 수 없습니다')).toBeVisible({ timeout: 30000 });
     });
 
     test('community detail has back button', async ({ page }) => {
-      await page.goto('/community/roadmap-1');
+      await page.goto('/community/1');
       await page.waitForSelector('h1', { timeout: 30000 });
       await expect(page.getByLabel('뒤로가기')).toBeVisible();
     });

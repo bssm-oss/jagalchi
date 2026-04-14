@@ -10,7 +10,7 @@ test.describe('Viewer E2E', () => {
 
     await page.evaluate(() => {
       const roadmap = {
-        id: 'viewer-test',
+        id: 1,
         title: 'Viewer Test',
         nodes: [
           {
@@ -28,7 +28,7 @@ test.describe('Viewer E2E', () => {
       localStorage.setItem('jagalchi-roadmaps', JSON.stringify([roadmap]));
     });
 
-    await page.goto('/viewer/viewer-test');
+    await page.goto('/viewer/1');
 
     const header = page.locator('header');
     await expect(header).toBeVisible({ timeout: 15000 });
