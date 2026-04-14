@@ -3,14 +3,13 @@ package gajeman.jagalchi.jagalchiserver.infrastructure.oauth2;
 import gajeman.jagalchi.jagalchiserver.application.auth.result.LoginResult;
 import gajeman.jagalchi.jagalchiserver.infrastructure.cookie.CookieUtil;
 import gajeman.jagalchi.jagalchiserver.infrastructure.jwt.service.TokenService;
-import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.LoginResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -19,8 +18,10 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper;
     private final CookieUtil cookieUtil;
+
+    @Value("${front.url}")
+    private String frontUrl;
 
     /**
      * 로그인 성공 핸들러
@@ -41,14 +42,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         LoginResult result = LoginResult.from(accessToken, refreshToken);
 
-        LoginResponse loginResponse = LoginResponse.from(result.accessToken());
-
+        cookieUtil.addAccessToken(response, result.accessToken(), true);
         cookieUtil.addRefreshToken(response, result.refreshToken(), true);
 
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(objectMapper.writeValueAsString(loginResponse));
-        response.getWriter().flush();
+        response.sendRedirect(frontUrl);
     }
 
 }

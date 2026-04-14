@@ -62,3 +62,6 @@ spring:
 
 jwt:
   secret: ${SECRET_KEY}
+
+front:
+  url: ${FRONT_URL}
