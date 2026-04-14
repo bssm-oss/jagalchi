@@ -12,15 +12,12 @@ import {
   getPendingCount,
   sendCursorPosition,
   sendCursorHide,
+  setCurrentUser,
 } from './action-dispatcher';
 
 describe('action-dispatcher', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Clear pending actions by handling any remaining
-    while (getPendingCount() > 0) {
-      // Can't easily clear, but tests are independent
-    }
   });
 
   it('dispatchAction sends STOMP message and returns actionId', () => {
@@ -32,6 +29,21 @@ describe('action-dispatcher', () => {
         actionId,
         roadmap: 'roadmap-1',
         action: 'CREATE',
+      }),
+      expect.any(Object),
+    );
+  });
+
+  it('dispatchAction sends X-User-ID and X-User-Role headers when set', () => {
+    setCurrentUser('42', 'USER');
+    dispatchAction('rm-1', 'EDIT');
+
+    expect(publishStomp).toHaveBeenCalledWith(
+      '/app/roadmap/rm-1/action',
+      expect.any(Object),
+      expect.objectContaining({
+        'X-User-ID': '42',
+        'X-User-Role': 'USER',
       }),
     );
   });
@@ -55,21 +67,30 @@ describe('action-dispatcher', () => {
     expect(result.action).toBeUndefined();
   });
 
-  it('sendCursorPosition publishes to correct topic', () => {
-    sendCursorPosition('rm-1', { x: 100, y: 200, userName: 'alice' });
+  it('sendCursorPosition publishes with userId', () => {
+    sendCursorPosition('rm-1', { userId: 42, userName: 'alice', x: 100, y: 200 });
     expect(publishStomp).toHaveBeenCalledWith(
       '/app/roadmap/rm-1/cursor',
       expect.objectContaining({
+        userId: 42,
+        userName: 'alice',
         x: 100,
         y: 200,
-        userName: 'alice',
+        state: 'NORMAL',
+        timestamp: expect.any(Number),
       }),
+      expect.any(Object),
     );
   });
 
-  it('sendCursorHide publishes to correct topic', () => {
+  it('sendCursorHide publishes with headers', () => {
+    setCurrentUser('42', 'USER');
     sendCursorHide('rm-1');
-    expect(publishStomp).toHaveBeenCalledWith('/app/roadmap/rm-1/cursor/hide', {});
+    expect(publishStomp).toHaveBeenCalledWith(
+      '/app/roadmap/rm-1/cursor/hide',
+      {},
+      expect.objectContaining({ 'X-User-ID': '42' }),
+    );
   });
 
   it('getPendingCount tracks pending actions', () => {
