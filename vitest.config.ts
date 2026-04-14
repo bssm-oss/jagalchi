@@ -12,6 +12,7 @@ const dirname =
 
 export default defineConfig({
   test: {
+    testTimeout: 10000,
     projects: [
       {
         extends: true,
@@ -39,6 +40,9 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
+          pool: 'forks',
+          // @ts-expect-error -- vitest browser project에서 poolOptions 타입 미지원
+          poolOptions: { forks: { maxForks: 2 } },
           setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },
