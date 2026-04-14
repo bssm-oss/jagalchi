@@ -4,28 +4,10 @@ import { useEffect } from 'react';
 
 import { useSetAtom } from 'jotai';
 
+import { getRoadmap } from '@/api/roadmap';
 import { loadRoadmapFromLocalStorage } from '@/lib/roadmap-storage';
-import type { Roadmap } from '@/types/roadmap.types';
 
 import { viewerErrorAtom, viewerLoadingAtom, viewerRoadmapAtom } from '../stores/viewer-atoms';
-
-const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
-
-/**
- * Attempts to load a roadmap from the API.
- * Falls back to null when API is unavailable.
- */
-async function loadFromApi(roadmapId: string): Promise<Roadmap | null> {
-  if (!isRealtimeEnabled) return null;
-
-  try {
-    const response = await fetch(`/api/roadmaps/${roadmapId}`);
-    if (!response.ok) return null;
-    return (await response.json()) as Roadmap;
-  } catch {
-    return null;
-  }
-}
 
 export function useViewerRoadmapLoader(roadmapId: string) {
   const setRoadmap = useSetAtom(viewerRoadmapAtom);
@@ -39,18 +21,35 @@ export function useViewerRoadmapLoader(roadmapId: string) {
       setLoading(true);
       setError(null);
 
-      // 1. Try API first
-      const apiRoadmap = await loadFromApi(roadmapId);
+      // 1. API에서 로드맵 상세 조회 → 메타데이터 + localStorage에서 노드/엣지
+      try {
+        const detail = await getRoadmap(Number(roadmapId));
+
+        if (isCancelled) return;
+
+        // localStorage에서 노드/엣지 로드 (이벤트 replay 구현 전까지)
+        const local = loadRoadmapFromLocalStorage(Number(roadmapId));
+
+        setRoadmap({
+          id: detail.id,
+          title: detail.title,
+          description: detail.description ?? undefined,
+          nodes: local?.nodes ?? [],
+          edges: local?.edges ?? [],
+          author: { id: detail.owner.id, name: detail.owner.nickname },
+          isPublic: detail.isPublic,
+          createdAt: detail.createdAt,
+          updatedAt: detail.updatedAt,
+        });
+        setLoading(false);
+        return;
+      } catch {
+        // API 실패 시 localStorage fallback
+      }
 
       if (isCancelled) return;
 
-      if (apiRoadmap) {
-        setRoadmap(apiRoadmap);
-        setLoading(false);
-        return;
-      }
-
-      // 2. Fallback to localStorage
+      // 2. Fallback: localStorage만으로 로드
       const localRoadmap = loadRoadmapFromLocalStorage(Number(roadmapId));
 
       if (isCancelled) return;
