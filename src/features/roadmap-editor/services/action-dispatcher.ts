@@ -4,18 +4,28 @@ import { publishStomp } from '@/lib/stomp-client';
 
 type ActionType = 'CREATE' | 'EDIT' | 'DELETE' | 'UNDO' | 'REDO';
 type PayloadType = 'INFO' | 'MOVE' | 'SCALE' | 'LOCK' | 'COPY';
-type TargetType = 'NODE' | 'SECTION' | 'EDGE' | 'TEXT';
+type TargetType = 'NODE' | 'GROUP' | 'SECTION' | 'EDGE' | 'TEXT' | 'RESOURCE';
 
 interface ActionTarget {
   type: TargetType;
   object: string;
+  tempId?: string;
+  nodeId?: number;
+}
+
+interface ActionState {
+  x?: number;
+  y?: number;
+  label?: string;
+  locked?: boolean;
+  metadata?: Record<string, unknown>;
 }
 
 interface ActionPayload {
   type: PayloadType;
   target: ActionTarget;
-  prev?: Record<string, unknown> | null;
-  next?: Record<string, unknown> | null;
+  prev?: ActionState | null;
+  next?: ActionState | null;
   data?: Record<string, unknown> | null;
 }
 
@@ -29,6 +39,16 @@ interface StompAction {
 /** 전송 대기 중인 액션 (ACK 미수신) */
 const pendingActions = new Map<string, StompAction>();
 const MAX_PENDING_ACTIONS = 500;
+
+/** 현재 사용자 정보 (SEND 헤더용) */
+let currentUserId: string | null = null;
+let currentUserRole: string | null = null;
+
+/** 사용자 정보 설정 (CONNECT 후 호출) */
+export function setCurrentUser(userId: string, userRole: string): void {
+  currentUserId = userId;
+  currentUserRole = userRole;
+}
 
 /** 액션 전송 */
 export function dispatchAction(
@@ -52,9 +72,15 @@ export function dispatchAction(
   }
 
   pendingActions.set(actionId, stompAction);
+
+  const headers: Record<string, string> = {};
+  if (currentUserId) headers['X-User-ID'] = currentUserId;
+  if (currentUserRole) headers['X-User-Role'] = currentUserRole;
+
   publishStomp(
     `/app/roadmap/${roadmapId}/action`,
     stompAction as unknown as Record<string, unknown>,
+    headers,
   );
 
   return actionId;
@@ -83,19 +109,37 @@ export function getPendingCount(): number {
 /** 커서 위치 전송 */
 export function sendCursorPosition(
   roadmapId: string,
-  position: { x: number; y: number; userName: string },
+  position: { userId: number; userName: string; x: number; y: number },
 ): void {
-  publishStomp(`/app/roadmap/${roadmapId}/cursor`, {
-    ...position,
-    timestamp: Date.now(),
-    state: 'NORMAL',
-    targetId: null,
-  });
+  const headers: Record<string, string> = {};
+  if (currentUserId) headers['X-User-ID'] = currentUserId;
+
+  publishStomp(
+    `/app/roadmap/${roadmapId}/cursor`,
+    {
+      ...position,
+      timestamp: Date.now(),
+      state: 'NORMAL',
+      targetId: null,
+    },
+    headers,
+  );
 }
 
 /** 커서 숨기기 전송 — 사용자가 캔버스를 떠날 때 호출 */
 export function sendCursorHide(roadmapId: string): void {
-  publishStomp(`/app/roadmap/${roadmapId}/cursor/hide`, {});
+  const headers: Record<string, string> = {};
+  if (currentUserId) headers['X-User-ID'] = currentUserId;
+
+  publishStomp(`/app/roadmap/${roadmapId}/cursor/hide`, {}, headers);
 }
 
-export type { StompAction, ActionPayload, ActionType, PayloadType, TargetType, ActionTarget };
+export type {
+  StompAction,
+  ActionPayload,
+  ActionState,
+  ActionType,
+  PayloadType,
+  TargetType,
+  ActionTarget,
+};

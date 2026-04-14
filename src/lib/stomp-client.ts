@@ -6,9 +6,10 @@ import type { IFrame, IMessage, StompSubscription } from '@stomp/stompjs';
 
 const WS_URL =
   process.env.NEXT_PUBLIC_WS_URL ??
-  (process.env.NODE_ENV === 'production' ? undefined : 'ws://localhost:8080/ws');
+  (process.env.NODE_ENV === 'production' ? undefined : 'ws://localhost:8082/ws/roadmap');
 
 if (!WS_URL && typeof window !== 'undefined') {
+  // eslint-disable-next-line no-console
   console.warn('[stomp] NEXT_PUBLIC_WS_URL is not set. Real-time features will be disabled.');
 }
 
@@ -22,6 +23,10 @@ interface StompClientOptions {
   onConnect?: () => void;
   onDisconnect?: () => void;
   onError?: ErrorHandler;
+  /** CONNECT 시 전달할 사용자 정보 */
+  userId?: string;
+  userRole?: string;
+  roadmapId?: string;
 }
 
 /** STOMP 클라이언트 싱글톤 생성/재사용 */
@@ -54,11 +59,13 @@ export function getStompClient(options?: StompClientOptions): Client {
     },
 
     beforeConnect: () => {
-      // 연결 직전에 최신 토큰 + userId 주입
       const token = getAccessToken();
       if (client) {
         client.connectHeaders = {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options?.userId ? { 'X-User-ID': options.userId } : {}),
+          ...(options?.userRole ? { 'X-User-Role': options.userRole } : {}),
+          ...(options?.roadmapId ? { 'X-Roadmap-ID': options.roadmapId } : {}),
         };
       }
     },
@@ -93,11 +100,16 @@ export function subscribeStomp(
   return client.subscribe(destination, callback);
 }
 
-/** 메시지 전송 */
-export function publishStomp(destination: string, body: Record<string, unknown>): void {
+/** 메시지 전송 (헤더 지원) */
+export function publishStomp(
+  destination: string,
+  body: Record<string, unknown>,
+  headers?: Record<string, string>,
+): void {
   if (!client?.connected) return;
   client.publish({
     destination,
+    headers,
     body: JSON.stringify(body),
   });
 }

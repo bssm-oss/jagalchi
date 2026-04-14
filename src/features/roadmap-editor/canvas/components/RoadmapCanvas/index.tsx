@@ -199,7 +199,7 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
 
       const { clientX, clientY } = event;
       const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
-      sendCursorPosition(roadmapId, { x: flowPos.x, y: flowPos.y, userName });
+      sendCursorPosition(roadmapId, { userId: 0, userName, x: flowPos.x, y: flowPos.y });
     },
     [roadmapId, userName, screenToFlowPosition],
   );

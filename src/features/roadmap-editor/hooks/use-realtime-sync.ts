@@ -14,6 +14,8 @@ const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
 
 interface UseRealtimeSyncOptions {
   roadmapId: string;
+  userId?: string;
+  userRole?: string;
   isEnabled?: boolean;
 }
 
@@ -22,12 +24,20 @@ interface UseRealtimeSyncOptions {
  * STOMP 이벤트를 구독하여 원격 변경사항을 로컬 atom에 반영.
  * NEXT_PUBLIC_REALTIME_ENABLED=true 일 때만 활성화.
  */
-export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSyncOptions) {
+export function useRealtimeSync({
+  roadmapId,
+  userId,
+  userRole,
+  isEnabled = true,
+}: UseRealtimeSyncOptions) {
   const setNodes = useSetAtom(nodesAtom);
   const setEdges = useSetAtom(edgesAtom);
   const setRemoteCursors = useSetAtom(remoteCursorsAtom);
   const { isConnected, subscribe } = useStomp({
     isAutoConnect: isRealtimeEnabled && isEnabled,
+    userId,
+    userRole,
+    roadmapId,
   });
 
   // ACK 구독 — 액션 수락 응답 처리
@@ -58,18 +68,23 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
     }
   }, []);
 
-  // 스냅샷 구독 — 초기 전체 상태 수신 (/topic/roadmap/{id}/state 구독 시 자동 전송)
+  // 스냅샷 구독 — 초기 전체 상태 수신
   const handleSnapshotMessage = useCallback(
     (message: { body: string }) => {
       try {
         const snapshot = JSON.parse(message.body) as {
           type: string;
+          version: number;
+          roadmapId: string;
           nodes: RoadmapNode[];
           edges: Edge[];
+          sections: Record<string, unknown>[];
+          orphanNodeIds: number[];
         };
         if (snapshot.type !== 'SNAPSHOT') return;
         setNodes(snapshot.nodes);
         setEdges(snapshot.edges);
+        // TODO: sections, orphanNodeIds 처리 (섹션 atom 추가 시)
       } catch {
         /* invalid JSON — skip */
       }
@@ -77,7 +92,7 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
     [setNodes, setEdges],
   );
 
-  // 커서 위치 구독 — 다른 유저의 커서 위치 수신
+  // 커서 위치 구독
   const handleCursorsMessage = useCallback(
     (message: { body: string }) => {
       try {
@@ -86,7 +101,9 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
           userName: string;
           x: number;
           y: number;
+          timestamp: number;
           state: RemoteCursor['state'];
+          targetId: string | null;
         };
         setRemoteCursors((prev) => {
           const next = new Map(prev);
@@ -121,14 +138,18 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
     [setRemoteCursors],
   );
 
+  // 상태 이벤트 구독 — CREATE/EDIT/DELETE 브로드캐스트
   const handleStateEvent = useCallback(
     (message: { body: string }) => {
       let event: {
         type: string;
+        eventId: string;
+        sequence: number;
         payload: {
           type: string;
           target: { type: string; object: string };
           state?: Record<string, unknown>;
+          deletedNode?: Record<string, unknown>;
         };
       };
       try {
@@ -137,7 +158,6 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
         return;
       }
 
-      // 이벤트 타입에 따라 로컬 상태 업데이트
       const { payload } = event;
       if (!payload?.target) return;
 
@@ -145,21 +165,30 @@ export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSync
       const targetId = payload.target.object;
 
       if (targetType === 'NODE' || targetType === 'SECTION' || targetType === 'TEXT') {
-        setNodes((prev) =>
-          prev.map((node) => {
-            if (node.id !== targetId) return node;
-            const state = payload.state as Record<string, unknown> | undefined;
-            return state ? ({ ...node, ...state } as RoadmapNode) : node;
-          }),
-        );
+        if (payload.deletedNode) {
+          // 삭제 이벤트
+          setNodes((prev) => prev.filter((node) => node.id !== targetId));
+        } else {
+          setNodes((prev) =>
+            prev.map((node) => {
+              if (node.id !== targetId) return node;
+              const state = payload.state as Record<string, unknown> | undefined;
+              return state ? ({ ...node, ...state } as RoadmapNode) : node;
+            }),
+          );
+        }
       } else if (targetType === 'EDGE') {
-        setEdges((prev) =>
-          prev.map((edge) => {
-            if (edge.id !== targetId) return edge;
-            const state = payload.state as Record<string, unknown> | undefined;
-            return state ? ({ ...edge, ...state } as Edge) : edge;
-          }),
-        );
+        if (payload.deletedNode) {
+          setEdges((prev) => prev.filter((edge) => edge.id !== targetId));
+        } else {
+          setEdges((prev) =>
+            prev.map((edge) => {
+              if (edge.id !== targetId) return edge;
+              const state = payload.state as Record<string, unknown> | undefined;
+              return state ? ({ ...edge, ...state } as Edge) : edge;
+            }),
+          );
+        }
       }
     },
     [setNodes, setEdges],
