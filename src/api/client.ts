@@ -1,5 +1,10 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
+/** cross-origin API일 때만 credentials: include (프록시 환경에선 same-origin) */
+const CREDENTIALS = (
+  BASE_URL.startsWith('http') ? 'include' : 'same-origin'
+) as globalThis.RequestCredentials;
+
 export const SESSION_COOKIE_KEY = 'jagalchi-session';
 
 interface ApiError {
@@ -71,7 +76,7 @@ async function tryRefreshToken(): Promise<string | null> {
       const url = `${BASE_URL}/users/auth/refresh`;
       const response = await fetch(url, {
         method: 'PATCH',
-        credentials: 'include', // httpOnly 리프레시 쿠키 자동 전송
+        credentials: CREDENTIALS, // httpOnly 리프레시 쿠키 자동 전송
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -107,7 +112,7 @@ async function request<T>(
 
   const response = await fetch(url, {
     ...init,
-    credentials: 'include',
+    credentials: CREDENTIALS,
     headers: {
       'Content-Type': 'application/json',
       ...authHeader,
@@ -124,7 +129,7 @@ async function request<T>(
         // 새 토큰으로 원래 요청 재시도
         const retryResponse = await fetch(url, {
           ...init,
-          credentials: 'include',
+          credentials: CREDENTIALS,
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${newToken}`,
