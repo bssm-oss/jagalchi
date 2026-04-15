@@ -20,6 +20,11 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: ['./vitest.setup.ts'],
     testTimeout: 10000,
-    forceExit: true,
+    deps: {
+      optimizer: {
+        ssr: { enabled: false },
+        web: { enabled: false },
+      },
+    },
   },
 });
