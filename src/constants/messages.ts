@@ -407,4 +407,6 @@ export const EDITOR_MESSAGES = {
 export const REALTIME_MESSAGES = {
   NACK_TITLE: '변경 사항을 저장하지 못했습니다',
   NACK_DESCRIPTION: '잠시 후 다시 시도해주세요.',
+  CONNECTION_CONNECTED: '실시간 협업 중',
+  CONNECTION_DISCONNECTED: '연결 끊김',
 } as const;
