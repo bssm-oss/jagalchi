@@ -408,3 +408,18 @@ export const REALTIME_MESSAGES = {
   NACK_TITLE: '변경 사항을 저장하지 못했습니다',
   NACK_DESCRIPTION: '잠시 후 다시 시도해주세요.',
 } as const;
+
+export const NOTIFICATION_MESSAGES = {
+  // Bell
+  BELL_ARIA: '알림',
+  UNREAD_COUNT_ARIA: '읽지 않은 알림',
+  // Dropdown header
+  TITLE: '알림',
+  MARK_ALL_READ: '모두 읽음',
+  // List
+  EMPTY: '새로운 알림이 없습니다',
+  LOADING: '알림을 불러오는 중...',
+  ERROR: '알림을 불러오지 못했습니다',
+  // Item
+  MARK_READ_ARIA: '읽음 처리',
+} as const;
