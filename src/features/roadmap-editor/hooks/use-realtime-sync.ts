@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { useSetAtom } from 'jotai';
+import { toast } from 'sonner';
 
 import { useStomp } from '@/hooks/use-stomp';
 
@@ -62,8 +63,11 @@ export function useRealtimeSync({
       const { isFound, action } = handleNack(data.actionId);
       if (!isFound) return;
 
-      // 전역 이벤트로 공지 → 앱 레이어의 토스트/Sentry/롤백 reducer 가 수신.
-      // 실제 롤백 로직은 리덕스 스타일 액션 스택 도입과 함께 #226 에서 처리.
+      toast.error('변경 사항을 저장하지 못했습니다', {
+        description: data.errorMessage || '잠시 후 다시 시도해주세요.',
+      });
+
+      // 전역 이벤트로 공지 — 롤백 reducer 는 #226 에서 연결.
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
           new CustomEvent('jagalchi:realtime-nack', {

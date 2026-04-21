@@ -5,6 +5,35 @@ const CREDENTIALS = (
   BASE_URL.startsWith('http') ? 'include' : 'same-origin'
 ) as globalThis.RequestCredentials;
 
+/** 프록시를 통해 요청할 때만 CSRF 검증이 필요하다 */
+const IS_PROXY_MODE = !BASE_URL.startsWith('http');
+
+const SAFE_METHODS_SET = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+// --- CSRF Token (in-memory cache, proxy mode only) ---
+
+let csrfToken: string | null = null;
+
+async function getCsrfToken(): Promise<string | null> {
+  if (!IS_PROXY_MODE) return null;
+  if (csrfToken) return csrfToken;
+
+  try {
+    const response = await fetch('/api/csrf-token', { credentials: 'same-origin' });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { token: string };
+    csrfToken = data.token;
+    return csrfToken;
+  } catch {
+    return null;
+  }
+}
+
+/** CSRF 토큰 캐시를 초기화한다 (로그아웃 등 세션 전환 시 호출). */
+export function resetCsrfToken(): void {
+  csrfToken = null;
+}
+
 export const SESSION_COOKIE_KEY = 'jagalchi-session';
 
 interface ApiError {
@@ -110,12 +139,19 @@ async function request<T>(
   const token = getAccessToken();
   const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
+  const csrfHeader: Record<string, string> = {};
+  if (!SAFE_METHODS_SET.has(init.method)) {
+    const csrf = await getCsrfToken();
+    if (csrf) csrfHeader['X-CSRF-Token'] = csrf;
+  }
+
   const response = await fetch(url, {
     ...init,
     credentials: CREDENTIALS,
     headers: {
       'Content-Type': 'application/json',
       ...authHeader,
+      ...csrfHeader,
       ...init.headers,
     },
   });
@@ -133,6 +169,7 @@ async function request<T>(
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${newToken}`,
+            ...csrfHeader,
             ...init.headers,
           },
         });
