@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { useDebounce } from '@/hooks/use-debounce';
+import { isEnabled } from '@/lib/feature-flags';
 
 import { parseRoadmaps } from '../schemas/roadmap.schema';
 import { dispatchAction } from '../services/action-dispatcher';
@@ -18,7 +19,7 @@ interface UseAutoSaveProps {
   isEnabled?: boolean;
 }
 
-const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
+const isRealtimeEnabled = isEnabled('REALTIME_ENABLED');
 const QUOTA_WARNING_THRESHOLD = 0.9; // Warn at 90% usage
 
 /**
