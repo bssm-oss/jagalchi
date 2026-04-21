@@ -1,13 +1,12 @@
 'use client';
 
+import type { NotificationResponse } from '@/api/notifications';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { NOTIFICATION_MESSAGES } from '@/constants/messages';
 
 import { useMarkAllRead } from '../../hooks/use-mark-all-read';
 import { useMarkRead } from '../../hooks/use-mark-read';
 import { useNotifications } from '../../hooks/use-notifications';
-
-import type { NotificationResponse } from '@/api/notifications';
 
 interface NotificationItemProps {
   notification: NotificationResponse;

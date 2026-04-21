@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { NotificationBell } from '@/features/notifications';
+import { NotificationBell } from '../NotificationBell';
 
 interface AppHeaderProps {
   className?: string;

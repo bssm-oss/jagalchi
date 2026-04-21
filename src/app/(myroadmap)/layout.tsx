@@ -1,4 +1,4 @@
-import { AppHeader } from '@/components/AppHeader';
+import { AppHeader } from '@/features/notifications';
 
 import type { Metadata } from 'next';
 

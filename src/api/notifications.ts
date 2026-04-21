@@ -36,7 +36,9 @@ export interface NotificationListParams {
 
 // === API Functions ===
 
-export const getNotifications = (params?: NotificationListParams): Promise<NotificationListResponse> => {
+export const getNotifications = (
+  params?: NotificationListParams,
+): Promise<NotificationListResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.page !== undefined) searchParams.set('page', String(params.page));
   if (params?.size !== undefined) searchParams.set('size', String(params.size));

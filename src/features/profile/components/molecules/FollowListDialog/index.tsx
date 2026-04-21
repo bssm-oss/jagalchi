@@ -1,12 +1,7 @@
 'use client';
 
 import type { FollowListResponse } from '@/api/profile';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PROFILE_MESSAGES } from '@/constants/messages';
 
@@ -33,7 +28,11 @@ function FollowUserItem({ profileImage, name }: FollowUserItemProps) {
     <div className="flex items-center gap-3 py-3">
       <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-slate-100">
         {profileImage ? (
-          <img src={profileImage} alt={`${name}${PROFILE_MESSAGES.PROFILE_PICTURE_ALT_WITH_NAME}`} className="h-full w-full object-cover" />
+          <img
+            src={profileImage}
+            alt={`${name}${PROFILE_MESSAGES.PROFILE_PICTURE_ALT_WITH_NAME}`}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-500">
             {name.charAt(0).toUpperCase()}
@@ -45,13 +44,7 @@ function FollowUserItem({ profileImage, name }: FollowUserItemProps) {
   );
 }
 
-function FollowListContent({
-  type,
-  userName,
-}: {
-  type: FollowDialogType;
-  userName: string;
-}) {
+function FollowListContent({ type, userName }: { type: FollowDialogType; userName: string }) {
   const followersQuery = useFollowers(userName);
   const followingsQuery = useFollowings(userName);
 

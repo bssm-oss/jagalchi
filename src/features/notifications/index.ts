@@ -1,4 +1,5 @@
 // Components
+export { AppHeader } from './components/AppHeader';
 export { NotificationBell } from './components/NotificationBell';
 export { NotificationList } from './components/NotificationList';
 
