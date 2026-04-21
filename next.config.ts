@@ -1,7 +1,19 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'cdn.jagalchi.dev' },
+      { protocol: 'https', hostname: '*.r2.dev' },
+      { protocol: 'https', hostname: '*.s3.amazonaws.com' },
+    ],
+  },
 
   // Security headers to protect against common vulnerabilities
   async headers() {
@@ -44,4 +56,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default bundleAnalyzer(nextConfig);
