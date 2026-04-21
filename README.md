@@ -96,6 +96,7 @@ src/
 
 - [API 명세](./docs/api.md)
 - [배포 가이드](./docs/deployment.md)
+- [런북 (장애 대응)](./docs/runbook.md)
 
 ## License
 
