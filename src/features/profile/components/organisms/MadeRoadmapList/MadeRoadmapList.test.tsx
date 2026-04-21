@@ -11,7 +11,11 @@ vi.mock('../../../hooks/use-profile-roadmaps', () => ({
   useProfileRoadmaps: () => ({
     data: [
       { id: 1, title: 'Roadmap Name', owner: { id: 1, nickname: '홍길동', profileImageUrl: null } },
-      { id: 2, title: 'Roadmap Name 2', owner: { id: 1, nickname: '홍길동', profileImageUrl: null } },
+      {
+        id: 2,
+        title: 'Roadmap Name 2',
+        owner: { id: 1, nickname: '홍길동', profileImageUrl: null },
+      },
     ],
     isLoading: false,
   }),

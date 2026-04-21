@@ -31,11 +31,7 @@ export function MadeRoadmapList({ userName }: MadeRoadmapListProps) {
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {roadmaps.map((roadmap) => (
-              <RoadmapCard
-                key={roadmap.id}
-                title={roadmap.title}
-                author={roadmap.owner.nickname}
-              />
+              <RoadmapCard key={roadmap.id} title={roadmap.title} author={roadmap.owner.nickname} />
             ))}
           </div>
         )}
