@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useSetAtom } from 'jotai';
 import { toast } from 'sonner';
 
+import { REALTIME_MESSAGES } from '@/constants/messages';
 import { useStomp } from '@/hooks/use-stomp';
 
 import { handleAck, handleNack } from '../services/action-dispatcher';
@@ -63,8 +64,8 @@ export function useRealtimeSync({
       const { isFound, action } = handleNack(data.actionId);
       if (!isFound) return;
 
-      toast.error('변경 사항을 저장하지 못했습니다', {
-        description: data.errorMessage || '잠시 후 다시 시도해주세요.',
+      toast.error(REALTIME_MESSAGES.NACK_TITLE, {
+        description: data.errorMessage || REALTIME_MESSAGES.NACK_DESCRIPTION,
       });
 
       // 전역 이벤트로 공지 — 롤백 reducer 는 #226 에서 연결.

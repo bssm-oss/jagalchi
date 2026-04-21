@@ -403,3 +403,8 @@ export const EDITOR_MESSAGES = {
   // RoadmapCanvas
   NEW_NODE_LABEL: 'New Node',
 } as const;
+
+export const REALTIME_MESSAGES = {
+  NACK_TITLE: '변경 사항을 저장하지 못했습니다',
+  NACK_DESCRIPTION: '잠시 후 다시 시도해주세요.',
+} as const;

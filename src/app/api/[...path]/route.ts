@@ -45,8 +45,9 @@ function stripCorsHeaders(headers: Headers) {
 }
 
 /**
- * 요청 헤더에서 프록시 홉 바이 홉 헤더, host, CSRF 헤더를 제거한다.
- * CSRF 헤더는 검증 후 업스트림에 노출할 필요가 없다.
+ * 요청 헤더에서 프록시 홉 바이 홉 헤더, host, CSRF 헤더, 포워딩 헤더를 제거한다.
+ * - CSRF 헤더: 검증 후 업스트림에 노출 불필요
+ * - x-forwarded-*: 클라이언트 조작으로 업스트림 IP 스푸핑 방지
  */
 function sanitizeRequestHeaders(source: Headers): Headers {
   const headers = new Headers(source);
@@ -54,6 +55,11 @@ function sanitizeRequestHeaders(source: Headers): Headers {
   headers.delete('connection');
   headers.delete('content-length');
   headers.delete(CSRF_HEADER_NAME);
+  headers.delete('x-forwarded-for');
+  headers.delete('x-forwarded-host');
+  headers.delete('x-forwarded-proto');
+  headers.delete('x-real-ip');
+  headers.delete('forwarded');
   return headers;
 }
 
@@ -73,37 +79,14 @@ function timingSafeStringEqual(a: string, b: string): boolean {
 }
 
 /**
- * Referer 헤더에서 origin 부분(scheme + host + port)만 추출한다.
- */
-function extractOriginFromReferer(referer: string): string | null {
-  try {
-    const url = new URL(referer);
-    return url.origin; // e.g. "https://jagalchi.dev"
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Origin 또는 Referer 기반으로 same-origin 여부를 검증한다.
- * 허용 목록에 포함된 origin 이면 true 를 반환한다.
+ * Origin 헤더 기반으로 same-origin 여부를 검증한다.
+ * 상태 변경 요청에서 브라우저는 항상 Origin을 전송하므로 Referer 폴백은 사용하지 않는다.
+ * (Referer 폴백은 스푸핑 가능성이 있어 공격면 확대)
  */
 function verifyOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin');
-
-  if (origin) {
-    return ALLOWED_ORIGINS.has(origin);
-  }
-
-  // Origin 헤더가 없으면 Referer 로 fallback
-  const referer = request.headers.get('referer');
-  if (referer) {
-    const refererOrigin = extractOriginFromReferer(referer);
-    return refererOrigin !== null && ALLOWED_ORIGINS.has(refererOrigin);
-  }
-
-  // Origin, Referer 모두 없으면 거부
-  return false;
+  if (!origin) return false;
+  return ALLOWED_ORIGINS.has(origin);
 }
 
 /**

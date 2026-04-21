@@ -10,8 +10,8 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 /**
  * CSRF 토큰 발급 엔드포인트.
  *
- * 기존 `csrf-token` 쿠키가 유효하면 재사용하고,
- * 없으면 새 토큰을 발급해 non-HttpOnly 쿠키로 세트한다.
+ * 기존 쿠키가 있으면 재사용하되 만료를 갱신(슬라이딩)하고,
+ * 없으면 새 토큰을 발급해 HttpOnly 쿠키로 세트한다.
  * 클라이언트는 응답 JSON의 `token` 필드를 읽어
  * 변경 요청(POST/PUT/PATCH/DELETE) 시 `X-CSRF-Token` 헤더에 담아야 한다.
  */
@@ -21,15 +21,15 @@ export function GET(request: NextRequest) {
 
   const response = NextResponse.json({ token });
 
-  if (!existingToken) {
-    response.cookies.set(CSRF_COOKIE_NAME, token, {
-      httpOnly: false, // JS가 읽어야 하므로 HttpOnly 비활성화
-      secure: IS_PRODUCTION,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: TOKEN_MAX_AGE_SECONDS,
-    });
-  }
+  // 항상 Set-Cookie로 만료를 갱신한다 (슬라이딩 만료).
+  // httpOnly: true — 클라이언트는 JSON 바디로 토큰을 읽으므로 document.cookie 불필요.
+  response.cookies.set(CSRF_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: IS_PRODUCTION,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: TOKEN_MAX_AGE_SECONDS,
+  });
 
   return response;
 }

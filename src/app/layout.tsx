@@ -1,9 +1,8 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
-import { Toaster } from 'sonner';
-
 import { MSWProvider } from '@/components/MswProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/features/auth';
 
 import type { Metadata } from 'next';
