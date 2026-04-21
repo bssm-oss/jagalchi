@@ -1,5 +1,3 @@
-import type { RequestInit, HeadersInit } from 'undici-types';
-
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
@@ -251,8 +249,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('x-forwarded-for')).toBeNull();
   });
 
@@ -262,8 +260,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('x-forwarded-host')).toBeNull();
   });
 
@@ -273,8 +271,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('x-forwarded-proto')).toBeNull();
   });
 
@@ -284,8 +282,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('host')).toBeNull();
   });
 
@@ -297,8 +295,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await POST(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('x-csrf-token')).toBeNull();
   });
 
@@ -308,8 +306,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('x-real-ip')).toBeNull();
   });
 
@@ -319,8 +317,8 @@ describe('sanitizeRequestHeaders', () => {
     });
     await GET(req);
 
-    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers as HeadersInit);
+    const [, init] = mockFetch.mock.calls[0] as [string, any];
+    const headers = new Headers(init.headers);
     expect(headers.get('authorization')).toBe('Bearer token123');
   });
 });

@@ -71,8 +71,8 @@ const TestProvider = ({ initialValues, children }: WrapperProps) => (
 );
 
 const defaultAtoms: (readonly [WritableAtom<unknown, unknown[], unknown>, unknown])[] = [
-  [profileModeAtom, 'show'],
-  [profileImageAtom, '/profile.svg'],
+  [profileModeAtom as WritableAtom<unknown, unknown[], unknown>, 'show'],
+  [profileImageAtom as WritableAtom<unknown, unknown[], unknown>, '/profile.svg'],
 ];
 
 describe('Profile', () => {
@@ -81,7 +81,7 @@ describe('Profile', () => {
       data: mockProfileData,
       isLoading: false,
       isError: false,
-    } as ReturnType<typeof useProfile>);
+    } as unknown as ReturnType<typeof useProfile>);
   });
 
   it('renders the user name', () => {
@@ -144,7 +144,7 @@ describe('Profile', () => {
       data: undefined,
       isLoading: true,
       isError: false,
-    } as ReturnType<typeof useProfile>);
+    } as unknown as ReturnType<typeof useProfile>);
 
     render(
       <TestProvider initialValues={defaultAtoms}>
@@ -159,7 +159,7 @@ describe('Profile', () => {
       data: undefined,
       isLoading: false,
       isError: true,
-    } as ReturnType<typeof useProfile>);
+    } as unknown as ReturnType<typeof useProfile>);
 
     render(
       <TestProvider initialValues={defaultAtoms}>

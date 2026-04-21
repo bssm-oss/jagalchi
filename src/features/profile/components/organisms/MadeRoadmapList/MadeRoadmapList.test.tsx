@@ -46,7 +46,9 @@ const Wrapper = ({ initialValues, children }: WrapperProps) => (
 describe('MadeRoadmapList', () => {
   it('renders list of roadmaps in view mode', () => {
     render(
-      <Wrapper initialValues={[[profileModeAtom, 'show']]}>
+      <Wrapper
+        initialValues={[[profileModeAtom as WritableAtom<unknown, unknown[], unknown>, 'show']]}
+      >
         <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
@@ -57,7 +59,9 @@ describe('MadeRoadmapList', () => {
 
   it('renders add button in edit mode', () => {
     render(
-      <Wrapper initialValues={[[profileModeAtom, 'edit']]}>
+      <Wrapper
+        initialValues={[[profileModeAtom as WritableAtom<unknown, unknown[], unknown>, 'edit']]}
+      >
         <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
