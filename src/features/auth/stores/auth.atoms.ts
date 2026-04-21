@@ -23,9 +23,7 @@ export const loginAtom = atom(null, (_get, set, token: string) => {
   set(accessTokenAtom, token);
   setAccessToken(token);
   const name = extractUserNameFromToken(token);
-  if (name) {
-    set(currentUserNameAtom, name);
-  }
+  set(currentUserNameAtom, name);
 });
 
 /** 로그아웃 시 토큰 삭제 + 상태 초기화 */

@@ -15,6 +15,7 @@ if (!WS_URL && typeof window !== 'undefined') {
 
 let client: Client | null = null;
 let isConnecting = false;
+let consumerCount = 0;
 
 type MessageHandler = (message: IMessage) => void;
 type ErrorHandler = (frame: IFrame) => void;
@@ -76,14 +77,18 @@ export function getStompClient(options?: StompClientOptions): Client {
 
 /** STOMP 연결 활성화 */
 export function connectStomp(options?: StompClientOptions): void {
+  consumerCount++;
   const c = getStompClient(options);
   if (!c.active) {
     c.activate();
   }
 }
 
-/** STOMP 연결 해제 */
+/** STOMP 연결 해제 — 마지막 소비자가 해제할 때만 실제 disconnect */
 export async function disconnectStomp(): Promise<void> {
+  consumerCount = Math.max(0, consumerCount - 1);
+  if (consumerCount > 0) return;
+
   if (client?.active) {
     await client.deactivate();
   }
