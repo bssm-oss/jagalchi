@@ -57,7 +57,7 @@ export function useNackRollback() {
         setEdges((edges) =>
           edges.map((edge) => {
             if (edge.id !== targetId) return edge;
-            return { ...edge } as Edge;
+            return { ...edge, ...prev } as Edge;
           }),
         );
       }
