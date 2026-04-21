@@ -7,8 +7,14 @@ import { profileModeAtom } from '../../../stores/profile-atoms';
 
 import { MadeRoadmapList } from './index';
 
-vi.mock('@/components/atoms/RoadmapCard', () => ({
-  RoadmapCard: ({ title }: { title: string }) => <div data-testid="roadmap-card">{title}</div>,
+vi.mock('../../../hooks/use-profile-roadmaps', () => ({
+  useProfileRoadmaps: () => ({
+    data: [
+      { id: 1, title: 'Roadmap Name', owner: { id: 1, nickname: '홍길동', profileImageUrl: null } },
+      { id: 2, title: 'Roadmap Name 2', owner: { id: 1, nickname: '홍길동', profileImageUrl: null } },
+    ],
+    isLoading: false,
+  }),
 }));
 
 vi.mock('../AddRoadmapModal', () => ({
@@ -18,7 +24,7 @@ vi.mock('../AddRoadmapModal', () => ({
 }));
 
 interface WrapperProps {
-  initialValues: (readonly [WritableAtom<unknown, any[], any>, unknown])[];
+  initialValues: (readonly [WritableAtom<unknown, unknown[], unknown>, unknown])[];
   children: React.ReactNode;
 }
 
@@ -37,7 +43,7 @@ describe('MadeRoadmapList', () => {
   it('renders list of roadmaps in view mode', () => {
     render(
       <Wrapper initialValues={[[profileModeAtom, 'show']]}>
-        <MadeRoadmapList />
+        <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
     expect(screen.getByText('만든 로드맵')).toBeInTheDocument();
@@ -48,7 +54,7 @@ describe('MadeRoadmapList', () => {
   it('renders add button in edit mode', () => {
     render(
       <Wrapper initialValues={[[profileModeAtom, 'edit']]}>
-        <MadeRoadmapList />
+        <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
     expect(screen.getByText('공개 로드맵 추가')).toBeInTheDocument();

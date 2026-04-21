@@ -24,7 +24,13 @@ import { AUTH_MESSAGES, PROFILE_MESSAGES } from '@/constants/messages';
 import { useDeleteAccount } from '@/hooks/use-delete-account';
 
 import { useProfile } from '../../../hooks/use-profile';
-import { profileBioAtom, profileModeAtom } from '../../../stores/profile-atoms';
+import {
+  profileBioAtom,
+  profileImageAtom,
+  profileLinksAtom,
+  profileModeAtom,
+  type ProfileLinkItem,
+} from '../../../stores/profile-atoms';
 import { ProfileBio } from '../../molecules/ProfileBio';
 import { ProfileCustomBoxArea } from '../../molecules/ProfileCustomBoxArea';
 import { ProfileHeader } from '../../molecules/ProfileHeader';
@@ -40,19 +46,38 @@ export function Profile({ userName = '' }: ProfileProps) {
   const router = useRouter();
   const mode = useAtomValue(profileModeAtom);
   const setBio = useSetAtom(profileBioAtom);
+  const setLinks = useSetAtom(profileLinksAtom);
+  const setImage = useSetAtom(profileImageAtom);
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleDeleteAccount = () => {
-    deleteAccount(undefined, {
-      onSuccess: () => {
-        clearAccessToken();
-        router.push('/login');
-      },
-    });
-  };
-
   const { data, isLoading, isError } = useProfile(userName);
+
+  // 실데이터로 atoms hydration — 프로필 데이터가 로드되면 atoms에 반영
+  useEffect(() => {
+    if (!data) return;
+
+    const { user } = data;
+
+    if (user.bio !== null && user.bio !== undefined) {
+      setBio(user.bio);
+    }
+
+    if (user.profileImageUrl) {
+      setImage(user.profileImageUrl);
+    }
+
+    if (user.externalLinks && Object.keys(user.externalLinks).length > 0) {
+      const linkItems: ProfileLinkItem[] = Object.entries(user.externalLinks).map(
+        ([name, url]) => ({
+          id: name,
+          name,
+          url,
+        }),
+      );
+      setLinks(linkItems);
+    }
+  }, [data, setBio, setImage, setLinks]);
 
   // Warn user before leaving the page while in edit mode
   useEffect(() => {
@@ -65,6 +90,15 @@ export function Profile({ userName = '' }: ProfileProps) {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [mode]);
+
+  const handleDeleteAccount = () => {
+    deleteAccount(undefined, {
+      onSuccess: () => {
+        clearAccessToken();
+        router.push('/login');
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -112,8 +146,8 @@ export function Profile({ userName = '' }: ProfileProps) {
           </div>
         </div>
         <ProfileStreak activities={streak.activities} currentStreak={streak.currentStreak} />
-        <ProfileThirdBox />
-        <MadeRoadmapList />
+        <ProfileThirdBox userName={userName} />
+        <MadeRoadmapList userName={userName} />
 
         {/* 계정 삭제 섹션 */}
         <div className="border-t border-slate-200 pt-8">
