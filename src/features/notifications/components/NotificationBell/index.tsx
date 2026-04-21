@@ -16,7 +16,9 @@ import { NotificationList } from '../NotificationList';
 export function NotificationBell() {
   const { data } = useNotifications({ size: 20 });
 
-  const unreadCount = (data?.content ?? []).filter((n) => !n.isRead).length;
+  const fetchedReadCount = (data?.content ?? []).filter((n) => n.isRead).length;
+  const unreadCount =
+    data !== undefined ? (data.totalElements - fetchedReadCount) : 0;
   const displayCount = unreadCount > 99 ? '99+' : unreadCount;
 
   return (
