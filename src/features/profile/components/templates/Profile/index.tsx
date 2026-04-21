@@ -102,6 +102,7 @@ export function Profile({ userName = '' }: ProfileProps) {
           email={user.email}
           followerCount={user.stats.followersCount}
           followingCount={user.stats.followingCount}
+          isFollowing={user.isFollowed}
         />
         <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-[76px]">
           <div className="w-full lg:w-[500px] lg:shrink-0">

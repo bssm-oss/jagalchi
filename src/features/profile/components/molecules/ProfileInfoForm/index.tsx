@@ -18,6 +18,7 @@ import {
   profileOrgAtom,
   profileOrgSnapshotAtom,
 } from '../../../stores/profile-atoms';
+import { FollowButton } from '../../atoms/FollowButton';
 import { ProfileEditButton } from '../../atoms/ProfileEditButton';
 import { FollowListDialog } from '../FollowListDialog';
 
@@ -28,6 +29,8 @@ interface ProfileInfoFormProps {
   email: string;
   followerCount?: number;
   followingCount?: number;
+  isSelf?: boolean;
+  isFollowing?: boolean;
   onNameChange?: (name: string) => void;
   onEmailChange?: (email: string) => void;
 }
@@ -44,6 +47,8 @@ export function ProfileInfoForm({
   email,
   followerCount = 0,
   followingCount = 0,
+  isSelf = true,
+  isFollowing = false,
   onNameChange,
   onEmailChange,
 }: ProfileInfoFormProps) {
@@ -153,7 +158,8 @@ export function ProfileInfoForm({
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-row gap-2">
+            <FollowButton userName={name} isFollowing={isFollowing} isSelf={isSelf} />
             <ProfileEditButton variant="show" onClick={handleEnterEdit} />
           </div>
         </div>
