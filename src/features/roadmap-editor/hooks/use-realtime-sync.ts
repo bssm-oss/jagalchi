@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { REALTIME_MESSAGES } from '@/constants/messages';
 import { useStomp } from '@/hooks/use-stomp';
+import { isEnabled } from '@/lib/feature-flags';
 
 import { handleAck, handleNack } from '../services/action-dispatcher';
 import { nodesAtom, edgesAtom, remoteCursorsAtom, type RemoteCursor } from '../stores/editor-atoms';
@@ -12,7 +13,7 @@ import { nodesAtom, edgesAtom, remoteCursorsAtom, type RemoteCursor } from '../s
 import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
 
-const isRealtimeEnabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === 'true';
+const isRealtimeEnabled = isEnabled('REALTIME_ENABLED');
 
 interface UseRealtimeSyncOptions {
   roadmapId: string;
