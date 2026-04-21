@@ -17,6 +17,7 @@ export const config = defineConfig({
   use: {
     baseURL: 'http://localhost:3100',
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
     serviceWorkers: 'allow',
   },
   projects: [
