@@ -410,3 +410,18 @@ export const REALTIME_MESSAGES = {
   CONNECTION_CONNECTED: '실시간 협업 중',
   CONNECTION_DISCONNECTED: '연결 끊김',
 } as const;
+
+export const NOTIFICATION_MESSAGES = {
+  // Bell
+  BELL_ARIA: '알림',
+  UNREAD_COUNT_ARIA: '읽지 않은 알림',
+  // Dropdown header
+  TITLE: '알림',
+  MARK_ALL_READ: '모두 읽음',
+  // List
+  EMPTY: '새로운 알림이 없습니다',
+  LOADING: '알림을 불러오는 중...',
+  ERROR: '알림을 불러오지 못했습니다',
+  // Item
+  MARK_READ_ARIA: '읽음 처리',
+} as const;
