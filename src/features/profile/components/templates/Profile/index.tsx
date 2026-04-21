@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -52,10 +52,12 @@ export function Profile({ userName = '' }: ProfileProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data, isLoading, isError } = useProfile(userName);
+  const isHydrated = useRef(false);
 
-  // 실데이터로 atoms hydration — 프로필 데이터가 로드되면 atoms에 반영
+  // 실데이터로 atoms hydration — 최초 1회만 수행하여 edit 모드 중 refetch가 편집 내용을 덮어쓰지 않도록 한다
   useEffect(() => {
-    if (!data) return;
+    if (!data || isHydrated.current) return;
+    isHydrated.current = true;
 
     const { user } = data;
 
