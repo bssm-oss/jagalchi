@@ -190,25 +190,41 @@ export function useRealtimeSync({
           // 삭제 이벤트
           setNodes((prev) => prev.filter((node) => node.id !== targetId));
         } else {
-          setNodes((prev) =>
-            prev.map((node) => {
+          setNodes((prev) => {
+            const existingNode = prev.find((n) => n.id === targetId);
+            if (!existingNode) {
+              // CREATE: payload.state를 새 노드로 추가
+              const state = payload.state as RoadmapNode | undefined;
+              if (state) return [...prev, state];
+              return prev;
+            }
+            // UPDATE
+            return prev.map((node) => {
               if (node.id !== targetId) return node;
               const state = payload.state as Record<string, unknown> | undefined;
               return state ? ({ ...node, ...state } as RoadmapNode) : node;
-            }),
-          );
+            });
+          });
         }
       } else if (targetType === 'EDGE') {
         if (payload.deletedNode) {
           setEdges((prev) => prev.filter((edge) => edge.id !== targetId));
         } else {
-          setEdges((prev) =>
-            prev.map((edge) => {
+          setEdges((prev) => {
+            const existingEdge = prev.find((e) => e.id === targetId);
+            if (!existingEdge) {
+              // CREATE: payload.state를 새 엣지로 추가
+              const state = payload.state as Edge | undefined;
+              if (state) return [...prev, state];
+              return prev;
+            }
+            // UPDATE
+            return prev.map((edge) => {
               if (edge.id !== targetId) return edge;
               const state = payload.state as Record<string, unknown> | undefined;
               return state ? ({ ...edge, ...state } as Edge) : edge;
-            }),
-          );
+            });
+          });
         }
       }
     },
