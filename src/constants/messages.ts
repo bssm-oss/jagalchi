@@ -209,6 +209,15 @@ export const PROFILE_MESSAGES = {
   SEARCH_EMPTY: '검색 결과가 없습니다.',
   CANCEL: '취소',
   CONFIRM: '확인',
+  // Follow
+  FOLLOW: '팔로우',
+  UNFOLLOW: '언팔로우',
+  FOLLOW_LOADING: '처리 중...',
+  FOLLOWERS_TITLE: '팔로워',
+  FOLLOWINGS_TITLE: '팔로잉',
+  FOLLOW_LIST_EMPTY: '목록이 없습니다.',
+  FOLLOW_LIST_LOADING: '불러오는 중...',
+  FOLLOW_LIST_ERROR: '목록을 불러올 수 없습니다.',
   // Profile template
   LOADING: '프로필을 불러오는 중...',
   ERROR: '프로필을 불러올 수 없습니다.',
