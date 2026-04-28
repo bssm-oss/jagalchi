@@ -5,8 +5,11 @@
 
 interface JwtPayload {
   sub?: string;
+  id?: string | number;
   name?: string;
   email?: string;
+  role?: string;
+  type?: string;
   exp?: number;
   iat?: number;
 }
@@ -33,10 +36,49 @@ export function decodeJwtPayload(token: string): JwtPayload | null {
 
 /**
  * JWT 토큰에서 사용자 이름을 추출한다.
- * name claim → sub claim 순서로 시도하고 모두 없으면 null 반환.
+ * name claim → id claim → sub claim 순서로 시도하고 모두 없으면 null 반환.
  */
 export function extractUserNameFromToken(token: string): string | null {
   const payload = decodeJwtPayload(token);
   if (!payload) return null;
-  return payload.name ?? payload.sub ?? null;
+  return payload.name ?? (payload.id !== undefined ? String(payload.id) : (payload.sub ?? null));
+}
+
+/**
+ * JWT 토큰에서 사용자 ID를 추출한다.
+ */
+export function extractUserIdFromToken(token: string): string | null {
+  const payload = decodeJwtPayload(token);
+  if (!payload) return null;
+  return payload.id !== undefined ? String(payload.id) : (payload.sub ?? null);
+}
+
+/**
+ * JWT 토큰에서 사용자 역할을 추출한다.
+ */
+export function extractUserRoleFromToken(token: string): string | null {
+  const payload = decodeJwtPayload(token);
+  if (!payload) return null;
+  return payload.role ?? null;
+}
+
+/**
+ * 인증 토큰의 역할을 STOMP 서버가 기대하는 X-User-Role 값으로 변환한다.
+ * Gateway/User 도메인 역할: STUDENT, TEACHER, ADMIN
+ * Node STOMP 역할: USER, ADMIN
+ */
+export function mapToStompRole(role: string | null): string {
+  if (!role) return 'USER';
+
+  switch (role.toUpperCase()) {
+    case 'STUDENT':
+      return 'USER';
+    case 'TEACHER':
+    case 'ADMIN':
+      return 'ADMIN';
+    case 'USER':
+      return 'USER';
+    default:
+      return 'USER';
+  }
 }
