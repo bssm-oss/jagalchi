@@ -1,6 +1,9 @@
 'use client';
 
 import { ReactFlowProvider } from '@xyflow/react';
+import { useAtomValue } from 'jotai';
+
+import { currentUserIdAtom, currentUserNameAtom, currentUserRoleAtom } from '@/lib/auth-atoms';
 
 import { RoadmapCanvas } from '../../../canvas/components';
 import { useNackRollback } from '../../../hooks/use-nack-rollback';
@@ -16,8 +19,14 @@ interface EditorContentProps {
 }
 
 function EditorContent({ onBack, roadmapId }: EditorContentProps) {
+  const userId = useAtomValue(currentUserIdAtom);
+  const userName = useAtomValue(currentUserNameAtom);
+  const userRole = useAtomValue(currentUserRoleAtom);
+
   const { isConnected } = useRealtimeSync({
     roadmapId: roadmapId ?? '',
+    userId: userId ?? undefined,
+    userRole: userRole ?? undefined,
     isEnabled: !!roadmapId,
   });
 
@@ -29,7 +38,11 @@ function EditorContent({ onBack, roadmapId }: EditorContentProps) {
 
       <div className="relative flex flex-1 overflow-hidden">
         <div className="flex-1">
-          <RoadmapCanvas roadmapId={roadmapId} />
+          <RoadmapCanvas
+            roadmapId={roadmapId}
+            userId={userId ?? undefined}
+            userName={userName ?? undefined}
+          />
         </div>
         <EditorSidebar />
       </div>

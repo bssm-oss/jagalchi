@@ -54,10 +54,11 @@ const nodeTypes: NodeTypes = {
 
 interface RoadmapCanvasProps {
   roadmapId?: string;
+  userId?: string;
   userName?: string;
 }
 
-export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvasProps) {
+export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProps) {
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const setSelectedNodeIds = useSetAtom(selectedNodeIdsAtom);
@@ -201,9 +202,17 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
 
       const { clientX, clientY } = event;
       const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
-      sendCursorPosition(roadmapId, { userId: 0, userName, x: flowPos.x, y: flowPos.y });
+      const numericUserId = Number(userId);
+      if (!Number.isFinite(numericUserId) || !userName) return;
+
+      sendCursorPosition(roadmapId, {
+        userId: numericUserId,
+        userName,
+        x: flowPos.x,
+        y: flowPos.y,
+      });
     },
-    [roadmapId, userName, screenToFlowPosition],
+    [roadmapId, userId, userName, screenToFlowPosition],
   );
 
   const defaultEdgeOptions = useMemo(
