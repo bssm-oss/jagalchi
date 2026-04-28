@@ -38,9 +38,10 @@ vi.mock('@/api/client', () => ({
 }));
 
 import {
-  getStompClient,
   connectStomp,
+  createStompSocketUrl,
   disconnectStomp,
+  getStompClient,
   subscribeStomp,
   publishStomp,
 } from './stomp-client';
@@ -71,6 +72,15 @@ describe('stomp-client', () => {
         'http://localhost:8082/ws/roadmap?access_token=test-token',
       );
       expect(socket?.url).toBe('http://localhost:8082/ws/roadmap?access_token=test-token');
+    });
+
+    it('appends access token with ampersand when URL already has query params', () => {
+      const url = createStompSocketUrl(
+        'https://api.jagalchi.dev/ws/roadmap?transport=sockjs',
+        'a+b',
+      );
+
+      expect(url).toBe('https://api.jagalchi.dev/ws/roadmap?transport=sockjs&access_token=a%2Bb');
     });
 
     it('passes userId/userRole/roadmapId to connectHeaders via beforeConnect', () => {

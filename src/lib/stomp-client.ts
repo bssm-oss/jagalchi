@@ -9,6 +9,12 @@ const WS_URL =
   process.env.NEXT_PUBLIC_WS_URL ??
   (process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:8082/ws/roadmap');
 
+export function createStompSocketUrl(baseUrl: string, token: string | null): string {
+  if (!token) return baseUrl;
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  return `${baseUrl}${separator}access_token=${encodeURIComponent(token)}`;
+}
+
 if (!WS_URL && typeof window !== 'undefined') {
   // eslint-disable-next-line no-console
   console.warn('[stomp] NEXT_PUBLIC_WS_URL is not set. Real-time features will be disabled.');
@@ -46,7 +52,7 @@ export function getStompClient(options?: StompClientOptions): Client {
       }
 
       const token = getAccessToken();
-      const url = token ? `${WS_URL}?access_token=${encodeURIComponent(token)}` : WS_URL;
+      const url = createStompSocketUrl(WS_URL, token);
 
       return new SockJS(url);
     },
