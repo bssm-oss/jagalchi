@@ -21,5 +21,6 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     testTimeout: 10000,
     globalSetup: ['./vitest.global-setup.ts'],
+    reporters: process.env.CI ? ['default', './vitest.force-exit-reporter.ts'] : ['default'],
   },
 });
