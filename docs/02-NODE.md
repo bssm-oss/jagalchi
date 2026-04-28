@@ -1051,10 +1051,12 @@ import SockJS from 'sockjs-client';
 
 const ROADMAP_ID = '123';
 const WS_URL = 'http://localhost:8082/ws/roadmap';
+const ACCESS_TOKEN = 'short-lived-access-token';
+const wsUrlWithToken = `${WS_URL}${WS_URL.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(ACCESS_TOKEN)}`;
 
 const client = new Client({
   // SockJS 팩토리
-  webSocketFactory: () => new SockJS(WS_URL),
+  webSocketFactory: () => new SockJS(wsUrlWithToken),
 
   // STOMP CONNECT 시 인증 헤더 전달
   connectHeaders: {
