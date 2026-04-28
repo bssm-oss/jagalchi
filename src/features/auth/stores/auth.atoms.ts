@@ -37,6 +37,8 @@ export const loginAtom = atom(null, (_get, set, token: string) => {
   set(currentUserRoleAtom, userRole);
   if (userId) {
     setCurrentUser(userId, userRole);
+  } else {
+    setCurrentUser(null, null);
   }
 });
 

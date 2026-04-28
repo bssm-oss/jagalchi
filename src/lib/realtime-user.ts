@@ -2,7 +2,7 @@ let currentUserId: string | null = null;
 let currentUserRole: string | null = null;
 
 /** STOMP CONNECT/SEND 헤더에 사용할 현재 사용자 정보를 설정한다. */
-export function setCurrentUser(userId: string, userRole: string): void {
+export function setCurrentUser(userId: string | null, userRole: string | null): void {
   currentUserId = userId;
   currentUserRole = userRole;
 }

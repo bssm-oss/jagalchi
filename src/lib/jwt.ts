@@ -65,10 +65,10 @@ export function extractUserRoleFromToken(token: string): string | null {
 /**
  * 인증 토큰의 역할을 STOMP 서버가 기대하는 X-User-Role 값으로 변환한다.
  * Gateway/User 도메인 역할: STUDENT, TEACHER, ADMIN
- * Node STOMP 역할: USER, ADMIN
+ * Node STOMP 역할: USER, ADMIN, GUEST
  */
 export function mapToStompRole(role: string | null): string {
-  if (!role) return 'USER';
+  if (!role) return 'GUEST';
 
   switch (role.toUpperCase()) {
     case 'STUDENT':
@@ -78,7 +78,9 @@ export function mapToStompRole(role: string | null): string {
       return 'ADMIN';
     case 'USER':
       return 'USER';
+    case 'GUEST':
+      return 'GUEST';
     default:
-      return 'USER';
+      return 'GUEST';
   }
 }
