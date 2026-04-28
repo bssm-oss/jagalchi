@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 import { getAccessToken } from '@/api/client';
 
@@ -6,7 +7,7 @@ import type { IFrame, IMessage, StompSubscription } from '@stomp/stompjs';
 
 const WS_URL =
   process.env.NEXT_PUBLIC_WS_URL ??
-  (process.env.NODE_ENV === 'production' ? undefined : 'ws://localhost:8082/ws/roadmap');
+  (process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:8082/ws/roadmap');
 
 if (!WS_URL && typeof window !== 'undefined') {
   // eslint-disable-next-line no-console
@@ -39,8 +40,16 @@ export function getStompClient(options?: StompClientOptions): Client {
   isConnecting = true;
 
   client = new Client({
-    brokerURL: WS_URL,
-    connectHeaders: {},
+    webSocketFactory: () => {
+      if (!WS_URL) {
+        throw new Error('[stomp] WS_URL is not configured.');
+      }
+
+      const token = getAccessToken();
+      const url = token ? `${WS_URL}?access_token=${encodeURIComponent(token)}` : WS_URL;
+
+      return new SockJS(url);
+    },
     reconnectDelay: 3000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,

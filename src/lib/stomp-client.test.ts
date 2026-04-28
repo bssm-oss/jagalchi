@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const { mockSockJS } = vi.hoisted(() => ({
+  mockSockJS: vi.fn(function (this: Record<string, unknown>, url: string) {
+    this.url = url;
+  }),
+}));
+
 // Mock @stomp/stompjs Client as a class constructor
 const mockActivate = vi.fn();
 const mockDeactivate = vi.fn().mockResolvedValue(undefined);
@@ -22,6 +28,10 @@ vi.mock('@stomp/stompjs', () => {
   });
   return { Client: MockClient };
 });
+
+vi.mock('sockjs-client', () => ({
+  default: mockSockJS,
+}));
 
 vi.mock('@/api/client', () => ({
   getAccessToken: vi.fn().mockReturnValue('test-token'),
@@ -46,10 +56,21 @@ describe('stomp-client', () => {
     it('creates a new Client with correct config', () => {
       const client = getStompClient();
       expect(client).toBeDefined();
-      expect(client.brokerURL).toBeDefined();
+      expect(client.webSocketFactory).toBeDefined();
       expect(client.reconnectDelay).toBe(3000);
       expect(client.heartbeatIncoming).toBe(10000);
       expect(client.heartbeatOutgoing).toBe(10000);
+    });
+
+    it('creates a SockJS connection with access token in the URL', () => {
+      const client = getStompClient();
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(mockSockJS).toHaveBeenCalledWith(
+        'http://localhost:8082/ws/roadmap?access_token=test-token',
+      );
+      expect(socket?.url).toBe('http://localhost:8082/ws/roadmap?access_token=test-token');
     });
 
     it('passes userId/userRole/roadmapId to connectHeaders via beforeConnect', () => {
@@ -89,8 +110,8 @@ describe('stomp-client', () => {
   });
 
   describe('connectStomp', () => {
-    it('activates the client', () => {
-      connectStomp();
+    it('activates the client', async () => {
+      await connectStomp();
       expect(mockActivate).toHaveBeenCalled();
     });
   });
