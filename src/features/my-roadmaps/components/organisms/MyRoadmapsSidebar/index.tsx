@@ -202,7 +202,7 @@ export function MyRoadmapsSidebar({
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-normal text-slate-950">{userName}</span>
-          <span className="truncate text-xs leading-4 text-slate-500">{userEmail}</span>
+          <span className="truncate text-xs leading-4 text-slate-600">{userEmail}</span>
         </div>
         <ChevronDown className="h-5 w-5 text-slate-500" />
       </div>
