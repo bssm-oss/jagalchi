@@ -194,6 +194,9 @@ export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProp
   const onMouseMove = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!roadmapId) return;
+      const numericUserId = Number(userId);
+      if (!Number.isFinite(numericUserId) || !userName) return;
+
       if (throttleTimerRef.current !== null) return;
 
       throttleTimerRef.current = setTimeout(() => {
@@ -202,8 +205,6 @@ export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProp
 
       const { clientX, clientY } = event;
       const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
-      const numericUserId = Number(userId);
-      if (!Number.isFinite(numericUserId) || !userName) return;
 
       sendCursorPosition(roadmapId, {
         userId: numericUserId,

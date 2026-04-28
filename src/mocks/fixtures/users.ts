@@ -8,11 +8,13 @@ export interface MockUser {
   email: string;
   password: string;
   username: string;
-  role?: string;
+  role?: MockUserRole;
   bio?: string;
   links: { name: string; url: string }[];
   createdAt: string;
 }
+
+type MockUserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
 
 export const MOCK_USERS: MockUser[] = [
   {
