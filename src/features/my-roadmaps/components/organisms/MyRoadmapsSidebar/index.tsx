@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -197,7 +197,6 @@ export function MyRoadmapsSidebar({
       {/* Profile Section */}
       <div className="mb-4 flex items-center gap-3 rounded-md px-3 py-2">
         <Avatar className="h-8 w-8">
-          <AvatarImage src="/placeholder-avatar.png" />
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col">

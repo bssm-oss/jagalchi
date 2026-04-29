@@ -64,6 +64,16 @@ test.describe('My Roadmaps E2E', () => {
       await expect(page.getByText('로드맵 추가')).toBeVisible({ timeout: 5000 });
       await expect(page.getByPlaceholder('로드맵 이름을 입력하세요')).toBeVisible();
     });
+
+    test('creating a roadmap opens the editor canvas', async ({ page }) => {
+      await page.getByRole('button', { name: /New/ }).click();
+      await page.getByRole('menuitem', { name: '로드맵' }).click();
+      await page.getByPlaceholder('로드맵 이름을 입력하세요').fill('E2E 생성 로드맵');
+      await page.getByRole('button', { name: '확인' }).click();
+
+      await expect(page).toHaveURL(/\/editor\/\d+/, { timeout: 10000 });
+      await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+    });
   });
 
   test.describe('Roadmap Card Actions', () => {
