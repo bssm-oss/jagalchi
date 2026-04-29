@@ -19,7 +19,7 @@ describe('ProfileHeader', () => {
     createTestWrapper([
       [profileModeAtom, mode],
       [profileImageAtom, '/profile.svg'],
-    ]);
+    ] as const);
 
   it('renders user name and email in show mode', () => {
     render(<ProfileHeader {...defaultProps} />, { wrapper: createProfileWrapper('show') });

@@ -14,7 +14,7 @@ describe('ProfileInfoForm', () => {
   };
 
   const createProfileWrapper = (mode: 'show' | 'edit') =>
-    createTestWrapper([[profileModeAtom, mode]]);
+    createTestWrapper([[profileModeAtom, mode]] as const);
 
   it('renders correctly in view mode', () => {
     render(<ProfileInfoForm {...defaultProps} />, { wrapper: createProfileWrapper('show') });
