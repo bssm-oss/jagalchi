@@ -7,7 +7,7 @@ import { REALTIME_MESSAGES } from '@/constants/messages';
 import { useStomp } from '@/hooks/use-stomp';
 import { isEnabled } from '@/lib/feature-flags';
 
-import { handleAck, handleNack } from '../services/action-dispatcher';
+import { handleAck, handleNack, sendCursorHide } from '../services/action-dispatcher';
 import { nodesAtom, edgesAtom, remoteCursorsAtom, type RemoteCursor } from '../stores/editor-atoms';
 
 import type { RoadmapNode } from '../types/editor.types';
@@ -19,6 +19,7 @@ interface UseRealtimeSyncOptions {
   roadmapId: string;
   userId?: string;
   userRole?: string;
+  userPermissions?: string;
   isEnabled?: boolean;
 }
 
@@ -31,16 +32,24 @@ export function useRealtimeSync({
   roadmapId,
   userId,
   userRole,
+  userPermissions,
   isEnabled = true,
 }: UseRealtimeSyncOptions) {
   const setNodes = useSetAtom(nodesAtom);
   const setEdges = useSetAtom(edgesAtom);
   const setRemoteCursors = useSetAtom(remoteCursorsAtom);
+  const handleBeforeDisconnect = useCallback(() => {
+    if (roadmapId) {
+      sendCursorHide(roadmapId);
+    }
+  }, [roadmapId]);
   const { isConnected, subscribe } = useStomp({
     isAutoConnect: isRealtimeEnabled && isEnabled,
     userId,
     userRole,
+    userPermissions,
     roadmapId,
+    onBeforeDisconnect: handleBeforeDisconnect,
   });
 
   // ACK 구독 — 액션 수락 응답 처리
@@ -87,31 +96,6 @@ export function useRealtimeSync({
       /* invalid JSON — skip */
     }
   }, []);
-
-  // 스냅샷 구독 — 초기 전체 상태 수신
-  const handleSnapshotMessage = useCallback(
-    (message: { body: string }) => {
-      try {
-        const snapshot = JSON.parse(message.body) as {
-          type: string;
-          version: number;
-          roadmapId: string;
-          nodes: RoadmapNode[];
-          edges: Edge[];
-          sections: Record<string, unknown>[];
-          orphanNodeIds: number[];
-        };
-        if (snapshot.type !== 'SNAPSHOT') return;
-        setNodes(snapshot.nodes);
-        setEdges(snapshot.edges);
-        // sections, orphanNodeIds 는 전용 atom 미도입 상태.
-        // 섹션 실시간 동기화는 #226 실시간 협업 MVP 에서 atom 과 함께 연결.
-      } catch {
-        /* invalid JSON — skip */
-      }
-    },
-    [setNodes, setEdges],
-  );
 
   // 커서 위치 구독
   const handleCursorsMessage = useCallback(
@@ -237,7 +221,6 @@ export function useRealtimeSync({
 
     const ackSub = subscribe('/user/queue/ack', handleAckMessage);
     const nackSub = subscribe('/user/queue/nack', handleNackMessage);
-    const snapshotSub = subscribe('/user/queue/snapshot', handleSnapshotMessage);
     const stateSub = subscribe(`/topic/roadmap/${roadmapId}/state`, handleStateEvent);
     const cursorsSub = subscribe(`/topic/roadmap/${roadmapId}/cursors`, handleCursorsMessage);
     const cursorsHideSub = subscribe(
@@ -248,7 +231,6 @@ export function useRealtimeSync({
     return () => {
       ackSub?.unsubscribe();
       nackSub?.unsubscribe();
-      snapshotSub?.unsubscribe();
       stateSub?.unsubscribe();
       cursorsSub?.unsubscribe();
       cursorsHideSub?.unsubscribe();
@@ -260,7 +242,6 @@ export function useRealtimeSync({
     subscribe,
     handleAckMessage,
     handleNackMessage,
-    handleSnapshotMessage,
     handleStateEvent,
     handleCursorsMessage,
     handleCursorsHideMessage,

@@ -5,12 +5,14 @@ import {
   accessTokenAtom,
   currentUserIdAtom,
   currentUserNameAtom,
+  currentUserPermissionsAtom,
   currentUserRoleAtom,
 } from '@/lib/auth-atoms';
 import {
   extractUserIdFromToken,
   extractUserNameFromToken,
   extractUserRoleFromToken,
+  mapToStompPermissions,
   mapToStompRole,
 } from '@/lib/jwt';
 import { clearCurrentUser, setCurrentUser } from '@/lib/realtime-user';
@@ -18,6 +20,7 @@ import { clearCurrentUser, setCurrentUser } from '@/lib/realtime-user';
 export {
   currentUserIdAtom,
   currentUserNameAtom,
+  currentUserPermissionsAtom,
   currentUserRoleAtom,
   isAuthenticatedAtom,
 } from '@/lib/auth-atoms';
@@ -31,14 +34,17 @@ export const loginAtom = atom(null, (_get, set, token: string) => {
   setAccessToken(token);
   const name = extractUserNameFromToken(token);
   const userId = extractUserIdFromToken(token);
-  const userRole = mapToStompRole(extractUserRoleFromToken(token));
+  const tokenRole = extractUserRoleFromToken(token);
+  const userRole = mapToStompRole(tokenRole);
+  const userPermissions = mapToStompPermissions(tokenRole);
   set(currentUserNameAtom, name);
   set(currentUserIdAtom, userId);
   set(currentUserRoleAtom, userRole);
+  set(currentUserPermissionsAtom, userPermissions);
   if (userId) {
-    setCurrentUser(userId, userRole);
+    setCurrentUser(userId, userRole, userPermissions);
   } else {
-    setCurrentUser(null, null);
+    setCurrentUser(null, null, null);
   }
 });
 
@@ -48,6 +54,7 @@ export const logoutAtom = atom(null, (_get, set) => {
   set(currentUserNameAtom, null);
   set(currentUserIdAtom, null);
   set(currentUserRoleAtom, null);
+  set(currentUserPermissionsAtom, null);
   clearCurrentUser();
   clearAccessToken();
 });

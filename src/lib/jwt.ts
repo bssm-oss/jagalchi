@@ -84,3 +84,19 @@ export function mapToStompRole(role: string | null): string {
       return 'GUEST';
   }
 }
+
+/**
+ * 인증 토큰의 역할을 STOMP 서버가 기대하는 X-Permissions 값으로 변환한다.
+ */
+export function mapToStompPermissions(role: string | null): string {
+  const stompRole = mapToStompRole(role);
+
+  switch (stompRole) {
+    case 'ADMIN':
+      return 'ALL';
+    case 'USER':
+      return 'READ,WRITE';
+    default:
+      return 'READ';
+  }
+}

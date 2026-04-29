@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import {
   ReactFlow,
@@ -27,7 +27,7 @@ import '@xyflow/react/dist/style.css';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
-import { sendCursorHide, sendCursorPosition } from '../../../services/action-dispatcher';
+import { sendCursorPosition } from '../../../services/action-dispatcher';
 import {
   nodesAtom,
   edgesAtom,
@@ -74,14 +74,6 @@ export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProp
 
   // 키보드 단축키 활성화
   useKeyboardShortcuts();
-
-  // 언마운트 시 커서 숨기기
-  useEffect(() => {
-    if (!roadmapId) return;
-    return () => {
-      sendCursorHide(roadmapId);
-    };
-  }, [roadmapId]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {

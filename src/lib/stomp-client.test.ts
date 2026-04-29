@@ -83,10 +83,23 @@ describe('stomp-client', () => {
       expect(url).toBe('https://api.jagalchi.dev/ws/roadmap?transport=sockjs&access_token=a%2Bb');
     });
 
-    it('passes userId/userRole/roadmapId to connectHeaders via beforeConnect', () => {
+    it('adds roadmapId to the SockJS URL query when provided', () => {
+      const client = getStompClient({
+        roadmapId: '1',
+      });
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(socket?.url).toBe(
+        'http://localhost:8082/ws/roadmap?access_token=test-token&roadmapId=1',
+      );
+    });
+
+    it('passes Swagger STOMP headers to connectHeaders via beforeConnect', () => {
       const client = getStompClient({
         userId: '42',
         userRole: 'USER',
+        userPermissions: 'READ,WRITE',
         roadmapId: '1',
       });
 
@@ -99,6 +112,7 @@ describe('stomp-client', () => {
           Authorization: 'Bearer test-token',
           'X-User-ID': '42',
           'X-User-Role': 'USER',
+          'X-Permissions': 'READ,WRITE',
           'X-Roadmap-ID': '1',
         }),
       );
