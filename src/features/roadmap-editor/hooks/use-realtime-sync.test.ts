@@ -53,7 +53,7 @@ describe('useRealtimeSync', () => {
     subscribeCallbacks.clear();
   });
 
-  it('connects with permissions and subscribes to Swagger STOMP destinations', () => {
+  it('connects and subscribes to Swagger STOMP destinations', () => {
     renderHook(() => useRealtimeSync({ roadmapId: '1' }), {
       wrapper: createTestWrapper(),
     });
@@ -61,9 +61,6 @@ describe('useRealtimeSync', () => {
     expect(mockUseStomp).toHaveBeenCalledWith({
       isAutoConnect: true,
       roadmapId: '1',
-      userId: undefined,
-      userPermissions: undefined,
-      userRole: undefined,
       onBeforeDisconnect: expect.any(Function),
     });
     expect(mockSubscribe).toHaveBeenCalledTimes(5);
@@ -77,26 +74,14 @@ describe('useRealtimeSync', () => {
     );
   });
 
-  it('passes STOMP user identity and permissions to useStomp', () => {
-    renderHook(
-      () =>
-        useRealtimeSync({
-          roadmapId: '7',
-          userId: '42',
-          userRole: 'USER',
-          userPermissions: 'READ,WRITE',
-        }),
-      {
-        wrapper: createTestWrapper(),
-      },
-    );
+  it('does not pass client-controlled user identity to useStomp', () => {
+    renderHook(() => useRealtimeSync({ roadmapId: '7' }), {
+      wrapper: createTestWrapper(),
+    });
 
     expect(mockUseStomp).toHaveBeenCalledWith({
       isAutoConnect: true,
       roadmapId: '7',
-      userId: '42',
-      userPermissions: 'READ,WRITE',
-      userRole: 'USER',
       onBeforeDisconnect: expect.any(Function),
     });
   });

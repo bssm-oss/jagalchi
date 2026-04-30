@@ -8,12 +8,6 @@ import type { StompSubscription } from '@stomp/stompjs';
 interface UseStompOptions {
   /** 자동 연결 여부 (기본: true) */
   isAutoConnect?: boolean;
-  /** CONNECT 헤더: X-User-ID */
-  userId?: string;
-  /** CONNECT 헤더: X-User-Role */
-  userRole?: string;
-  /** CONNECT 헤더: X-Permissions */
-  userPermissions?: string;
   /** CONNECT 헤더: X-Roadmap-ID */
   roadmapId?: string;
   /** 연결 해제 직전 실행할 정리 작업 */
@@ -34,9 +28,6 @@ interface UseStompReturn {
  */
 export function useStomp({
   isAutoConnect = true,
-  userId,
-  userRole,
-  userPermissions,
   roadmapId,
   onBeforeDisconnect,
 }: UseStompOptions = {}): UseStompReturn {
@@ -50,12 +41,9 @@ export function useStomp({
       onConnect: () => setIsConnected(true),
       onDisconnect: () => setIsConnected(false),
       onError: () => setIsConnected(false),
-      userId,
-      userRole,
-      userPermissions,
       roadmapId,
     });
-  }, [userId, userRole, userPermissions, roadmapId]);
+  }, [roadmapId]);
 
   const disconnect = useCallback(() => {
     if (hasActivatedRef.current) {

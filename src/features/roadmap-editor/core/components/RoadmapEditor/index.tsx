@@ -3,12 +3,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { useAtomValue } from 'jotai';
 
-import {
-  currentUserIdAtom,
-  currentUserNameAtom,
-  currentUserPermissionsAtom,
-  currentUserRoleAtom,
-} from '@/lib/auth-atoms';
+import { currentUserIdAtom, currentUserNameAtom } from '@/lib/auth-atoms';
 
 import { RoadmapCanvas } from '../../../canvas/components';
 import { useNackRollback } from '../../../hooks/use-nack-rollback';
@@ -26,14 +21,9 @@ interface EditorContentProps {
 function EditorContent({ onBack, roadmapId }: EditorContentProps) {
   const userId = useAtomValue(currentUserIdAtom);
   const userName = useAtomValue(currentUserNameAtom);
-  const userRole = useAtomValue(currentUserRoleAtom);
-  const userPermissions = useAtomValue(currentUserPermissionsAtom);
 
   const { isConnected } = useRealtimeSync({
     roadmapId: roadmapId ?? '',
-    userId: userId ?? undefined,
-    userRole: userRole ?? undefined,
-    userPermissions: userPermissions ?? undefined,
     isEnabled: !!roadmapId,
   });
 

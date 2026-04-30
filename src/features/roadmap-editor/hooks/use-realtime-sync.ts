@@ -20,9 +20,6 @@ const shouldUseRealtime = isRealtimeEnabled && !isApiMockingEnabled;
 
 interface UseRealtimeSyncOptions {
   roadmapId: string;
-  userId?: string;
-  userRole?: string;
-  userPermissions?: string;
   isEnabled?: boolean;
 }
 
@@ -31,13 +28,7 @@ interface UseRealtimeSyncOptions {
  * STOMP 이벤트를 구독하여 원격 변경사항을 로컬 atom에 반영.
  * NEXT_PUBLIC_REALTIME_ENABLED=true 일 때만 활성화.
  */
-export function useRealtimeSync({
-  roadmapId,
-  userId,
-  userRole,
-  userPermissions,
-  isEnabled = true,
-}: UseRealtimeSyncOptions) {
+export function useRealtimeSync({ roadmapId, isEnabled = true }: UseRealtimeSyncOptions) {
   const setNodes = useSetAtom(nodesAtom);
   const setEdges = useSetAtom(edgesAtom);
   const setRemoteCursors = useSetAtom(remoteCursorsAtom);
@@ -48,9 +39,6 @@ export function useRealtimeSync({
   }, [roadmapId]);
   const { isConnected, subscribe } = useStomp({
     isAutoConnect: shouldUseRealtime && isEnabled,
-    userId,
-    userRole,
-    userPermissions,
     roadmapId,
     onBeforeDisconnect: handleBeforeDisconnect,
   });
