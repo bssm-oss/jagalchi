@@ -109,7 +109,7 @@ function DirectoryNode({ node }: { node: DirectoryTreeItem }) {
         className="group flex h-7 w-full items-center gap-1.5 rounded-md text-sm text-slate-700 transition-colors hover:bg-black/5"
         style={{ paddingLeft: `${12 + depth * 16}px`, paddingRight: '4px' }}
       >
-        <button type="button" className="flex min-w-0 flex-1 items-center gap-1.5">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <span className="w-3.5 shrink-0" />
           <Folder className="h-4 w-4 shrink-0 text-slate-500" />
           {isRenaming ? (
@@ -126,7 +126,7 @@ function DirectoryNode({ node }: { node: DirectoryTreeItem }) {
           ) : (
             <span className="truncate">{node.name}</span>
           )}
-        </button>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
