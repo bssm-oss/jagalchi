@@ -4,8 +4,15 @@ import { defineConfig, devices } from '@playwright/test';
  * Playwright E2E 테스트 설정
  * - Chromium only (속도 최적화)
  * - webServer: pnpm dev 자동 실행
- * - MSW 설정: .env.development에서 NEXT_PUBLIC_API_URL=/api, NEXT_PUBLIC_API_MOCKING=true
+ * - MSW 설정: 실제 개발 기본값과 분리하고 E2E 서버에서만 명시적으로 활성화
  */
+const e2eEnv = {
+  NEXT_PUBLIC_API_URL: '/api',
+  NEXT_PUBLIC_API_MOCKING: 'true',
+  NEXT_PUBLIC_REALTIME_ENABLED: 'true',
+  NEXT_PUBLIC_SITE_URL: 'http://localhost:3100',
+};
+
 export const config = defineConfig({
   testDir: './e2e',
   timeout: 60000,
@@ -32,6 +39,7 @@ export const config = defineConfig({
   ],
   webServer: {
     command: process.env.CI ? 'PORT=3100 node_modules/.bin/next start' : 'pnpm dev --port 3100',
+    env: e2eEnv,
     url: 'http://localhost:3100',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
