@@ -22,9 +22,8 @@ export function clearCurrentUser(): void {
 
 /** STOMP SEND 프레임에 첨부할 현재 사용자 헤더를 반환한다. */
 export function getCurrentUserHeaders(): Record<string, string> {
-  return {
-    ...(currentUserId ? { 'X-User-ID': currentUserId } : {}),
-    ...(currentUserRole ? { 'X-User-Role': currentUserRole } : {}),
-    ...(currentUserPermissions ? { 'X-Permissions': currentUserPermissions } : {}),
-  };
+  void currentUserId;
+  void currentUserRole;
+  void currentUserPermissions;
+  return {};
 }

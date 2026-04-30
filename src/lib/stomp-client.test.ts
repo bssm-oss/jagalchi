@@ -95,11 +95,8 @@ describe('stomp-client', () => {
       );
     });
 
-    it('passes Swagger STOMP headers to connectHeaders via beforeConnect', () => {
+    it('passes only auth and roadmap headers to connectHeaders via beforeConnect', () => {
       const client = getStompClient({
-        userId: '42',
-        userRole: 'USER',
-        userPermissions: 'READ,WRITE',
         roadmapId: '1',
       });
 
@@ -110,12 +107,12 @@ describe('stomp-client', () => {
       expect(client.connectHeaders).toEqual(
         expect.objectContaining({
           Authorization: 'Bearer test-token',
-          'X-User-ID': '42',
-          'X-User-Role': 'USER',
-          'X-Permissions': 'READ,WRITE',
           'X-Roadmap-ID': '1',
         }),
       );
+      expect(client.connectHeaders).not.toHaveProperty('X-User-ID');
+      expect(client.connectHeaders).not.toHaveProperty('X-User-Role');
+      expect(client.connectHeaders).not.toHaveProperty('X-Permissions');
     });
 
     it('omits headers when options not provided', () => {
@@ -163,17 +160,17 @@ describe('stomp-client', () => {
       expect(mockPublish).not.toHaveBeenCalled();
     });
 
-    it('sends message with headers when connected', () => {
+    it('sends message with provided non-identity headers when connected', () => {
       // Need a connected client to test publish
       const client = getStompClient();
       // Simulate connected state
       (client as unknown as Record<string, unknown>).connected = true;
 
-      publishStomp('/app/test', { data: 'hello' }, { 'X-User-ID': '42' });
+      publishStomp('/app/test', { data: 'hello' }, { 'X-Roadmap-ID': '42' });
 
       expect(mockPublish).toHaveBeenCalledWith({
         destination: '/app/test',
-        headers: { 'X-User-ID': '42' },
+        headers: { 'X-Roadmap-ID': '42' },
         body: JSON.stringify({ data: 'hello' }),
       });
     });

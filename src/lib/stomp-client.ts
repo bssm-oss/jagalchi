@@ -45,9 +45,6 @@ interface StompClientOptions {
   onDisconnect?: () => void;
   onError?: ErrorHandler;
   /** CONNECT 시 전달할 사용자 정보 */
-  userId?: string;
-  userRole?: string;
-  userPermissions?: string;
   roadmapId?: string;
 }
 
@@ -95,9 +92,6 @@ export function getStompClient(options?: StompClientOptions): Client {
       if (client) {
         client.connectHeaders = {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(options?.userId ? { 'X-User-ID': options.userId } : {}),
-          ...(options?.userRole ? { 'X-User-Role': options.userRole } : {}),
-          ...(options?.userPermissions ? { 'X-Permissions': options.userPermissions } : {}),
           ...(options?.roadmapId ? { 'X-Roadmap-ID': options.roadmapId } : {}),
         };
       }
