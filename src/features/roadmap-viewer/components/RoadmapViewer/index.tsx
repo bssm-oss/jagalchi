@@ -14,6 +14,7 @@ import {
   viewerErrorAtom,
   viewerLayoutAtom,
   viewerLoadingAtom,
+  viewerRoadmapAtom,
   viewerSidebarOpenAtom,
 } from '../../stores/viewer-atoms';
 import { CardListMode } from '../CardListMode';
@@ -36,6 +37,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
   const isLoading = useAtomValue(viewerLoadingAtom);
   const error = useAtomValue(viewerErrorAtom);
+  const roadmap = useAtomValue(viewerRoadmapAtom);
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
   const [isCoachOpen, setIsCoachOpen] = useState(false);
@@ -60,7 +62,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
     <div className="bg-background min-h-screen">
       <RoadmapHeader
         roadmapId={Number(roadmapId)}
-        roadmapTitle={`Roadmap · ${roadmapId}`}
+        roadmapTitle={roadmap?.title ?? VIEWER_MESSAGES.DEFAULT_ROADMAP_TITLE}
         onAiFeedback={() => setIsCoachOpen(true)}
       />
 
