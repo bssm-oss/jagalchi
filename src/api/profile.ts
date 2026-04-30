@@ -4,6 +4,8 @@ import { apiClient } from './client';
 
 interface UpdateProfileRequest {
   user: {
+    name?: string;
+    email?: string;
     profileImage?: string;
     bio?: string;
     externalLinks?: Record<string, string>;
@@ -22,6 +24,7 @@ interface UserStats {
 }
 
 interface QueryUserDto {
+  id?: number;
   name: string;
   email: string;
   profileImageUrl: string | null;

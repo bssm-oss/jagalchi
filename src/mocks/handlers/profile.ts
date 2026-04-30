@@ -38,6 +38,7 @@ function toQueryUserResponse(user: MockUser, isFollowed: boolean) {
 
   return {
     user: {
+      id: Number(user.id.replace('user-', '')),
       name: user.username,
       email: user.email,
       profileImageUrl: null,
@@ -78,11 +79,19 @@ export const profileHandlers = [
   // PATCH /api/users/profile — 프로필 수정
   http.patch('/api/users/profile', async ({ request }) => {
     const body = (await request.json()) as {
-      user: { profileImage?: string; bio?: string; externalLinks?: Record<string, string> };
+      user: {
+        name?: string;
+        email?: string;
+        profileImage?: string;
+        bio?: string;
+        externalLinks?: Record<string, string>;
+      };
     };
 
     const user = findUserById('user-1');
     if (user) {
+      if (body.user.name !== undefined) user.username = body.user.name;
+      if (body.user.email !== undefined) user.email = body.user.email;
       if (body.user.bio !== undefined) user.bio = body.user.bio;
       if (body.user.externalLinks) {
         user.links = Object.entries(body.user.externalLinks).map(([name, url]) => ({ name, url }));
