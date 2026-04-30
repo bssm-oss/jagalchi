@@ -35,19 +35,11 @@ describe('action-dispatcher', () => {
     );
   });
 
-  it('dispatchAction sends STOMP user headers when set', () => {
+  it('dispatchAction does not send client-controlled user headers', () => {
     setCurrentUser('42', 'USER', 'READ,WRITE');
     dispatchAction('rm-1', 'EDIT');
 
-    expect(publishStomp).toHaveBeenCalledWith(
-      '/app/roadmap/rm-1/action',
-      expect.any(Object),
-      expect.objectContaining({
-        'X-User-ID': '42',
-        'X-User-Role': 'USER',
-        'X-Permissions': 'READ,WRITE',
-      }),
-    );
+    expect(publishStomp).toHaveBeenCalledWith('/app/roadmap/rm-1/action', expect.any(Object), {});
   });
 
   it('handleAck removes pending action', () => {
@@ -85,14 +77,10 @@ describe('action-dispatcher', () => {
     );
   });
 
-  it('sendCursorHide publishes with headers', () => {
+  it('sendCursorHide omits client-controlled user headers', () => {
     setCurrentUser('42', 'USER', 'READ,WRITE');
     sendCursorHide('rm-1');
-    expect(publishStomp).toHaveBeenCalledWith(
-      '/app/roadmap/rm-1/cursor/hide',
-      {},
-      expect.objectContaining({ 'X-User-ID': '42', 'X-Permissions': 'READ,WRITE' }),
-    );
+    expect(publishStomp).toHaveBeenCalledWith('/app/roadmap/rm-1/cursor/hide', {}, {});
   });
 
   it('getPendingCount tracks pending actions', () => {
