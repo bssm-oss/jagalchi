@@ -82,6 +82,7 @@ export const createMockToken = (userId: string): string => {
   const payload = toBase64Url({
     sub: userId,
     id: gatewayUserId,
+    email: user?.email,
     name: user?.username ?? userId,
     role: user?.role ?? 'STUDENT',
     type: 'ACCESS_TOKEN',

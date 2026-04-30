@@ -21,7 +21,7 @@ export function ProfileCustomOrganization({
 }: ProfileCustomOrganizationProps) {
   const mode = useAtomValue(profileModeAtom);
 
-  const { register, reset, watch } = useForm({
+  const { getValues, register, reset, watch } = useForm({
     defaultValues: {
       organization: initialValue,
     },
@@ -31,13 +31,16 @@ export function ProfileCustomOrganization({
 
   // Update form when prop changes
   useEffect(() => {
+    if (getValues('organization') === initialValue) return;
     reset({ organization: initialValue });
-  }, [initialValue, reset]);
+  }, [getValues, initialValue, reset]);
 
   // Notify parent of changes
   useEffect(() => {
+    if (mode !== 'edit') return;
+    if (value === initialValue) return;
     onChange?.(value);
-  }, [value, onChange]);
+  }, [initialValue, mode, value, onChange]);
 
   if (mode === 'edit') {
     return (

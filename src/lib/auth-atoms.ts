@@ -6,6 +6,9 @@ export const accessTokenAtom = atom<string | null>(null);
 /** 현재 로그인한 사용자 이름 — JWT payload에서 추출 */
 export const currentUserNameAtom = atom<string | null>(null);
 
+/** 현재 로그인한 사용자 이메일 — JWT payload에서 추출 */
+export const currentUserEmailAtom = atom<string | null>(null);
+
 /** 현재 로그인한 사용자 ID — JWT payload의 id claim 우선, sub fallback */
 export const currentUserIdAtom = atom<string | null>(null);
 

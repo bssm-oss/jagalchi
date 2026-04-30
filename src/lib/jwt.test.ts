@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
-import { mapToStompPermissions, mapToStompRole } from './jwt';
+import { extractUserEmailFromToken, mapToStompPermissions, mapToStompRole } from './jwt';
+
+function createToken(payload: Record<string, unknown>): string {
+  return [
+    btoa(JSON.stringify({ alg: 'none' }))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, ''),
+    btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
+    'signature',
+  ].join('.');
+}
 
 describe('jwt STOMP mapping', () => {
   it.each([
@@ -13,5 +24,11 @@ describe('jwt STOMP mapping', () => {
   ] as const)('maps %s to %s with %s permission', (role, expectedRole, expectedPermissions) => {
     expect(mapToStompRole(role)).toBe(expectedRole);
     expect(mapToStompPermissions(role)).toBe(expectedPermissions);
+  });
+
+  it('extracts email from JWT payload', () => {
+    const token = createToken({ email: 'kim@example.com' });
+
+    expect(extractUserEmailFromToken(token)).toBe('kim@example.com');
   });
 });

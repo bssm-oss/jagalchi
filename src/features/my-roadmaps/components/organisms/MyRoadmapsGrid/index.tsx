@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
+import { BookOpen } from 'lucide-react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,10 +34,15 @@ import { RoadmapCard } from '../../atoms/RoadmapCard';
 import type { RoadmapData } from '../../../types/my-roadmaps.types';
 
 interface MyRoadmapsGridProps {
+  emptyMessage?: string;
   roadmaps: RoadmapData[];
 }
 
-export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
+export function MyRoadmapsGrid({
+  emptyMessage = MY_ROADMAPS_MESSAGES.EMPTY,
+  roadmaps,
+}: MyRoadmapsGridProps) {
+  const router = useRouter();
   const deleteMutation = useDeleteRoadmap();
   const updateMutation = useUpdateRoadmap();
 
@@ -65,24 +74,37 @@ export function MyRoadmapsGrid({ roadmaps }: MyRoadmapsGridProps) {
     setRenameInput('');
   };
 
+  const handleOpenRoadmap = (roadmap: RoadmapData) => {
+    if (roadmap.type === 'Directory') return;
+    router.push(`/editor/${roadmap.id}`);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-1 gap-x-14 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
-        {roadmaps.map((roadmap) => (
-          <RoadmapCard
-            key={roadmap.id}
-            id={roadmap.id}
-            title={roadmap.title}
-            type={roadmap.type}
-            author={roadmap.author}
-            fileCount={roadmap.fileCount}
-            imageUrl={roadmap.imageUrl}
-            isFavorite={roadmap.isFavorite}
-            onRename={() => handleRenameOpen(roadmap.id, roadmap.title)}
-            onDelete={() => setDeleteTarget(roadmap.id)}
-          />
-        ))}
-      </div>
+      {roadmaps.length === 0 ? (
+        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-center">
+          <BookOpen className="mb-3 h-8 w-8 text-slate-300" />
+          <p className="text-sm font-medium text-slate-600">{emptyMessage}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-x-14 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+          {roadmaps.map((roadmap) => (
+            <RoadmapCard
+              key={roadmap.id}
+              id={roadmap.id}
+              title={roadmap.title}
+              type={roadmap.type}
+              author={roadmap.author}
+              fileCount={roadmap.fileCount}
+              imageUrl={roadmap.imageUrl}
+              isFavorite={roadmap.isFavorite}
+              onClick={() => handleOpenRoadmap(roadmap)}
+              onRename={() => handleRenameOpen(roadmap.id, roadmap.title)}
+              onDelete={() => setDeleteTarget(roadmap.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Delete confirmation dialog */}
       <AlertDialog

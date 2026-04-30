@@ -45,6 +45,15 @@ export function extractUserNameFromToken(token: string): string | null {
 }
 
 /**
+ * JWT 토큰에서 사용자 이메일을 추출한다.
+ */
+export function extractUserEmailFromToken(token: string): string | null {
+  const payload = decodeJwtPayload(token);
+  if (!payload) return null;
+  return payload.email ?? null;
+}
+
+/**
  * JWT 토큰에서 사용자 ID를 추출한다.
  */
 export function extractUserIdFromToken(token: string): string | null {

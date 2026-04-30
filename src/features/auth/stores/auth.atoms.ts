@@ -3,12 +3,14 @@ import { atom } from 'jotai';
 import { setAccessToken, clearAccessToken } from '@/api/client';
 import {
   accessTokenAtom,
+  currentUserEmailAtom,
   currentUserIdAtom,
   currentUserNameAtom,
   currentUserPermissionsAtom,
   currentUserRoleAtom,
 } from '@/lib/auth-atoms';
 import {
+  extractUserEmailFromToken,
   extractUserIdFromToken,
   extractUserNameFromToken,
   extractUserRoleFromToken,
@@ -18,6 +20,7 @@ import {
 import { clearCurrentUser, setCurrentUser } from '@/lib/realtime-user';
 
 export {
+  currentUserEmailAtom,
   currentUserIdAtom,
   currentUserNameAtom,
   currentUserPermissionsAtom,
@@ -33,11 +36,13 @@ export const loginAtom = atom(null, (_get, set, token: string) => {
   set(accessTokenAtom, token);
   setAccessToken(token);
   const name = extractUserNameFromToken(token);
+  const email = extractUserEmailFromToken(token);
   const userId = extractUserIdFromToken(token);
   const tokenRole = extractUserRoleFromToken(token);
   const userRole = mapToStompRole(tokenRole);
   const userPermissions = mapToStompPermissions(tokenRole);
   set(currentUserNameAtom, name);
+  set(currentUserEmailAtom, email);
   set(currentUserIdAtom, userId);
   set(currentUserRoleAtom, userRole);
   set(currentUserPermissionsAtom, userPermissions);
@@ -52,6 +57,7 @@ export const loginAtom = atom(null, (_get, set, token: string) => {
 export const logoutAtom = atom(null, (_get, set) => {
   set(accessTokenAtom, null);
   set(currentUserNameAtom, null);
+  set(currentUserEmailAtom, null);
   set(currentUserIdAtom, null);
   set(currentUserRoleAtom, null);
   set(currentUserPermissionsAtom, null);

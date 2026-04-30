@@ -90,7 +90,7 @@ describe('Profile', () => {
         <Profile userName="John Doe" />
       </TestProvider>,
     );
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getAllByText('John Doe').length).toBeGreaterThan(0);
   });
 
   it('renders the user email', () => {

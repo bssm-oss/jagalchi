@@ -14,6 +14,9 @@ import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
 
 const isRealtimeEnabled = isEnabled('REALTIME_ENABLED');
+const isApiMockingEnabled =
+  process.env.NEXT_PUBLIC_API_MOCKING === 'true' && process.env.NODE_ENV !== 'production';
+const shouldUseRealtime = isRealtimeEnabled && !isApiMockingEnabled;
 
 interface UseRealtimeSyncOptions {
   roadmapId: string;
@@ -44,7 +47,7 @@ export function useRealtimeSync({
     }
   }, [roadmapId]);
   const { isConnected, subscribe } = useStomp({
-    isAutoConnect: isRealtimeEnabled && isEnabled,
+    isAutoConnect: shouldUseRealtime && isEnabled,
     userId,
     userRole,
     userPermissions,
@@ -217,7 +220,7 @@ export function useRealtimeSync({
 
   // 구독 설정
   useEffect(() => {
-    if (!isConnected || !isRealtimeEnabled || !isEnabled) return;
+    if (!isConnected || !shouldUseRealtime || !isEnabled) return;
 
     const ackSub = subscribe('/user/queue/ack', handleAckMessage);
     const nackSub = subscribe('/user/queue/nack', handleNackMessage);
@@ -247,5 +250,5 @@ export function useRealtimeSync({
     handleCursorsHideMessage,
   ]);
 
-  return { isConnected: isRealtimeEnabled && isConnected };
+  return { isConnected: shouldUseRealtime ? isConnected : undefined };
 }
