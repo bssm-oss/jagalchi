@@ -16,6 +16,7 @@ vi.mock('next/navigation', () => ({
 
 const mockProfileData = {
   user: {
+    id: 1,
     name: 'John Doe',
     email: 'john.doe@example.com',
     profileImageUrl: null,
@@ -42,6 +43,15 @@ vi.mock('../../../hooks/use-profile-roadmaps', () => ({
   useProfileRoadmaps: vi.fn(() => ({
     data: [],
     isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
+  })),
+}));
+
+vi.mock('../../../hooks/use-update-profile', () => ({
+  useUpdateProfile: vi.fn(() => ({
+    mutateAsync: vi.fn().mockResolvedValue({ message: 'ok' }),
+    isPending: false,
   })),
 }));
 
