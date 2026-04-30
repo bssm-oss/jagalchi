@@ -56,6 +56,13 @@ node scripts/verify-prod-env.mjs && pnpm build
 - `NEXT_PUBLIC_API_MOCKING` 이 `true` 면 exit 1 (MSW 유입 차단)
 - `NEXT_PUBLIC_API_URL` 미설정 시 exit 1
 
+## 보안 경계
+
+- `NEXT_PUBLIC_API_URL` 을 절대 URL로 설정하면 브라우저가 백엔드 API에 직접 요청하므로, CSRF/Origin 검증은 백엔드 게이트웨이에서 반드시 수행해야 한다.
+- same-origin 프록시(`/api`) 모드에서는 `src/app/api/[...path]/route.ts` 가 Origin 및 CSRF token을 검증한다.
+- SockJS/STOMP access token query string은 백엔드 transport 제약이 해소되기 전까지 로그 redaction과 짧은 만료시간으로 보호해야 한다.
+- 클라이언트가 보내는 realtime metadata는 권한 근거로 사용하지 말고, 서버는 bearer token 또는 서버 세션에서 사용자/권한을 재도출해야 한다.
+
 ## 시크릿 관리
 
 - **Vercel**: Project Settings → Environment Variables 에서 `Production` / `Preview` / `Development` 로 분리.

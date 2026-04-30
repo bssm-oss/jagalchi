@@ -9,7 +9,7 @@ const AUTH_ROUTES = ['/login', '/register', '/find-password'];
 
 const SESSION_COOKIE_KEY = 'jagalchi-session';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.get(SESSION_COOKIE_KEY)?.value === '1';
 
