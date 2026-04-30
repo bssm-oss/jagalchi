@@ -11,11 +11,17 @@ import { AddRoadmapModal } from '../AddRoadmapModal';
 
 interface MadeRoadmapListProps {
   userName: string;
+  userId?: number;
 }
 
-export function MadeRoadmapList({ userName }: MadeRoadmapListProps) {
+export function MadeRoadmapList({ userName, userId }: MadeRoadmapListProps) {
   const [mode] = useAtom(profileModeAtom);
-  const { data: roadmaps = [], isLoading } = useProfileRoadmaps({ userName });
+  const {
+    data: roadmaps = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useProfileRoadmaps({ userName, userId });
 
   return (
     <Card className="mb-10 w-full gap-0 rounded-xl shadow-none">
@@ -28,6 +34,13 @@ export function MadeRoadmapList({ userName }: MadeRoadmapListProps) {
       <CardContent className="flex flex-col gap-4">
         {isLoading ? (
           <p className="text-muted-foreground text-sm">{PROFILE_MESSAGES.LOADING}</p>
+        ) : isError ? (
+          <div className="flex flex-col gap-2">
+            <p className="text-destructive text-sm">{PROFILE_MESSAGES.ERROR}</p>
+            <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
+              다시 시도
+            </Button>
+          </div>
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {roadmaps.map((roadmap) => (
