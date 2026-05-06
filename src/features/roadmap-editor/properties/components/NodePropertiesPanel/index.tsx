@@ -1,8 +1,18 @@
 'use client';
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+
+import { Upload, X } from 'lucide-react';
 
 import { getNodeDescription } from '@/api/ai';
+import {
+  ATTACHMENT_UPLOAD_CONSTRAINTS,
+  AttachmentUploadError,
+  uploadAttachment,
+  validateAttachmentFile,
+} from '@/api/upload';
+import type { AttachmentUploadErrorCode } from '@/api/upload';
+import { Button } from '@/components/ui/button';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { LoadingButton } from '../../../components/atoms/LoadingButton';
@@ -29,15 +39,26 @@ interface NodePropertiesPanelProps {
  * - 노드 설명: EditorInput (multiline)
  * - AI 생성: LoadingButton
  * - 기본 컬러: ColorSelector
- * - 형부자료: EditorInput 3개 + "AI 추천" LoadingButton
+ * - 첨부자료: EditorInput 3개 + 파일 첨부 + "AI 추천" LoadingButton
  */
 export const NodePropertiesPanel = memo(function NodePropertiesPanel({
   node,
 }: NodePropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadControllerRef = useRef<AbortController | null>(null);
   const [isDescLoading, setIsDescLoading] = useState(false);
   const [descError, setDescError] = useState('');
   const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [attachmentUploadProgress, setAttachmentUploadProgress] = useState(0);
+  const [attachmentUploadError, setAttachmentUploadError] = useState('');
+
+  useEffect(() => {
+    return () => {
+      uploadControllerRef.current?.abort();
+    };
+  }, []);
 
   const toggleLock = useCallback(() => {
     updateNode({ isLocked: !node.data.isLocked });
@@ -86,6 +107,76 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
       }
     },
     [node.data.resources, handleResourceChange],
+  );
+
+  const getAttachmentUploadErrorMessage = useCallback((code: AttachmentUploadErrorCode) => {
+    switch (code) {
+      case 'EMPTY_FILE':
+        return EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_EMPTY;
+      case 'UNSUPPORTED_TYPE':
+        return EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_TYPE;
+      case 'FILE_TOO_LARGE':
+        return EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_SIZE;
+      case 'ABORTED':
+        return '';
+      case 'UPLOAD_FAILED':
+      default:
+        return EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_FAILED;
+    }
+  }, []);
+
+  const handleAttachmentUploadClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleCancelAttachmentUpload = useCallback(() => {
+    uploadControllerRef.current?.abort();
+  }, []);
+
+  const handleAttachmentFileChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file) return;
+
+      const emptyIndex = node.data.resources.findIndex((resource) => !resource);
+      if (emptyIndex === -1) {
+        setAttachmentUploadError(EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_FULL);
+        return;
+      }
+
+      const validationError = validateAttachmentFile(file);
+      if (validationError) {
+        setAttachmentUploadError(getAttachmentUploadErrorMessage(validationError));
+        return;
+      }
+
+      const controller = new AbortController();
+      uploadControllerRef.current = controller;
+      setIsUploadingAttachment(true);
+      setAttachmentUploadProgress(0);
+      setAttachmentUploadError('');
+
+      try {
+        const response = await uploadAttachment(file, {
+          signal: controller.signal,
+          onProgress: setAttachmentUploadProgress,
+        });
+        handleResourceChange(emptyIndex, response.url);
+      } catch (error) {
+        if (error instanceof AttachmentUploadError) {
+          setAttachmentUploadError(getAttachmentUploadErrorMessage(error.code));
+        } else {
+          setAttachmentUploadError(EDITOR_MESSAGES.ATTACHMENT_UPLOAD_ERROR_FAILED);
+        }
+      } finally {
+        if (uploadControllerRef.current === controller) {
+          uploadControllerRef.current = null;
+        }
+        setIsUploadingAttachment(false);
+      }
+    },
+    [getAttachmentUploadErrorMessage, handleResourceChange, node.data.resources],
   );
 
   // Ensure we have exactly 3 resource slots
@@ -146,11 +237,30 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
           onPresetSelect={(variant) => updateNode({ variant: variant as NodeColorVariant })}
         />
 
-        {/* 형부자료 */}
+        {/* 첨부자료 */}
         <div className="space-y-1.5">
-          <span className="text-sm font-medium text-slate-950">
-            {EDITOR_MESSAGES.SIDEBAR_RESOURCES_LABEL}
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-slate-950">
+              {EDITOR_MESSAGES.SIDEBAR_RESOURCES_LABEL}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              aria-label={EDITOR_MESSAGES.ATTACHMENT_UPLOAD_BUTTON}
+              onClick={handleAttachmentUploadClick}
+              disabled={node.data.isLocked || isUploadingAttachment}
+            >
+              <Upload className="size-4" />
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept={ATTACHMENT_UPLOAD_CONSTRAINTS.accept}
+              onChange={handleAttachmentFileChange}
+            />
+          </div>
           <div className="space-y-2">
             {resources.slice(0, 3).map((resource: string, index: number) => (
               <EditorInput
@@ -163,6 +273,30 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
               />
             ))}
           </div>
+          {isUploadingAttachment && (
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 flex-1 rounded-full bg-slate-200">
+                <div
+                  className="bg-primary h-full rounded-full transition-[width]"
+                  style={{ width: `${attachmentUploadProgress}%` }}
+                />
+              </div>
+              <span className="text-muted-foreground w-9 text-right text-xs">
+                {attachmentUploadProgress}%
+              </span>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label={EDITOR_MESSAGES.ATTACHMENT_UPLOAD_CANCEL}
+                onClick={handleCancelAttachmentUpload}
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
+          {attachmentUploadError && (
+            <p className="text-destructive text-xs">{attachmentUploadError}</p>
+          )}
           <div className="flex justify-end">
             <button
               type="button"

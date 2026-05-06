@@ -634,6 +634,44 @@ api.interceptors.response.use(
 - 파일 업로드가 필요한 경우 `multipart/form-data` 사용
 - `Content-Type`을 명시적으로 설정하지 말 것 (브라우저가 boundary를 자동 설정)
 
+#### 5.6.1 로드맵 첨부 자료 업로드
+
+에디터 노드의 첨부 자료 파일 업로드는 다음 계약을 표준으로 한다.
+
+| 항목             | 값                                                                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **메서드**       | `POST`                                                                                                                               |
+| **URL**          | `/uploads/attachments`                                                                                                               |
+| **Content-Type** | `multipart/form-data`                                                                                                                |
+| **필드**         | `file`                                                                                                                               |
+| **최대 크기**    | 10MB                                                                                                                                 |
+| **허용 MIME**    | `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/avif`, `application/pdf`, `text/plain`, `text/markdown`                 |
+| **공개 URL**     | CDN 도메인 `https://cdn.jagalchi.dev` 하위 URL                                                                                       |
+| **이미지 처리**  | 이미지 파일은 서버에서 원본 저장 후 `thumbnailUrl` 생성 가능. 프론트는 `url`만 필수로 사용하고 `thumbnailUrl`은 선택값으로 취급한다. |
+
+요청 예시:
+
+```http
+POST /uploads/attachments
+Content-Type: multipart/form-data
+
+file=<binary>
+```
+
+성공 응답:
+
+```json
+{
+  "url": "https://cdn.jagalchi.dev/uploads/attachments/lesson.pdf",
+  "filename": "lesson.pdf",
+  "contentType": "application/pdf",
+  "size": 12345,
+  "thumbnailUrl": null
+}
+```
+
+서버는 프론트와 동일한 MIME/크기 제한을 다시 검증해야 한다.
+
 ### 5.7 AI 엔드포인트 응답 시간
 
 - AI 서비스 엔드포인트는 응답 시간이 길 수 있음 (수 초 ~ 수십 초)

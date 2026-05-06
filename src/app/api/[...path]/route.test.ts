@@ -1,6 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
+import { ATTACHMENT_UPLOAD_CONSTRAINTS } from '@/constants/upload';
+
 // fetch는 모듈 로드 전에 stubGlobal 로 설정
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -48,6 +50,20 @@ function makeOkFetchResponse(status = 200) {
       headers: { 'content-type': 'application/json' },
     }),
   );
+}
+
+function makeUploadRequest(file?: File) {
+  const formData = new FormData();
+  if (file) formData.set('file', file);
+
+  const request = makeRequest('POST', '/api/uploads/attachments', {
+    origin: VALID_ORIGIN,
+    csrfCookie: VALID_CSRF,
+    csrfHeader: VALID_CSRF,
+  });
+
+  vi.spyOn(request, 'formData').mockResolvedValue(formData);
+  return request;
 }
 
 const VALID_ORIGIN = 'http://localhost:3000'; // NODE_ENV=test → IS_PRODUCTION=false → 허용
@@ -191,6 +207,59 @@ describe('POST /api/[...path] (state-mutating method)', () => {
       expect(res.status).toBe(201);
       expect(mockFetch).toHaveBeenCalledOnce();
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// POST /uploads/attachments — 서버 측 업로드 검증
+// ---------------------------------------------------------------------------
+
+describe('POST /api/uploads/attachments', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockFetch.mockReturnValue(makeOkFetchResponse(201));
+  });
+
+  it('유효한 첨부 파일은 upstream 으로 FormData 프록시된다', async () => {
+    const req = makeUploadRequest(new File(['lesson'], 'lesson.pdf', { type: 'application/pdf' }));
+    const res = await POST(req);
+
+    expect(res.status).toBe(201);
+    expect(mockFetch).toHaveBeenCalledOnce();
+
+    const [, init] = mockFetch.mock.calls[0] as [string, { body?: unknown; headers?: unknown }];
+    expect(init.body).toBeInstanceOf(FormData);
+    expect(new Headers(init.headers as never).get('content-type')).toBeNull();
+  });
+
+  it('file 필드가 없으면 400 FILE_REQUIRED를 반환한다', async () => {
+    const res = await POST(makeUploadRequest());
+
+    expect(res.status).toBe(400);
+    expect(mockFetch).not.toHaveBeenCalled();
+    await expect(res.json()).resolves.toMatchObject({ code: 'FILE_REQUIRED' });
+  });
+
+  it('허용되지 않은 MIME 타입이면 415 UNSUPPORTED_MEDIA_TYPE을 반환한다', async () => {
+    const req = makeUploadRequest(new File(['html'], 'bad.html', { type: 'text/html' }));
+    const res = await POST(req);
+
+    expect(res.status).toBe(415);
+    expect(mockFetch).not.toHaveBeenCalled();
+    await expect(res.json()).resolves.toMatchObject({ code: 'UNSUPPORTED_MEDIA_TYPE' });
+  });
+
+  it('크기 제한을 넘으면 413 FILE_SIZE_EXCEEDED를 반환한다', async () => {
+    const req = makeUploadRequest(
+      new File([new Uint8Array(ATTACHMENT_UPLOAD_CONSTRAINTS.maxSizeBytes + 1)], 'large.pdf', {
+        type: 'application/pdf',
+      }),
+    );
+    const res = await POST(req);
+
+    expect(res.status).toBe(413);
+    expect(mockFetch).not.toHaveBeenCalled();
+    await expect(res.json()).resolves.toMatchObject({ code: 'FILE_SIZE_EXCEEDED' });
   });
 });
 
