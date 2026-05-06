@@ -14,8 +14,10 @@ import type { RoadmapNode } from '../types/editor.types';
 import type { Edge } from '@xyflow/react';
 
 const isRealtimeEnabled = isEnabled('REALTIME_ENABLED');
+const isE2EMockingEnabled = process.env.NEXT_PUBLIC_E2E_MOCKING === 'true';
 const isApiMockingEnabled =
-  process.env.NEXT_PUBLIC_API_MOCKING === 'true' && process.env.NODE_ENV !== 'production';
+  process.env.NEXT_PUBLIC_API_MOCKING === 'true' &&
+  (process.env.NODE_ENV !== 'production' || isE2EMockingEnabled);
 const shouldUseRealtime = isRealtimeEnabled && !isApiMockingEnabled;
 
 interface UseRealtimeSyncOptions {
