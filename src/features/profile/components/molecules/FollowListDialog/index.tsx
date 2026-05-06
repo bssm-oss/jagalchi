@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import type { FollowListResponse } from '@/api/profile';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -26,12 +28,14 @@ interface FollowUserItemProps {
 function FollowUserItem({ profileImage, name }: FollowUserItemProps) {
   return (
     <div className="flex items-center gap-3 py-3">
-      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-slate-100">
+      <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-slate-100">
         {profileImage ? (
-          <img
+          <Image
             src={profileImage}
             alt={`${name}${PROFILE_MESSAGES.PROFILE_PICTURE_ALT_WITH_NAME}`}
-            className="h-full w-full object-cover"
+            fill
+            sizes="36px"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-500">
