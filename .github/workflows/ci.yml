@@ -34,6 +34,41 @@ jobs:
       - name: Build
         run: pnpm build
 
+  dependency-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Production dependency audit
+        continue-on-error: true
+        run: pnpm audit --prod --audit-level=high
+
+      - name: List pnpm overrides for review
+        run: |
+          node - <<'NODE'
+          const { readFileSync } = require('node:fs');
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          const overrides = pkg.pnpm?.overrides ?? {};
+          const entries = Object.entries(overrides);
+          console.log(`pnpm.overrides count: ${entries.length}`);
+          for (const [name, version] of entries) {
+            console.log(`- ${name} -> ${version}`);
+          }
+          NODE
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
