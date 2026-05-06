@@ -187,7 +187,7 @@ export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProp
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!roadmapId) return;
       const numericUserId = Number(userId);
-      if (!Number.isFinite(numericUserId) || !userName) return;
+      if (!Number.isSafeInteger(numericUserId) || !userName) return;
 
       if (throttleTimerRef.current !== null) return;
 

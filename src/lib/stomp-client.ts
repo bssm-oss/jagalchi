@@ -106,10 +106,16 @@ export async function connectStomp(options?: StompClientOptions): Promise<void> 
   if (disconnectingPromise) {
     await disconnectingPromise;
   }
-  consumerCount++;
   const c = getStompClient(options);
-  if (!c.active) {
-    c.activate();
+  consumerCount++;
+
+  try {
+    if (!c.active) {
+      c.activate();
+    }
+  } catch (error) {
+    consumerCount = Math.max(0, consumerCount - 1);
+    throw error;
   }
 }
 

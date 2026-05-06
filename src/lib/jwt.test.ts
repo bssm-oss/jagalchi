@@ -21,6 +21,7 @@ describe('jwt STOMP mapping', () => {
     ['USER', 'USER', 'READ,WRITE'],
     ['GUEST', 'GUEST', 'READ'],
     [null, 'GUEST', 'READ'],
+    [123, 'GUEST', 'READ'],
   ] as const)('maps %s to %s with %s permission', (role, expectedRole, expectedPermissions) => {
     expect(mapToStompRole(role)).toBe(expectedRole);
     expect(mapToStompPermissions(role)).toBe(expectedPermissions);

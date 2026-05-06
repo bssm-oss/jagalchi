@@ -14,7 +14,7 @@ export function useCreateRoadmap() {
       saveRoadmapToLocalStorage(
         createEmptyRoadmap(response.id, {
           title: response.title || data.title,
-          description: response.description ?? data.description,
+          description: response.description ?? data.description ?? undefined,
           isPublic: response.isPublic,
         }),
       );

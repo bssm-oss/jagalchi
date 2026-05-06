@@ -8,7 +8,7 @@ interface JwtPayload {
   id?: string | number;
   name?: string;
   email?: string;
-  role?: string;
+  role?: unknown;
   type?: string;
   exp?: number;
   iat?: number;
@@ -68,7 +68,7 @@ export function extractUserIdFromToken(token: string): string | null {
 export function extractUserRoleFromToken(token: string): string | null {
   const payload = decodeJwtPayload(token);
   if (!payload) return null;
-  return payload.role ?? null;
+  return typeof payload.role === 'string' ? payload.role : null;
 }
 
 /**
@@ -76,8 +76,8 @@ export function extractUserRoleFromToken(token: string): string | null {
  * Gateway/User 도메인 역할: STUDENT, TEACHER, ADMIN
  * Node STOMP 역할: USER, ADMIN, GUEST
  */
-export function mapToStompRole(role: string | null): string {
-  if (!role) return 'GUEST';
+export function mapToStompRole(role: unknown): string {
+  if (typeof role !== 'string' || !role) return 'GUEST';
 
   switch (role.toUpperCase()) {
     case 'STUDENT':
@@ -97,7 +97,7 @@ export function mapToStompRole(role: string | null): string {
 /**
  * 인증 토큰의 역할을 STOMP 서버가 기대하는 X-Permissions 값으로 변환한다.
  */
-export function mapToStompPermissions(role: string | null): string {
+export function mapToStompPermissions(role: unknown): string {
   const stompRole = mapToStompRole(role);
 
   switch (stompRole) {
