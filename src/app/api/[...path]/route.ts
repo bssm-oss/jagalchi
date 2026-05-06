@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { timingSafeEqual } from 'crypto';
 
+import { ATTACHMENT_UPLOAD_CONSTRAINTS, ATTACHMENT_UPLOAD_ENDPOINT } from '@/constants/upload';
+
 const API_ORIGIN = process.env.API_ORIGIN ?? 'https://api.jagalchi.dev';
 const DEFAULT_TIMEOUT_MS = 15_000;
 const CSRF_COOKIE_NAME = 'csrf-token';
@@ -110,6 +112,46 @@ function forbidden(code: string, message: string): NextResponse {
   return NextResponse.json({ code, message }, { status: 403 });
 }
 
+function uploadValidationError(code: string, message: string, status: number): NextResponse {
+  return NextResponse.json({ code, message }, { status });
+}
+
+function isUploadedFile(value: unknown): value is File {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'size' in value &&
+    'type' in value &&
+    typeof (value as Blob).arrayBuffer === 'function'
+  );
+}
+
+async function validateAttachmentUploadRequest(
+  request: NextRequest,
+): Promise<FormData | NextResponse> {
+  const formData = await request.formData();
+  const file = formData.get('file');
+
+  if (!isUploadedFile(file)) {
+    return uploadValidationError('FILE_REQUIRED', 'file field is required', 400);
+  }
+
+  if (file.size === 0) {
+    return uploadValidationError('EMPTY_FILE', 'file is empty', 400);
+  }
+
+  if (file.size > ATTACHMENT_UPLOAD_CONSTRAINTS.maxSizeBytes) {
+    return uploadValidationError('FILE_SIZE_EXCEEDED', 'file size exceeds limit', 413);
+  }
+
+  const allowedMimeTypes: readonly string[] = ATTACHMENT_UPLOAD_CONSTRAINTS.allowedMimeTypes;
+  if (!allowedMimeTypes.includes(file.type)) {
+    return uploadValidationError('UNSUPPORTED_MEDIA_TYPE', 'file type is not allowed', 415);
+  }
+
+  return formData;
+}
+
 // ---------------------------------------------------------------------------
 // 프록시 핸들러
 // ---------------------------------------------------------------------------
@@ -147,8 +189,18 @@ async function proxyRequest(request: NextRequest) {
 
     // GET/HEAD/OPTIONS 는 바디를 포함할 수 없다.
     if (!SAFE_METHODS.has(request.method)) {
-      init.body = request.body;
-      init.duplex = 'half';
+      if (request.method === 'POST' && targetPath === ATTACHMENT_UPLOAD_ENDPOINT) {
+        const uploadBody = await validateAttachmentUploadRequest(request);
+        if (uploadBody instanceof NextResponse) {
+          return uploadBody;
+        }
+
+        headers.delete('content-type');
+        init.body = uploadBody;
+      } else {
+        init.body = request.body;
+        init.duplex = 'half';
+      }
     }
 
     const response = await fetch(targetUrl, init);
