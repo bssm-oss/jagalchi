@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 
+import { getCurrentUserHeaders, setCurrentUser } from '@/lib/realtime-user';
 import { publishStomp } from '@/lib/stomp-client';
 
 type ActionType = 'CREATE' | 'EDIT' | 'DELETE' | 'UNDO' | 'REDO';
@@ -40,15 +41,7 @@ interface StompAction {
 const pendingActions = new Map<string, StompAction>();
 const MAX_PENDING_ACTIONS = 500;
 
-/** 현재 사용자 정보 (SEND 헤더용) */
-let currentUserId: string | null = null;
-let currentUserRole: string | null = null;
-
-/** 사용자 정보 설정 (CONNECT 후 호출) */
-export function setCurrentUser(userId: string, userRole: string): void {
-  currentUserId = userId;
-  currentUserRole = userRole;
-}
+export { setCurrentUser };
 
 /** 액션 전송 */
 export function dispatchAction(
@@ -80,9 +73,7 @@ export function dispatchAction(
 
   pendingActions.set(actionId, stompAction);
 
-  const headers: Record<string, string> = {};
-  if (currentUserId) headers['X-User-ID'] = currentUserId;
-  if (currentUserRole) headers['X-User-Role'] = currentUserRole;
+  const headers = getCurrentUserHeaders();
 
   publishStomp(
     `/app/roadmap/${roadmapId}/action`,
@@ -118,8 +109,7 @@ export function sendCursorPosition(
   roadmapId: string,
   position: { userId: number; userName: string; x: number; y: number },
 ): void {
-  const headers: Record<string, string> = {};
-  if (currentUserId) headers['X-User-ID'] = currentUserId;
+  const headers = getCurrentUserHeaders();
 
   publishStomp(
     `/app/roadmap/${roadmapId}/cursor`,
@@ -135,8 +125,7 @@ export function sendCursorPosition(
 
 /** 커서 숨기기 전송 — 사용자가 캔버스를 떠날 때 호출 */
 export function sendCursorHide(roadmapId: string): void {
-  const headers: Record<string, string> = {};
-  if (currentUserId) headers['X-User-ID'] = currentUserId;
+  const headers = getCurrentUserHeaders();
 
   publishStomp(`/app/roadmap/${roadmapId}/cursor/hide`, {}, headers);
 }

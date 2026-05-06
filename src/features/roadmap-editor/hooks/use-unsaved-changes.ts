@@ -26,7 +26,7 @@ interface UseUnsavedChangesReturn {
   showExitDialog: boolean;
   setShowExitDialog: (show: boolean) => void;
   handleBack: () => void;
-  handleSave: () => void;
+  handleSave: () => boolean;
   handleSaveAndExit: () => void;
   handleDiscardAndExit: () => void;
 }
@@ -102,7 +102,7 @@ export function useUnsavedChanges({
 
   const handleSave = useCallback(() => {
     const roadmap = loadRoadmapFromLocalStorage(Number(roadmapId));
-    if (!roadmap) return;
+    if (!roadmap) return false;
 
     const updated: Roadmap = {
       ...roadmap,
@@ -112,17 +112,20 @@ export function useUnsavedChanges({
       updatedAt: new Date().toISOString(),
     };
 
-    saveRoadmapToLocalStorage(updated);
+    const isSaved = saveRoadmapToLocalStorage(updated);
+    if (!isSaved) return false;
 
     // Update saved state (using fast hash)
     setSavedNodes(hashNodes(nodes));
     setSavedEdges(hashEdges(edges));
     setSavedTitle(title);
+    return true;
   }, [roadmapId, nodes, edges, title]);
 
   const handleSaveAndExit = useCallback(() => {
-    handleSave();
-    router.push('/myroadmap');
+    if (handleSave()) {
+      router.push('/myroadmap');
+    }
   }, [handleSave, router]);
 
   const handleDiscardAndExit = useCallback(() => {

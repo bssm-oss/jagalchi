@@ -8,12 +8,10 @@ import type { StompSubscription } from '@stomp/stompjs';
 interface UseStompOptions {
   /** 자동 연결 여부 (기본: true) */
   isAutoConnect?: boolean;
-  /** CONNECT 헤더: X-User-ID */
-  userId?: string;
-  /** CONNECT 헤더: X-User-Role */
-  userRole?: string;
   /** CONNECT 헤더: X-Roadmap-ID */
   roadmapId?: string;
+  /** 연결 해제 직전 실행할 정리 작업 */
+  onBeforeDisconnect?: () => void;
 }
 
 interface UseStompReturn {
@@ -30,30 +28,33 @@ interface UseStompReturn {
  */
 export function useStomp({
   isAutoConnect = true,
-  userId,
-  userRole,
   roadmapId,
+  onBeforeDisconnect,
 }: UseStompOptions = {}): UseStompReturn {
   const [isConnected, setIsConnected] = useState(false);
   const subscriptionsRef = useRef<StompSubscription[]>([]);
+  const hasActivatedRef = useRef(false);
 
   const connect = useCallback(() => {
+    hasActivatedRef.current = true;
     connectStomp({
       onConnect: () => setIsConnected(true),
       onDisconnect: () => setIsConnected(false),
       onError: () => setIsConnected(false),
-      userId,
-      userRole,
       roadmapId,
     });
-  }, [userId, userRole, roadmapId]);
+  }, [roadmapId]);
 
   const disconnect = useCallback(() => {
+    if (hasActivatedRef.current) {
+      onBeforeDisconnect?.();
+    }
     subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
     subscriptionsRef.current = [];
     disconnectStomp();
+    hasActivatedRef.current = false;
     setIsConnected(false);
-  }, []);
+  }, [onBeforeDisconnect]);
 
   const subscribe = useCallback((destination: string, callback: MessageHandler) => {
     const sub = subscribeStomp(destination, callback);

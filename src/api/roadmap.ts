@@ -67,8 +67,11 @@ interface RoadmapDetailResponse {
 
 interface RoadmapListItemResponse {
   id: number;
+  isPublic?: boolean;
+  thumbnailUrl?: string | null;
   title: string;
   tags: string[];
+  updatedAt?: string;
   owner: RoadmapOwnerResponse;
 }
 

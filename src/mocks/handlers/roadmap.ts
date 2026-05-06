@@ -40,8 +40,11 @@ export const roadmapHandlers = [
     return HttpResponse.json({
       content: content.map((r) => ({
         id: r.id,
+        isPublic: r.isPublic,
+        thumbnailUrl: null,
         title: r.title,
         tags: [],
+        updatedAt: r.updatedAt,
         owner: {
           id: r.author?.id ?? 1,
           nickname: r.author?.name ?? '김선배',
@@ -68,8 +71,11 @@ export const roadmapHandlers = [
     return HttpResponse.json({
       content: content.map((r) => ({
         id: r.id,
+        isPublic: r.isPublic,
+        thumbnailUrl: null,
         title: r.title,
         tags: [],
+        updatedAt: r.updatedAt,
         owner: {
           id: r.author?.id ?? 1,
           nickname: r.author?.name ?? '김선배',

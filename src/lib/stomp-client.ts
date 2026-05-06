@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 import { getAccessToken } from '@/api/client';
 
@@ -6,7 +7,25 @@ import type { IFrame, IMessage, StompSubscription } from '@stomp/stompjs';
 
 const WS_URL =
   process.env.NEXT_PUBLIC_WS_URL ??
-  (process.env.NODE_ENV === 'production' ? undefined : 'ws://localhost:8082/ws/roadmap');
+  (process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:8082/ws/roadmap');
+
+export function createStompSocketUrl(baseUrl: string, token: string | null): string {
+  if (!token) return baseUrl;
+  return appendQueryParams(baseUrl, { access_token: token });
+}
+
+function appendQueryParams(baseUrl: string, params: Record<string, string | undefined>): string {
+  const entries = Object.entries(params).filter((entry): entry is [string, string] =>
+    Boolean(entry[1]),
+  );
+  if (entries.length === 0) return baseUrl;
+
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  const query = entries
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return `${baseUrl}${separator}${query}`;
+}
 
 if (!WS_URL && typeof window !== 'undefined') {
   // eslint-disable-next-line no-console
@@ -26,8 +45,6 @@ interface StompClientOptions {
   onDisconnect?: () => void;
   onError?: ErrorHandler;
   /** CONNECT 시 전달할 사용자 정보 */
-  userId?: string;
-  userRole?: string;
   roadmapId?: string;
 }
 
@@ -39,8 +56,18 @@ export function getStompClient(options?: StompClientOptions): Client {
   isConnecting = true;
 
   client = new Client({
-    brokerURL: WS_URL,
-    connectHeaders: {},
+    webSocketFactory: () => {
+      if (!WS_URL) {
+        throw new Error('[stomp] WS_URL is not configured.');
+      }
+
+      const token = getAccessToken();
+      const url = appendQueryParams(createStompSocketUrl(WS_URL, token), {
+        roadmapId: options?.roadmapId,
+      });
+
+      return new SockJS(url);
+    },
     reconnectDelay: 3000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,
@@ -65,8 +92,6 @@ export function getStompClient(options?: StompClientOptions): Client {
       if (client) {
         client.connectHeaders = {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(options?.userId ? { 'X-User-ID': options.userId } : {}),
-          ...(options?.userRole ? { 'X-User-Role': options.userRole } : {}),
           ...(options?.roadmapId ? { 'X-Roadmap-ID': options.roadmapId } : {}),
         };
       }
@@ -81,10 +106,16 @@ export async function connectStomp(options?: StompClientOptions): Promise<void> 
   if (disconnectingPromise) {
     await disconnectingPromise;
   }
-  consumerCount++;
   const c = getStompClient(options);
-  if (!c.active) {
-    c.activate();
+  consumerCount++;
+
+  try {
+    if (!c.active) {
+      c.activate();
+    }
+  } catch (error) {
+    consumerCount = Math.max(0, consumerCount - 1);
+    throw error;
   }
 }
 

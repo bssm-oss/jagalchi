@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { NextRequest } from 'next/server';
 
-import { middleware } from './middleware';
+import { proxy } from './proxy';
 
 function makeRequest(pathname: string, hasSession = false) {
   const url = new URL(pathname, 'http://localhost:3000');
@@ -12,7 +12,7 @@ function makeRequest(pathname: string, hasSession = false) {
   return new NextRequest(url, { headers });
 }
 
-describe('middleware', () => {
+describe('proxy', () => {
   describe('보호된 라우트 (PROTECTED_ROUTES)', () => {
     const protectedPaths = [
       '/myroadmap',
@@ -25,7 +25,7 @@ describe('middleware', () => {
 
     it.each(protectedPaths)('세션 없이 %s 접근 시 /login 으로 리다이렉트한다', (pathname) => {
       const req = makeRequest(pathname);
-      const res = middleware(req);
+      const res = proxy(req);
 
       expect(res.status).toBe(307);
       const location = res.headers.get('location') ?? '';
@@ -34,7 +34,7 @@ describe('middleware', () => {
 
     it('세션 없이 보호 경로 접근 시 redirect 쿼리에 원래 경로가 담긴다', () => {
       const req = makeRequest('/myroadmap/123');
-      const res = middleware(req);
+      const res = proxy(req);
 
       const location = res.headers.get('location') ?? '';
       const url = new URL(location);
@@ -43,7 +43,7 @@ describe('middleware', () => {
 
     it.each(protectedPaths)('세션 있으면 %s 정상 통과한다', (pathname) => {
       const req = makeRequest(pathname, true);
-      const res = middleware(req);
+      const res = proxy(req);
 
       // NextResponse.next() — 리다이렉트가 없어야 한다
       expect(res.status).not.toBe(307);
@@ -56,7 +56,7 @@ describe('middleware', () => {
 
     it.each(authPaths)('세션 없이 %s 접근 시 그대로 통과한다', (pathname) => {
       const req = makeRequest(pathname);
-      const res = middleware(req);
+      const res = proxy(req);
 
       expect(res.status).not.toBe(307);
       expect(res.headers.get('location')).toBeNull();
@@ -66,7 +66,7 @@ describe('middleware', () => {
       '세션 있는 상태에서 %s 접근 시 /myroadmap 으로 리다이렉트한다',
       (pathname) => {
         const req = makeRequest(pathname, true);
-        const res = middleware(req);
+        const res = proxy(req);
 
         expect(res.status).toBe(307);
         const location = res.headers.get('location') ?? '';
@@ -78,7 +78,7 @@ describe('middleware', () => {
   describe('퍼블릭 경로 (PROTECTED/AUTH 둘 다 아닌 경로)', () => {
     it('세션 없이 공개 경로 접근 시 그대로 통과한다', () => {
       const req = makeRequest('/community');
-      const res = middleware(req);
+      const res = proxy(req);
 
       expect(res.status).not.toBe(307);
       expect(res.headers.get('location')).toBeNull();
@@ -86,7 +86,7 @@ describe('middleware', () => {
 
     it('세션 있어도 공개 경로 접근 시 그대로 통과한다', () => {
       const req = makeRequest('/community', true);
-      const res = middleware(req);
+      const res = proxy(req);
 
       expect(res.status).not.toBe(307);
       expect(res.headers.get('location')).toBeNull();

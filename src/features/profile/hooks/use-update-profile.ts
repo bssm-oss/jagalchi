@@ -13,6 +13,8 @@ export function useUpdateProfile(name: string) {
       const sanitized: UpdateProfileRequest = {
         user: {
           ...data.user,
+          name: data.user.name ? sanitizeText(data.user.name) : data.user.name,
+          email: data.user.email ? sanitizeText(data.user.email) : data.user.email,
           bio: data.user.bio ? sanitizeText(data.user.bio) : data.user.bio,
         },
       };

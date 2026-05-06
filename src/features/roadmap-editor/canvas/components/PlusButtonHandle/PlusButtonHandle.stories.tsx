@@ -27,7 +27,7 @@ export const Top: Story = {
   },
   render: (args) => (
     <div className="relative flex h-[100px] w-[200px] items-center justify-center border border-dashed border-slate-300">
-      <span className="text-slate-400">Node</span>
+      <span className="text-slate-600">Node</span>
       <PlusButtonHandle {...args} />
     </div>
   ),
@@ -40,7 +40,7 @@ export const Right: Story = {
   },
   render: (args) => (
     <div className="relative flex h-[100px] w-[200px] items-center justify-center border border-dashed border-slate-300">
-      <span className="text-slate-400">Node</span>
+      <span className="text-slate-600">Node</span>
       <PlusButtonHandle {...args} />
     </div>
   ),
@@ -53,7 +53,7 @@ export const Bottom: Story = {
   },
   render: (args) => (
     <div className="relative flex h-[100px] w-[200px] items-center justify-center border border-dashed border-slate-300">
-      <span className="text-slate-400">Node</span>
+      <span className="text-slate-600">Node</span>
       <PlusButtonHandle {...args} />
     </div>
   ),
@@ -66,7 +66,7 @@ export const Left: Story = {
   },
   render: (args) => (
     <div className="relative flex h-[100px] w-[200px] items-center justify-center border border-dashed border-slate-300">
-      <span className="text-slate-400">Node</span>
+      <span className="text-slate-600">Node</span>
       <PlusButtonHandle {...args} />
     </div>
   ),
@@ -79,7 +79,7 @@ export const AllDirections: Story = {
   },
   render: () => (
     <div className="relative flex h-[200px] w-[200px] items-center justify-center border border-dashed border-slate-300">
-      <span className="text-slate-400">Node</span>
+      <span className="text-slate-600">Node</span>
       <PlusButtonHandle position="top" onCreateNode={() => {}} />
       <PlusButtonHandle position="right" onCreateNode={() => {}} />
       <PlusButtonHandle position="bottom" onCreateNode={() => {}} />

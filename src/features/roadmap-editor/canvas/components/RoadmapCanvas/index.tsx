@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import {
   ReactFlow,
@@ -27,7 +27,7 @@ import '@xyflow/react/dist/style.css';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
 import { useKeyboardShortcuts } from '../../../hooks/use-keyboard-shortcuts';
-import { sendCursorHide, sendCursorPosition } from '../../../services/action-dispatcher';
+import { sendCursorPosition } from '../../../services/action-dispatcher';
 import {
   nodesAtom,
   edgesAtom,
@@ -54,10 +54,11 @@ const nodeTypes: NodeTypes = {
 
 interface RoadmapCanvasProps {
   roadmapId?: string;
+  userId?: string;
   userName?: string;
 }
 
-export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvasProps) {
+export function RoadmapCanvas({ roadmapId, userId, userName }: RoadmapCanvasProps) {
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const setSelectedNodeIds = useSetAtom(selectedNodeIdsAtom);
@@ -73,14 +74,6 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
 
   // 키보드 단축키 활성화
   useKeyboardShortcuts();
-
-  // 언마운트 시 커서 숨기기
-  useEffect(() => {
-    if (!roadmapId) return;
-    return () => {
-      sendCursorHide(roadmapId);
-    };
-  }, [roadmapId]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -193,6 +186,9 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
   const onMouseMove = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!roadmapId) return;
+      const numericUserId = Number(userId);
+      if (!Number.isSafeInteger(numericUserId) || !userName) return;
+
       if (throttleTimerRef.current !== null) return;
 
       throttleTimerRef.current = setTimeout(() => {
@@ -201,9 +197,15 @@ export function RoadmapCanvas({ roadmapId, userName = 'Unknown' }: RoadmapCanvas
 
       const { clientX, clientY } = event;
       const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
-      sendCursorPosition(roadmapId, { userId: 0, userName, x: flowPos.x, y: flowPos.y });
+
+      sendCursorPosition(roadmapId, {
+        userId: numericUserId,
+        userName,
+        x: flowPos.x,
+        y: flowPos.y,
+      });
     },
-    [roadmapId, userName, screenToFlowPosition],
+    [roadmapId, userId, userName, screenToFlowPosition],
   );
 
   const defaultEdgeOptions = useMemo(

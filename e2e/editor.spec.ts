@@ -5,37 +5,9 @@ import { loginAsTestUser } from './helpers/auth';
 // MSW fixture에 있는 로드맵 ID 사용
 const TEST_ROADMAP_ID = '1';
 
-// 에디터는 localStorage에서 로드맵을 읽으므로 beforeEach에서 시딩 필요
-const EDITOR_SEED_ROADMAP = {
-  id: 1,
-  title: '프론트엔드 개발자 로드맵',
-  nodes: [
-    {
-      id: 'node-1',
-      type: 'jagalchi-node',
-      position: { x: 250, y: 0 },
-      data: { label: 'HTML/CSS 기초', variant: 'blue', isLocked: false },
-    },
-    {
-      id: 'node-2',
-      type: 'jagalchi-node',
-      position: { x: 250, y: 150 },
-      data: { label: 'JavaScript', variant: 'orange', isLocked: false },
-    },
-  ],
-  edges: [{ id: 'edge-1-2', source: 'node-1', target: 'node-2' }],
-  isPublic: true,
-  createdAt: '2025-07-01T10:00:00.000Z',
-  updatedAt: '2025-12-15T14:30:00.000Z',
-};
-
 test.describe('Editor E2E', () => {
   test.beforeEach(async ({ page }) => {
     await loginAsTestUser(page);
-    // 에디터는 localStorage fallback을 사용하므로 로그인 후 시딩
-    await page.evaluate((roadmap) => {
-      localStorage.setItem('jagalchi-roadmaps-v1', JSON.stringify([roadmap]));
-    }, EDITOR_SEED_ROADMAP);
     await page.goto(`/editor/${TEST_ROADMAP_ID}`);
   });
 

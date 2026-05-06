@@ -3,10 +3,12 @@
  * worker threads) keep the process alive indefinitely after tests complete.
  * This globalSetup teardown forces exit when running in CI.
  */
-export async function teardown() {
-  if (process.env.CI) {
-    // Allow 1 s for reporters/coverage to flush, then hard-exit.
-    await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-    process.exit(0);
-  }
+export default function setup() {
+  return async function teardown() {
+    if (process.env.CI) {
+      // Allow 1 s for reporters/coverage to flush, then hard-exit.
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+      process.exit(0);
+    }
+  };
 }

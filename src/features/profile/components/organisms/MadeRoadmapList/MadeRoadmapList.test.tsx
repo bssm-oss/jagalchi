@@ -18,6 +18,8 @@ vi.mock('../../../hooks/use-profile-roadmaps', () => ({
       },
     ],
     isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
   }),
 }));
 

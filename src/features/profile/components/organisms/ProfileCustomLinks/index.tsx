@@ -25,10 +25,18 @@ interface ProfileCustomLinksProps {
   onChange?: (links: LinkItem[]) => void;
 }
 
+function areLinksEqual(left: LinkItem[], right: LinkItem[]): boolean {
+  if (left.length !== right.length) return false;
+  return left.every((link, index) => {
+    const other = right[index];
+    return other?.id === link.id && other.name === link.name && other.url === link.url;
+  });
+}
+
 export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCustomLinksProps) {
   const mode = useAtomValue(profileModeAtom);
 
-  const { control, register, reset, watch } = useForm({
+  const { control, getValues, register, reset, watch } = useForm({
     defaultValues: {
       links: initialLinks,
     },
@@ -43,13 +51,18 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
 
   // Update form when props change
   useEffect(() => {
+    const currentLinks = getValues('links') ?? [];
+    if (areLinksEqual(currentLinks, initialLinks)) return;
     reset({ links: initialLinks });
-  }, [initialLinks, reset]);
+  }, [getValues, initialLinks, reset]);
 
   // Notify parent of changes
   useEffect(() => {
+    if (mode !== 'edit') return;
+    if (!links) return;
+    if (areLinksEqual(links, initialLinks)) return;
     onChange?.(links);
-  }, [links, onChange]);
+  }, [initialLinks, links, mode, onChange]);
 
   const handleAddLink = () => {
     append({ id: crypto.randomUUID(), name: '', url: '' });
@@ -96,7 +109,7 @@ export function ProfileCustomLinks({ initialLinks = [], onChange }: ProfileCusto
     );
   }
 
-  if (links.length === 0) return null;
+  if (!links || links.length === 0) return null;
 
   return (
     <div className="flex w-full flex-col gap-2">

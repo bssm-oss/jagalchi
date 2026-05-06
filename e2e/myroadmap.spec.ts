@@ -30,6 +30,7 @@ test.describe('My Roadmaps E2E', () => {
     });
 
     test('renders sidebar profile info', async ({ page }) => {
+      await expect(page.getByRole('button', { name: '프로필 보기' })).toBeVisible();
       await expect(page.getByPlaceholder('Search')).toBeVisible();
     });
   });
@@ -44,6 +45,11 @@ test.describe('My Roadmaps E2E', () => {
     test('logout button is visible and clickable', async ({ page }) => {
       const logoutButton = page.getByRole('button', { name: '로그아웃' });
       await expect(logoutButton).toBeVisible();
+    });
+
+    test('clicking sidebar profile opens profile page', async ({ page }) => {
+      await page.getByRole('button', { name: '프로필 보기' }).click();
+      await expect(page).toHaveURL(/\/profile/, { timeout: 10000 });
     });
   });
 
@@ -64,6 +70,26 @@ test.describe('My Roadmaps E2E', () => {
       await expect(page.getByText('로드맵 추가')).toBeVisible({ timeout: 5000 });
       await expect(page.getByPlaceholder('로드맵 이름을 입력하세요')).toBeVisible();
     });
+
+    test('creating a roadmap opens the editor canvas', async ({ page }) => {
+      await page.getByRole('button', { name: /New/ }).click();
+      await page.getByRole('menuitem', { name: '로드맵' }).click();
+      await page.getByPlaceholder('로드맵 이름을 입력하세요').fill('E2E 생성 로드맵');
+      await page.getByRole('button', { name: '확인' }).click();
+
+      await expect(page).toHaveURL(/\/editor\/\d+/, { timeout: 10000 });
+      await expect(page.getByText('E2E 생성 로드맵')).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+    });
+
+    test('search filters matching roadmaps', async ({ page }) => {
+      await page.getByPlaceholder('로드맵 검색').fill('프론트엔드');
+
+      await expect(page.getByRole('article', { name: '프론트엔드 개발자 로드맵' })).toBeVisible({
+        timeout: 10000,
+      });
+      await expect(page.getByRole('article', { name: '백엔드 개발자 로드맵' })).toHaveCount(0);
+    });
   });
 
   test.describe('Roadmap Card Actions', () => {
@@ -72,6 +98,13 @@ test.describe('My Roadmaps E2E', () => {
       await expect(cards.first()).toBeVisible({ timeout: 10000 });
       const count = await cards.count();
       expect(count).toBeGreaterThan(0);
+    });
+
+    test('clicking a roadmap card opens the editor', async ({ page }) => {
+      await page.getByRole('article', { name: '프론트엔드 개발자 로드맵' }).click();
+
+      await expect(page).toHaveURL(/\/editor\/1/, { timeout: 10000 });
+      await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
     });
 
     test('card more menu shows action options', async ({ page }) => {
@@ -128,12 +161,10 @@ test.describe('My Roadmaps E2E', () => {
     test('search with no results shows empty grid', async ({ page }) => {
       const searchInput = page.getByPlaceholder('로드맵 검색');
       await searchInput.fill('존재하지않는로드맵이름xyz');
-      await page
-        .waitForSelector('[role="article"]', { state: 'detached', timeout: 5000 })
-        .catch(() => {});
 
       const cards = page.locator('[role="article"]');
       await expect(cards).toHaveCount(0);
+      await expect(page.getByText('검색 결과가 없습니다')).toBeVisible();
     });
 
     test('rename dialog confirm button disabled with empty input', async ({ page }) => {

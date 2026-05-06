@@ -22,8 +22,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { AUTH_MESSAGES, PROFILE_MESSAGES } from '@/constants/messages';
 import { useDeleteAccount } from '@/hooks/use-delete-account';
+import {
+  accessTokenAtom,
+  currentUserEmailAtom,
+  currentUserIdAtom,
+  currentUserNameAtom,
+  currentUserPermissionsAtom,
+  currentUserRoleAtom,
+} from '@/lib/auth-atoms';
+import { clearCurrentUser } from '@/lib/realtime-user';
 
 import { useProfile } from '../../../hooks/use-profile';
+import { useUpdateProfile } from '../../../hooks/use-update-profile';
 import {
   profileBioAtom,
   profileImageAtom,
@@ -48,10 +58,20 @@ export function Profile({ userName = '' }: ProfileProps) {
   const setBio = useSetAtom(profileBioAtom);
   const setLinks = useSetAtom(profileLinksAtom);
   const setImage = useSetAtom(profileImageAtom);
+  const setAccessTokenAtom = useSetAtom(accessTokenAtom);
+  const setCurrentUserName = useSetAtom(currentUserNameAtom);
+  const setCurrentUserEmail = useSetAtom(currentUserEmailAtom);
+  const setCurrentUserId = useSetAtom(currentUserIdAtom);
+  const setCurrentUserRole = useSetAtom(currentUserRoleAtom);
+  const setCurrentUserPermissions = useSetAtom(currentUserPermissionsAtom);
+  const bio = useAtomValue(profileBioAtom);
+  const links = useAtomValue(profileLinksAtom);
+  const image = useAtomValue(profileImageAtom);
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data, isLoading, isError } = useProfile(userName);
+  const { mutateAsync: updateProfile, isPending: isSavingProfile } = useUpdateProfile(userName);
   const isHydrated = useRef(false);
 
   // 실데이터로 atoms hydration — 최초 1회만 수행하여 edit 모드 중 refetch가 편집 내용을 덮어쓰지 않도록 한다
@@ -96,8 +116,28 @@ export function Profile({ userName = '' }: ProfileProps) {
   const handleDeleteAccount = () => {
     deleteAccount(undefined, {
       onSuccess: () => {
+        setAccessTokenAtom(null);
+        setCurrentUserName(null);
+        setCurrentUserEmail(null);
+        setCurrentUserId(null);
+        setCurrentUserRole(null);
+        setCurrentUserPermissions(null);
+        clearCurrentUser();
         clearAccessToken();
         router.push('/login');
+      },
+    });
+  };
+
+  const handleSaveProfile = async ({ name, email }: { name: string; email: string }) => {
+    const externalLinks = Object.fromEntries(links.map((link) => [link.name, link.url]));
+    await updateProfile({
+      user: {
+        name,
+        email,
+        bio,
+        profileImage: image,
+        externalLinks,
       },
     });
   };
@@ -139,6 +179,8 @@ export function Profile({ userName = '' }: ProfileProps) {
           followerCount={user.stats.followersCount}
           followingCount={user.stats.followingCount}
           isFollowing={user.isFollowed}
+          onSave={handleSaveProfile}
+          isSaving={isSavingProfile}
         />
         <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-[76px]">
           <div className="w-full lg:w-[500px] lg:shrink-0">
@@ -150,7 +192,7 @@ export function Profile({ userName = '' }: ProfileProps) {
         </div>
         <ProfileStreak activities={streak.activities} currentStreak={streak.currentStreak} />
         <ProfileThirdBox userName={userName} />
-        <MadeRoadmapList userName={userName} />
+        <MadeRoadmapList userName={userName} userId={user.id} />
 
         {/* 계정 삭제 섹션 */}
         <div className="border-t border-slate-200 pt-8">

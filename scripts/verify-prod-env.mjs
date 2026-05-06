@@ -3,6 +3,14 @@
  * 프로덕션 배포 전 환경변수 안전성 검증.
  * Vercel/Netlify 프로덕션 빌드 파이프라인에서 호출하여 실수로 mocking 이 켜지지 않도록 막는다.
  */
+const isProductionCheck =
+  process.argv.includes('--production') || process.env.VERCEL_ENV === 'production';
+
+if (!isProductionCheck) {
+  console.log('[verify-prod-env] skipped outside production deployment');
+  process.exit(0);
+}
+
 const errors = [];
 
 if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {

@@ -3,13 +3,20 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { createTestWrapper } from '@/test-utils';
 
-const mockTree = [
-  { id: 1, name: 'Frontend', parentId: null, children: [] },
-  { id: 2, name: 'Backend', parentId: null, children: [] },
-];
+const { mockTree, mockGetDirectoryTree } = vi.hoisted(() => {
+  const tree = [
+    { id: 1, name: 'Frontend', parentId: null, children: [] },
+    { id: 2, name: 'Backend', parentId: null, children: [] },
+  ];
+
+  return {
+    mockTree: tree,
+    mockGetDirectoryTree: vi.fn().mockResolvedValue(tree),
+  };
+});
 
 vi.mock('@/api/roadmap', () => ({
-  getDirectoryTree: vi.fn().mockResolvedValue(mockTree),
+  getDirectoryTree: mockGetDirectoryTree,
 }));
 
 import { getDirectoryTree } from '@/api/roadmap';

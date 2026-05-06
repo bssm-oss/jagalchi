@@ -53,7 +53,7 @@ export const ConnectionLine = memo(function ConnectionLine({
           y={toY - 24}
           width={200}
           height={48}
-          className="overflow-visible opacity-50"
+          className="overflow-visible opacity-70"
         >
           <div
             className={cn(

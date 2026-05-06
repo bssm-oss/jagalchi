@@ -23,9 +23,19 @@ export function Community() {
 
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  const { data: popularData, isLoading: isPopularLoading } = usePopularRoadmaps({ size: 12 });
+  const {
+    data: popularData,
+    isLoading: isPopularLoading,
+    isError: isPopularError,
+    refetch: refetchPopular,
+  } = usePopularRoadmaps({ size: 12 });
 
-  const { data: latestData, isLoading: isLatestLoading } = useCommunityRoadmaps({
+  const {
+    data: latestData,
+    isLoading: isLatestLoading,
+    isError: isLatestError,
+    refetch: refetchLatest,
+  } = useCommunityRoadmaps({
     sort: 'latest',
     query: debouncedQuery || undefined,
     size: 12,
@@ -53,12 +63,30 @@ export function Community() {
 
   const isLoading =
     (activeTab === 'popular' && isPopularLoading) || (activeTab === 'latest' && isLatestLoading);
+  const isError =
+    (activeTab === 'popular' && isPopularError) || (activeTab === 'latest' && isLatestError);
+  const refetch = activeTab === 'popular' ? refetchPopular : refetchLatest;
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <div className="flex h-[400px] w-full items-center justify-center">
           <p className="text-sm text-slate-500">{COMMUNITY_MESSAGES.LOADING}</p>
+        </div>
+      );
+    }
+
+    if (isError) {
+      return (
+        <div className="flex h-[400px] w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50">
+          <p className="text-sm font-medium text-red-500">{COMMUNITY_MESSAGES.ERROR_LOAD_FAILED}</p>
+          <button
+            type="button"
+            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            onClick={() => refetch()}
+          >
+            다시 시도
+          </button>
         </div>
       );
     }

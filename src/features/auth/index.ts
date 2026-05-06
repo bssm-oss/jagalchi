@@ -14,6 +14,7 @@ export {
   isAuthInitializedAtom,
   loginAtom,
   logoutAtom,
+  currentUserEmailAtom,
   currentUserNameAtom,
 } from './stores/auth.atoms';
 

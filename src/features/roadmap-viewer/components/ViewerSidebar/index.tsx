@@ -54,6 +54,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
     (nodeId: string) => {
       if (!roadmapId) return;
       const numericNodeId = Number(nodeId);
+      if (!Number.isInteger(numericNodeId)) return;
       const isCompleted = !completedIds.has(numericNodeId);
       completeMutation.mutate({ nodeId: numericNodeId, isCompleted });
     },
@@ -121,7 +122,9 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
             {filteredNodes.map((node) => {
               const data = node.data as JagalchiNodeData;
               const isSelected = node.id === selectedNodeId;
-              const isCompleted = completedIds.has(Number(node.id));
+              const numericNodeId = Number(node.id);
+              const isCompleted =
+                Number.isInteger(numericNodeId) && completedIds.has(numericNodeId);
               return (
                 <li key={node.id} className="flex items-center gap-1">
                   {roadmapId && (
