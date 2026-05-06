@@ -9,6 +9,7 @@ import { defineConfig, devices } from '@playwright/test';
 const e2eEnv = {
   NEXT_PUBLIC_API_URL: '/api',
   NEXT_PUBLIC_API_MOCKING: 'true',
+  NEXT_PUBLIC_E2E_MOCKING: 'true',
   NEXT_PUBLIC_REALTIME_ENABLED: 'true',
   NEXT_PUBLIC_SITE_URL: 'http://localhost:3100',
 };
