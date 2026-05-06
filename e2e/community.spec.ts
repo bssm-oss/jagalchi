@@ -41,6 +41,29 @@ test.describe('Community E2E', () => {
       await page.waitForURL(`**${href}`, { timeout: 30000 });
       expect(page.url()).toContain('/community/');
     });
+
+    test('searches latest roadmaps, opens result, and forks it', async ({ page }) => {
+      await page.getByRole('button', { name: '최신' }).click();
+      await expect(page.getByRole('link', { name: /프론트엔드 개발자 로드맵/ })).toBeVisible({
+        timeout: 10000,
+      });
+
+      await page.getByLabel('로드맵 검색').fill('백엔드');
+      await page.getByLabel('로드맵 검색').press('Enter');
+
+      await expect(page.getByRole('link', { name: /백엔드 개발자 로드맵/ })).toBeVisible({
+        timeout: 10000,
+      });
+      await expect(page.getByRole('link', { name: /프론트엔드 개발자 로드맵/ })).toHaveCount(0);
+
+      await page.getByRole('link', { name: /백엔드 개발자 로드맵/ }).click();
+      await expect(page).toHaveURL(/\/community\/2/, { timeout: 10000 });
+
+      await page.getByRole('button', { name: '내 로드맵에 추가' }).click();
+      await expect(page.getByText('로드맵을 내 로드맵에 추가했습니다.')).toBeVisible({
+        timeout: 10000,
+      });
+    });
   });
 
   test.describe('Community Detail Page', () => {
