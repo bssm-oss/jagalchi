@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const { mockSockJS } = vi.hoisted(() => ({
+  mockSockJS: vi.fn(function (this: Record<string, unknown>, url: string) {
+    this.url = url;
+  }),
+}));
+
 // Mock @stomp/stompjs Client as a class constructor
 const mockActivate = vi.fn();
 const mockDeactivate = vi.fn().mockResolvedValue(undefined);
@@ -23,14 +29,19 @@ vi.mock('@stomp/stompjs', () => {
   return { Client: MockClient };
 });
 
+vi.mock('sockjs-client', () => ({
+  default: mockSockJS,
+}));
+
 vi.mock('@/api/client', () => ({
   getAccessToken: vi.fn().mockReturnValue('test-token'),
 }));
 
 import {
-  getStompClient,
   connectStomp,
+  createStompSocketUrl,
   disconnectStomp,
+  getStompClient,
   subscribeStomp,
   publishStomp,
 } from './stomp-client';
@@ -46,16 +57,46 @@ describe('stomp-client', () => {
     it('creates a new Client with correct config', () => {
       const client = getStompClient();
       expect(client).toBeDefined();
-      expect(client.brokerURL).toBeDefined();
+      expect(client.webSocketFactory).toBeDefined();
       expect(client.reconnectDelay).toBe(3000);
       expect(client.heartbeatIncoming).toBe(10000);
       expect(client.heartbeatOutgoing).toBe(10000);
     });
 
-    it('passes userId/userRole/roadmapId to connectHeaders via beforeConnect', () => {
+    it('creates a SockJS connection with access token in the URL', () => {
+      const client = getStompClient();
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(mockSockJS).toHaveBeenCalledWith(
+        'http://localhost:8082/ws/roadmap?access_token=test-token',
+      );
+      expect(socket?.url).toBe('http://localhost:8082/ws/roadmap?access_token=test-token');
+    });
+
+    it('appends access token with ampersand when URL already has query params', () => {
+      const url = createStompSocketUrl(
+        'https://api.jagalchi.dev/ws/roadmap?transport=sockjs',
+        'a+b',
+      );
+
+      expect(url).toBe('https://api.jagalchi.dev/ws/roadmap?transport=sockjs&access_token=a%2Bb');
+    });
+
+    it('adds roadmapId to the SockJS URL query when provided', () => {
       const client = getStompClient({
-        userId: '42',
-        userRole: 'USER',
+        roadmapId: '1',
+      });
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(socket?.url).toBe(
+        'http://localhost:8082/ws/roadmap?access_token=test-token&roadmapId=1',
+      );
+    });
+
+    it('passes only auth and roadmap headers to connectHeaders via beforeConnect', () => {
+      const client = getStompClient({
         roadmapId: '1',
       });
 
@@ -66,11 +107,12 @@ describe('stomp-client', () => {
       expect(client.connectHeaders).toEqual(
         expect.objectContaining({
           Authorization: 'Bearer test-token',
-          'X-User-ID': '42',
-          'X-User-Role': 'USER',
           'X-Roadmap-ID': '1',
         }),
       );
+      expect(client.connectHeaders).not.toHaveProperty('X-User-ID');
+      expect(client.connectHeaders).not.toHaveProperty('X-User-Role');
+      expect(client.connectHeaders).not.toHaveProperty('X-Permissions');
     });
 
     it('omits headers when options not provided', () => {
@@ -89,8 +131,8 @@ describe('stomp-client', () => {
   });
 
   describe('connectStomp', () => {
-    it('activates the client', () => {
-      connectStomp();
+    it('activates the client', async () => {
+      await connectStomp();
       expect(mockActivate).toHaveBeenCalled();
     });
   });
@@ -118,17 +160,17 @@ describe('stomp-client', () => {
       expect(mockPublish).not.toHaveBeenCalled();
     });
 
-    it('sends message with headers when connected', () => {
+    it('sends message with provided non-identity headers when connected', () => {
       // Need a connected client to test publish
       const client = getStompClient();
       // Simulate connected state
       (client as unknown as Record<string, unknown>).connected = true;
 
-      publishStomp('/app/test', { data: 'hello' }, { 'X-User-ID': '42' });
+      publishStomp('/app/test', { data: 'hello' }, { 'X-Roadmap-ID': '42' });
 
       expect(mockPublish).toHaveBeenCalledWith({
         destination: '/app/test',
-        headers: { 'X-User-ID': '42' },
+        headers: { 'X-Roadmap-ID': '42' },
         body: JSON.stringify({ data: 'hello' }),
       });
     });

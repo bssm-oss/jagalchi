@@ -33,6 +33,8 @@ interface ProfileInfoFormProps {
   isFollowing?: boolean;
   onNameChange?: (name: string) => void;
   onEmailChange?: (email: string) => void;
+  onSave?: (data: { name: string; email: string }) => Promise<void> | void;
+  isSaving?: boolean;
 }
 
 function formatCount(count: number): string {
@@ -51,6 +53,8 @@ export function ProfileInfoForm({
   isFollowing = false,
   onNameChange,
   onEmailChange,
+  onSave,
+  isSaving = false,
 }: ProfileInfoFormProps) {
   const [mode, setMode] = useAtom(profileModeAtom);
   const [followDialog, setFollowDialog] = useState<FollowDialogType | null>(null);
@@ -121,6 +125,7 @@ export function ProfileInfoForm({
     const isValid = await trigger();
     if (!isValid) return;
     if (!userName.trim() || !userEmail.trim()) return;
+    await onSave?.({ name: userName.trim(), email: userEmail.trim() });
     setMode('show');
   };
 
@@ -170,6 +175,7 @@ export function ProfileInfoForm({
               <div className="flex flex-col gap-1">
                 <Input
                   type="text"
+                  disabled={isSaving}
                   {...register('name', { required: true, validate: (v) => v.trim().length > 0 })}
                   aria-label="이름"
                   aria-invalid={!!errors.name}
@@ -179,6 +185,7 @@ export function ProfileInfoForm({
               <div className="flex flex-col gap-1">
                 <Input
                   type="email"
+                  disabled={isSaving}
                   {...register('email', {
                     required: true,
                     validate: (v) => v.trim().length > 0,
@@ -223,10 +230,16 @@ export function ProfileInfoForm({
               variant="outline"
               className="font-semibold"
               onClick={handleCancel}
+              disabled={isSaving}
             >
               취소
             </Button>
-            <Button type="button" className="font-semibold" onClick={handleSave}>
+            <Button
+              type="button"
+              className="font-semibold"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
               저장
             </Button>
           </div>

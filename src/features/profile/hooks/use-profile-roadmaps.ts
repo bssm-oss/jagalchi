@@ -6,6 +6,7 @@ import { queryKeys } from '@/lib/query-keys';
 
 interface UseProfileRoadmapsParams {
   userName: string;
+  userId?: number;
   enabled?: boolean;
 }
 
@@ -16,13 +17,14 @@ interface UseProfileRoadmapsParams {
  * TODO: 백엔드에서 userId 기반 필터링을 지원하면 QueryUserDto에 id를 추가하고
  * getRoadmaps({ userId }) 방식으로 교체할 것.
  */
-export function useProfileRoadmaps({ userName, enabled = true }: UseProfileRoadmapsParams) {
+export function useProfileRoadmaps({ userName, userId, enabled = true }: UseProfileRoadmapsParams) {
   return useQuery<RoadmapListItemResponse[]>({
-    queryKey: queryKeys.roadmaps.lists({ ownerName: userName }),
+    queryKey: queryKeys.roadmaps.lists(userId ? { ownerId: userId } : { ownerName: userName }),
     queryFn: async () => {
-      const response = await getRoadmaps({ size: 50, isPublic: true });
+      const response = await getRoadmaps({ size: 50, isPublic: true, userId });
+      if (userId !== undefined) return response.content;
       return response.content.filter((roadmap) => roadmap.owner.nickname === userName);
     },
-    enabled: enabled && !!userName,
+    enabled: enabled && (!!userName || userId !== undefined),
   });
 }

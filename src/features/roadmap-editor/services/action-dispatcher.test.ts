@@ -5,6 +5,7 @@ vi.mock('@/lib/stomp-client', () => ({
 }));
 
 import { publishStomp } from '@/lib/stomp-client';
+import { clearCurrentUser, setCurrentUser } from '@/lib/realtime-user';
 import {
   dispatchAction,
   handleAck,
@@ -12,12 +13,12 @@ import {
   getPendingCount,
   sendCursorPosition,
   sendCursorHide,
-  setCurrentUser,
 } from './action-dispatcher';
 
 describe('action-dispatcher', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearCurrentUser();
   });
 
   it('dispatchAction sends STOMP message and returns actionId', () => {
@@ -34,18 +35,11 @@ describe('action-dispatcher', () => {
     );
   });
 
-  it('dispatchAction sends X-User-ID and X-User-Role headers when set', () => {
-    setCurrentUser('42', 'USER');
+  it('dispatchAction does not send client-controlled user headers', () => {
+    setCurrentUser('42', 'USER', 'READ,WRITE');
     dispatchAction('rm-1', 'EDIT');
 
-    expect(publishStomp).toHaveBeenCalledWith(
-      '/app/roadmap/rm-1/action',
-      expect.any(Object),
-      expect.objectContaining({
-        'X-User-ID': '42',
-        'X-User-Role': 'USER',
-      }),
-    );
+    expect(publishStomp).toHaveBeenCalledWith('/app/roadmap/rm-1/action', expect.any(Object), {});
   });
 
   it('handleAck removes pending action', () => {
@@ -83,14 +77,10 @@ describe('action-dispatcher', () => {
     );
   });
 
-  it('sendCursorHide publishes with headers', () => {
-    setCurrentUser('42', 'USER');
+  it('sendCursorHide omits client-controlled user headers', () => {
+    setCurrentUser('42', 'USER', 'READ,WRITE');
     sendCursorHide('rm-1');
-    expect(publishStomp).toHaveBeenCalledWith(
-      '/app/roadmap/rm-1/cursor/hide',
-      {},
-      expect.objectContaining({ 'X-User-ID': '42' }),
-    );
+    expect(publishStomp).toHaveBeenCalledWith('/app/roadmap/rm-1/cursor/hide', {}, {});
   });
 
   it('getPendingCount tracks pending actions', () => {

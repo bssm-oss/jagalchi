@@ -6,9 +6,13 @@ import userEvent from '@testing-library/user-event';
 import { Provider } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 
+const progressMocks = vi.hoisted(() => ({
+  mutate: vi.fn(),
+}));
+
 vi.mock('@/hooks/use-roadmap-progress', () => ({
-  useRoadmapProgress: () => ({ data: null }),
-  useCompleteNode: () => ({ mutate: vi.fn() }),
+  useRoadmapProgress: () => ({ data: { completedNodeIds: [1], progressPercentage: 50 } }),
+  useCompleteNode: () => ({ mutate: progressMocks.mutate }),
 }));
 
 vi.mock('@xyflow/react', () => ({
@@ -129,5 +133,18 @@ describe('ViewerSidebar', () => {
       </TestWrapper>,
     );
     expect(screen.getByText('총 2개 노드')).toBeTruthy();
+  });
+
+  it('does not send NaN completion requests for non-numeric node ids', async () => {
+    const user = userEvent.setup();
+    render(
+      <TestWrapper initialValues={[[viewerRoadmapAtom, mockRoadmap]]}>
+        <ViewerSidebar isOpen={true} roadmapId="1" />
+      </TestWrapper>,
+    );
+
+    await user.click(screen.getAllByLabelText(VIEWER_MESSAGES.NODE_INCOMPLETE)[0]);
+
+    expect(progressMocks.mutate).not.toHaveBeenCalled();
   });
 });

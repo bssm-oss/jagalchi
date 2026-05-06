@@ -67,11 +67,11 @@ export const PlusButtonHandle = forwardRef<HTMLButtonElement, PlusButtonHandlePr
         {isHovered && (
           <div
             className={cn(
-              'pointer-events-none absolute z-0 flex h-12 min-w-[200px] items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-white px-5 py-2.5 opacity-50',
+              'pointer-events-none absolute z-0 flex h-12 min-w-[200px] items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-white px-5 py-2.5 opacity-70',
               GHOST_POSITION_STYLES[position],
             )}
           >
-            <span className="truncate text-base font-medium text-gray-400">New Node</span>
+            <span className="truncate text-base font-medium text-gray-700">New Node</span>
           </div>
         )}
       </>

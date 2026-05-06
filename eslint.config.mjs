@@ -119,21 +119,30 @@ export default [
       'import/no-duplicates': 'error',
 
       // Feature 간 import 금지
-      'boundaries/element-types': [
+      'boundaries/dependencies': [
         'error',
         {
           default: 'disallow',
           rules: [
             // app은 모든 곳에서 import 가능
-            { from: 'app', allow: ['features', 'components', 'hooks', 'lib', 'types', 'constants'] },
+            {
+              from: { type: 'app' },
+              allow: { to: { type: ['features', 'components', 'hooks', 'lib', 'types', 'constants'] } },
+            },
             // features는 공용만 import 가능 (다른 feature 금지)
-            { from: 'features', allow: ['components', 'hooks', 'lib', 'types', 'constants'] },
+            {
+              from: { type: 'features' },
+              allow: { to: { type: ['components', 'hooks', 'lib', 'types', 'constants'] } },
+            },
             // 공용은 공용끼리만
-            { from: 'components', allow: ['components', 'hooks', 'lib', 'types', 'constants'] },
-            { from: 'hooks', allow: ['hooks', 'lib', 'types', 'constants'] },
-            { from: 'lib', allow: ['lib', 'types', 'constants'] },
-            { from: 'types', allow: ['types'] },
-            { from: 'constants', allow: ['constants', 'types'] },
+            {
+              from: { type: 'components' },
+              allow: { to: { type: ['components', 'hooks', 'lib', 'types', 'constants'] } },
+            },
+            { from: { type: 'hooks' }, allow: { to: { type: ['hooks', 'lib', 'types', 'constants'] } } },
+            { from: { type: 'lib' }, allow: { to: { type: ['lib', 'types', 'constants'] } } },
+            { from: { type: 'types' }, allow: { to: { type: 'types' } } },
+            { from: { type: 'constants' }, allow: { to: { type: ['constants', 'types'] } } },
           ],
         },
       ],

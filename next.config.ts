@@ -5,8 +5,31 @@ import type { NextConfig } from 'next';
 
 const API_ORIGIN = process.env.API_ORIGIN ?? 'https://api.jagalchi.dev';
 const CDN_ORIGIN = 'https://cdn.jagalchi.dev';
-// WebSocket: ws(s)://api.jagalchi.dev for STOMP realtime
-const WS_ORIGIN = API_ORIGIN.replace(/^https?/, 'wss');
+
+function getOrigin(value: string | undefined): string | undefined {
+  if (!value || value.startsWith('/')) return undefined;
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return undefined;
+  }
+}
+
+function toWebSocketOrigin(origin: string): string {
+  return origin.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:');
+}
+
+const PUBLIC_API_ORIGIN = getOrigin(process.env.NEXT_PUBLIC_API_URL);
+const PUBLIC_WS_HTTP_ORIGIN = getOrigin(process.env.NEXT_PUBLIC_WS_URL) ?? API_ORIGIN;
+const PUBLIC_WS_TRANSPORT_ORIGIN = toWebSocketOrigin(PUBLIC_WS_HTTP_ORIGIN);
+const CONNECT_ORIGINS = Array.from(
+  new Set(
+    ['self', API_ORIGIN, PUBLIC_API_ORIGIN, PUBLIC_WS_HTTP_ORIGIN, PUBLIC_WS_TRANSPORT_ORIGIN]
+      .filter((origin): origin is string => Boolean(origin))
+      .map((origin) => (origin === 'self' ? "'self'" : origin)),
+  ),
+).join(' ');
 
 const cspHeader = [
   `default-src 'self'`,
@@ -19,15 +42,16 @@ const cspHeader = [
   // Fonts: self (Next.js google fonts 로컬 다운로드)
   `font-src 'self'`,
   // API 요청 + WebSocket
-  `connect-src 'self' ${API_ORIGIN} ${WS_ORIGIN}`,
+  `connect-src ${CONNECT_ORIGINS}`,
   // Frames: same-origin only (X-Frame-Options SAMEORIGIN과 일치)
   `frame-src 'self'`,
   `object-src 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,
   // 위반 리포트 — 운영 중 CSP 위반 수집 (Sentry 연동 후 report-uri 교체 가능)
-  `upgrade-insecure-requests`,
+  process.env.NODE_ENV === 'production' ? `upgrade-insecure-requests` : undefined,
 ]
+  .filter((directive): directive is string => Boolean(directive))
   .join('; ')
   .trim();
 

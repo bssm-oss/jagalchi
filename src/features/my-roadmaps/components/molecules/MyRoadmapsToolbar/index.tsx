@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { ChevronRight, ListFilter, Plus, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -32,20 +32,11 @@ export function MyRoadmapsToolbar() {
   const createMutation = useCreateRoadmap();
   const createDirMutation = useCreateDirectory();
   const [breadcrumbPath, setBreadcrumbPath] = useAtom(breadcrumbPathAtom);
-  const setSearchQuery = useSetAtom(searchQueryAtom);
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState(false);
-  const [localQuery, setLocalQuery] = useState('');
   const filterRef = useRef<HTMLDivElement>(null);
-
-  // Debounce search input by 300ms before updating the shared atom
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchQuery(localQuery);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [localQuery, setSearchQuery]);
 
   useClickOutside(filterRef, () => setIsFilterOpen(false));
 
@@ -107,8 +98,8 @@ export function MyRoadmapsToolbar() {
             type="search"
             placeholder={MY_ROADMAPS_MESSAGES.SEARCH_PLACEHOLDER}
             className="border-border h-9 w-[240px] bg-white pl-9 text-xs"
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="relative" ref={filterRef}>

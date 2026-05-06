@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +43,11 @@ import { cn } from '@/lib/utils';
 import { useDeleteDirectory } from '../../../hooks/use-delete-directory';
 import { useDirectoryTree } from '../../../hooks/use-directory-tree';
 import { useUpdateDirectory } from '../../../hooks/use-update-directory';
-import { type SidebarCategory, sidebarCategoryAtom } from '../../../stores/my-roadmaps.atoms';
+import {
+  searchQueryAtom,
+  type SidebarCategory,
+  sidebarCategoryAtom,
+} from '../../../stores/my-roadmaps.atoms';
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -105,7 +109,7 @@ function DirectoryNode({ node }: { node: DirectoryTreeItem }) {
         className="group flex h-7 w-full items-center gap-1.5 rounded-md text-sm text-slate-700 transition-colors hover:bg-black/5"
         style={{ paddingLeft: `${12 + depth * 16}px`, paddingRight: '4px' }}
       >
-        <button type="button" className="flex min-w-0 flex-1 items-center gap-1.5">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <span className="w-3.5 shrink-0" />
           <Folder className="h-4 w-4 shrink-0 text-slate-500" />
           {isRenaming ? (
@@ -122,7 +126,7 @@ function DirectoryNode({ node }: { node: DirectoryTreeItem }) {
           ) : (
             <span className="truncate">{node.name}</span>
           )}
-        </button>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -176,6 +180,7 @@ interface MyRoadmapsSidebarProps {
   userName?: string;
   userEmail?: string;
   onLogout?: () => void;
+  onProfileClick?: () => void;
 }
 
 export function MyRoadmapsSidebar({
@@ -183,9 +188,12 @@ export function MyRoadmapsSidebar({
   userName = 'UserName',
   userEmail = 'user@example.com',
   onLogout,
+  onProfileClick,
 }: MyRoadmapsSidebarProps) {
   const [activeCategory, setActiveCategory] = useAtom(sidebarCategoryAtom);
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const { data: directoryTree } = useDirectoryTree();
+  const userInitial = userName.trim().charAt(0) || 'U';
 
   return (
     <div
@@ -195,17 +203,21 @@ export function MyRoadmapsSidebar({
       )}
     >
       {/* Profile Section */}
-      <div className="mb-4 flex items-center gap-3 rounded-md px-3 py-2">
+      <button
+        type="button"
+        aria-label={MY_ROADMAPS_MESSAGES.PROFILE_ARIA}
+        className="mb-4 flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none"
+        onClick={onProfileClick}
+      >
         <Avatar className="h-8 w-8">
-          <AvatarImage src="/placeholder-avatar.png" />
-          <AvatarFallback>U</AvatarFallback>
+          <AvatarFallback>{userInitial}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-normal text-slate-950">{userName}</span>
-          <span className="truncate text-xs leading-4 text-slate-500">{userEmail}</span>
+          <span className="truncate text-xs leading-4 text-slate-600">{userEmail}</span>
         </div>
         <ChevronDown className="h-5 w-5 text-slate-500" />
-      </div>
+      </button>
 
       {/* Search */}
       <div className="mb-4">
@@ -214,6 +226,8 @@ export function MyRoadmapsSidebar({
           <Input
             placeholder="Search"
             className="h-9 border border-slate-200 bg-white pl-10 text-sm shadow-xs"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
           />
         </div>
       </div>

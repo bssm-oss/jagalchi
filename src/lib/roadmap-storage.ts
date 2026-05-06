@@ -32,8 +32,8 @@ export function loadRoadmapFromLocalStorage(id: number): Roadmap | null {
   }
 }
 
-export function saveRoadmapToLocalStorage(roadmap: Roadmap): void {
-  if (typeof window === 'undefined') return;
+export function saveRoadmapToLocalStorage(roadmap: Roadmap): boolean {
+  if (typeof window === 'undefined') return false;
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -48,7 +48,8 @@ export function saveRoadmapToLocalStorage(roadmap: Roadmap): void {
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(roadmaps));
+    return true;
   } catch {
-    // Fail silently for now - will be replaced with API error handling
+    return false;
   }
 }

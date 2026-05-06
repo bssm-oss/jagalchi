@@ -13,6 +13,8 @@ interface ProfileHeaderProps {
   followingCount?: number;
   isSelf?: boolean;
   isFollowing?: boolean;
+  onSave?: (data: { name: string; email: string }) => Promise<void> | void;
+  isSaving?: boolean;
 }
 
 export function ProfileHeader({
@@ -22,6 +24,8 @@ export function ProfileHeader({
   followingCount = 0,
   isSelf = true,
   isFollowing = false,
+  onSave,
+  isSaving = false,
 }: ProfileHeaderProps) {
   const [imageSrc, setImageSrc] = useAtom(profileImageAtom);
 
@@ -48,6 +52,8 @@ export function ProfileHeader({
           followingCount={followingCount}
           isSelf={isSelf}
           isFollowing={isFollowing}
+          onSave={onSave}
+          isSaving={isSaving}
         />
       </div>
     </div>

@@ -8,10 +8,13 @@ export interface MockUser {
   email: string;
   password: string;
   username: string;
+  role?: MockUserRole;
   bio?: string;
   links: { name: string; url: string }[];
   createdAt: string;
 }
+
+type MockUserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
 
 export const MOCK_USERS: MockUser[] = [
   {
@@ -19,6 +22,7 @@ export const MOCK_USERS: MockUser[] = [
     email: 'kim@example.com',
     password: 'Test1234!',
     username: '김선배',
+    role: 'STUDENT',
     bio: '프론트엔드 개발자 | React, TypeScript 전문',
     links: [
       { name: 'GitHub', url: 'https://github.com/kimsenior' },
@@ -31,6 +35,7 @@ export const MOCK_USERS: MockUser[] = [
     email: 'park@example.com',
     password: 'Test1234!',
     username: '박후배',
+    role: 'STUDENT',
     bio: '백엔드 개발을 배우는 학생입니다',
     links: [{ name: 'GitHub', url: 'https://github.com/parkstudent' }],
     createdAt: '2025-09-01T12:00:00.000Z',
@@ -40,6 +45,7 @@ export const MOCK_USERS: MockUser[] = [
     email: 'lee@example.com',
     password: 'Test1234!',
     username: '이멘토',
+    role: 'TEACHER',
     bio: '10년차 풀스택 개발자 | 로드맵 큐레이터',
     links: [
       { name: 'LinkedIn', url: 'https://linkedin.com/in/leementor' },
@@ -71,10 +77,15 @@ const toBase64Url = (obj: object): string =>
 
 export const createMockToken = (userId: string): string => {
   const user = MOCK_USERS.find((u) => u.id === userId);
+  const gatewayUserId = Number(userId.replace(/\D/g, '')) || 1;
   const header = toBase64Url({ alg: 'HS512', typ: 'JWT' });
   const payload = toBase64Url({
     sub: userId,
+    id: gatewayUserId,
+    email: user?.email,
     name: user?.username ?? userId,
+    role: user?.role ?? 'STUDENT',
+    type: 'ACCESS_TOKEN',
     exp: Math.floor(Date.now() / 1000) + 3600,
   });
   return `${header}.${payload}.mock-signature`;

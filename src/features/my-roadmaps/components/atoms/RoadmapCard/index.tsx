@@ -101,18 +101,20 @@ export function RoadmapCard({
               type="button"
               aria-label={MY_ROADMAPS_MESSAGES.CARD_MORE_ARIA}
               className="text-muted-foreground/60 hover:text-foreground shrink-0 p-1 transition-colors"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               <Ellipsis className="h-[13px] w-[13px]" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[72px] p-[10px]">
-            {!isDirectory && onFavorite && (
+            {!isDirectory && (
               <>
                 <DropdownMenuItem
                   className="cursor-pointer justify-center text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onFavorite();
+                    onFavorite?.();
                   }}
                 >
                   {MY_ROADMAPS_MESSAGES.CARD_FAVORITE}

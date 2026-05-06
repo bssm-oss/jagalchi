@@ -141,12 +141,15 @@ export const MY_ROADMAPS_MESSAGES = {
   HEADER_ROADMAP_SUFFIX: '로드맵',
   // Toolbar
   ALL_ROADMAPS: '내 전체 로드맵',
+  EMPTY: '로드맵이 없습니다',
+  SEARCH_EMPTY: '검색 결과가 없습니다',
   // Sidebar
   SIDEBAR_RECENT: '최근',
   SIDEBAR_COMMUNITY: '커뮤니티',
   SIDEBAR_MY_ROADMAP: '내 로드맵',
   SIDEBAR_SHARED: '공유된 로드맵',
   SIDEBAR_FAVORITES: '즐겨찾기',
+  PROFILE_ARIA: '프로필 보기',
   // Card
   CARD_FILE_COUNT_SUFFIX: '개의 파일',
   CARD_MORE_ARIA: '더 보기',
