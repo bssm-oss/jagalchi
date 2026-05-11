@@ -1,0 +1,67 @@
+spring:
+  config:
+    import: optional:dotenv:.env
+  profiles:
+    active: local
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH_KEY}
+            scope: profile,email
+            redirect-uri: ${BASE_URL}/login/oauth2/code/google
+
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - read:user
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${REDIS_USER}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL}
+    password: ${GOOGLE_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+jwt:
+  secret: ${SECRET_KEY}
+
+front:
+  url: ${FRONT_URL}

@@ -1,0 +1,57 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: jagalchi-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-$$root_is_king$$}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-jagalchi_user}
+      MYSQL_USER: ${MYSQL_USER:-jagalchi}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-$$jagalchi_is_king$$}
+      TZ: ${TZ:-Asia/Seoul}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "${MYSQL_HOST:-localhost}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jagalchi-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jagalchi-server
+    env_file:
+      - env.list
+    environment:
+      DB_HOST: ${MYSQL_HOST:-jagalchi-mysql}
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-jagalchi_user}
+      DB_URL: jdbc:mysql://${MYSQL_HOST:-jagalchi-mysql}:3306/${MYSQL_DATABASE:-jagalchi_user}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: ${MYSQL_USER:-jagalchi}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-$$jagalchi_is_king$$}
+      BASE_URL: ${BASE_URL:-http://localhost:8080}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - jagalchi-network
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  jagalchi-network:
+    driver: bridge
