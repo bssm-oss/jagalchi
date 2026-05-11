@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URL:http://user.jagalchi.local:8081}
+          predicates:
+            - Path=/users/**
+          filters:
+            - RewritePath=/users/(?<segment>.*), /${segment}
+
+        - id: api-to-node
+          uri: ${NODE_SERVICE_URL:http://node.jagalchi.local:8082}
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /api/${segment}
+
+        - id: node-service-rest
+          uri: ${NODE_SERVICE_URL:http://node.jagalchi.local:8082}
+          predicates:
+            - Path=/node/**
+          filters:
+            - RewritePath=/node/(?<segment>.*), /${segment}
+
+        - id: node-service-websocket
+          uri: ${NODE_WS_URL:ws://node.jagalchi.local:8082}
+          predicates:
+            - Path=/ws/**
+          filters:
+            - RewritePath=/ws/(?<segment>.*), /${segment}
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+jwt:
+  secret: ${SECRET_KEY:your-secret-key-must-be-at-least-256-bits-long-for-hs512-algorithm}
