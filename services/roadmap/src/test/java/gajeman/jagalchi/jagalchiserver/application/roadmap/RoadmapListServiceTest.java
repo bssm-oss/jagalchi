@@ -63,7 +63,7 @@ class RoadmapListServiceTest {
 
         // when
         RoadmapListResponse result = roadmapService.getList(
-                null, 0, 10, "latest", null, null, null, null, null);
+                null, 0, 10, "latest", null, null, null, null, null, null);
 
         // then
         assertThat(result.getContent()).hasSize(1);
@@ -95,7 +95,7 @@ class RoadmapListServiceTest {
 
         // when
         RoadmapListResponse result = roadmapService.getList(
-                null, 0, 10, "latest", "Spring", null, null, null, null);
+                null, 0, 10, "latest", "Spring", null, null, null, null, null);
 
         // then
         assertThat(result.getContent()).hasSize(1);
@@ -127,7 +127,7 @@ class RoadmapListServiceTest {
 
         // when
         RoadmapListResponse result = roadmapService.getList(
-                null, 0, 10, "latest", null, null, null, null, List.of("spring", "backend"));
+                null, 0, 10, "latest", null, null, null, null, null, List.of("spring", "backend"));
 
         // then
         assertThat(result.getContent()).hasSize(1);
@@ -138,16 +138,16 @@ class RoadmapListServiceTest {
     void when_정렬값이_잘못되면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> roadmapService.getList(null, 0, 10, "wrong",
-                null, null, null, null, null))
+                null, null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("sort must be latest|popular|forks|views");
+                .hasMessage("sort must be latest|popular|forks|views|completion");
     }
 
     @Test
     void when_사이즈가_50을_초과하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> roadmapService.getList(null, 0, 51, "latest",
-                null, null, null, null, null))
+                null, null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("size must be <= 50");
     }
@@ -161,7 +161,7 @@ class RoadmapListServiceTest {
 
         // when
         RoadmapListResponse result = roadmapService.getList(
-                null, -1, 10, "latest", null, null, null, null, null);
+                null, -1, 10, "latest", null, null, null, null, null, null);
 
         // then
         assertThat(result.getPageable().getPageNumber()).isEqualTo(0);
@@ -176,7 +176,7 @@ class RoadmapListServiceTest {
 
         // when
         RoadmapListResponse result = roadmapService.getList(
-                null, 0, 0, "latest", null, null, null, null, null);
+                null, 0, 0, "latest", null, null, null, null, null, null);
 
         // then
         assertThat(result.getPageable().getPageSize()).isEqualTo(10);
