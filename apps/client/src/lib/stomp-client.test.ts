@@ -1,0 +1,178 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+const { mockSockJS } = vi.hoisted(() => ({
+  mockSockJS: vi.fn(function (this: Record<string, unknown>, url: string) {
+    this.url = url;
+  }),
+}));
+
+// Mock @stomp/stompjs Client as a class constructor
+const mockActivate = vi.fn();
+const mockDeactivate = vi.fn().mockResolvedValue(undefined);
+const mockSubscribe = vi.fn().mockReturnValue({ unsubscribe: vi.fn() });
+const mockPublish = vi.fn();
+
+vi.mock('@stomp/stompjs', () => {
+  const MockClient = vi.fn(function (
+    this: Record<string, unknown>,
+    config: Record<string, unknown>,
+  ) {
+    Object.assign(this, config);
+    this.connected = false;
+    this.active = false;
+    this.activate = mockActivate;
+    this.deactivate = mockDeactivate;
+    this.subscribe = mockSubscribe;
+    this.publish = mockPublish;
+    if (!this.connectHeaders) this.connectHeaders = {};
+  });
+  return { Client: MockClient };
+});
+
+vi.mock('sockjs-client', () => ({
+  default: mockSockJS,
+}));
+
+vi.mock('@/api/client', () => ({
+  getAccessToken: vi.fn().mockReturnValue('test-token'),
+}));
+
+import {
+  connectStomp,
+  createStompSocketUrl,
+  disconnectStomp,
+  getStompClient,
+  subscribeStomp,
+  publishStomp,
+} from './stomp-client';
+
+describe('stomp-client', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    // Reset singleton by disconnecting
+    await disconnectStomp();
+  });
+
+  describe('getStompClient', () => {
+    it('creates a new Client with correct config', () => {
+      const client = getStompClient();
+      expect(client).toBeDefined();
+      expect(client.webSocketFactory).toBeDefined();
+      expect(client.reconnectDelay).toBe(3000);
+      expect(client.heartbeatIncoming).toBe(10000);
+      expect(client.heartbeatOutgoing).toBe(10000);
+    });
+
+    it('creates a SockJS connection with access token in the URL', () => {
+      const client = getStompClient();
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(mockSockJS).toHaveBeenCalledWith(
+        'http://localhost:8082/ws/roadmap?access_token=test-token',
+      );
+      expect(socket?.url).toBe('http://localhost:8082/ws/roadmap?access_token=test-token');
+    });
+
+    it('appends access token with ampersand when URL already has query params', () => {
+      const url = createStompSocketUrl(
+        'https://api.jagalchi.dev/ws/roadmap?transport=sockjs',
+        'a+b',
+      );
+
+      expect(url).toBe('https://api.jagalchi.dev/ws/roadmap?transport=sockjs&access_token=a%2Bb');
+    });
+
+    it('adds roadmapId to the SockJS URL query when provided', () => {
+      const client = getStompClient({
+        roadmapId: '1',
+      });
+
+      const socket = client.webSocketFactory?.() as { url?: string } | undefined;
+
+      expect(socket?.url).toBe(
+        'http://localhost:8082/ws/roadmap?access_token=test-token&roadmapId=1',
+      );
+    });
+
+    it('passes only auth and roadmap headers to connectHeaders via beforeConnect', () => {
+      const client = getStompClient({
+        roadmapId: '1',
+      });
+
+      // Simulate beforeConnect callback
+      const beforeConnect = client.beforeConnect as (() => void) | undefined;
+      beforeConnect?.();
+
+      expect(client.connectHeaders).toEqual(
+        expect.objectContaining({
+          Authorization: 'Bearer test-token',
+          'X-Roadmap-ID': '1',
+        }),
+      );
+      expect(client.connectHeaders).not.toHaveProperty('X-User-ID');
+      expect(client.connectHeaders).not.toHaveProperty('X-User-Role');
+      expect(client.connectHeaders).not.toHaveProperty('X-Permissions');
+    });
+
+    it('omits headers when options not provided', () => {
+      const client = getStompClient();
+
+      const beforeConnect = client.beforeConnect as (() => void) | undefined;
+      beforeConnect?.();
+
+      expect(client.connectHeaders).toEqual(
+        expect.objectContaining({
+          Authorization: 'Bearer test-token',
+        }),
+      );
+      expect(client.connectHeaders).not.toHaveProperty('X-User-ID');
+    });
+  });
+
+  describe('connectStomp', () => {
+    it('activates the client', async () => {
+      await connectStomp();
+      expect(mockActivate).toHaveBeenCalled();
+    });
+  });
+
+  describe('disconnectStomp', () => {
+    it('deactivates and resets the client', async () => {
+      connectStomp();
+      await disconnectStomp();
+      // After disconnect, subscribe should return null (no client)
+      const result = subscribeStomp('/topic/test', vi.fn());
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('subscribeStomp', () => {
+    it('returns null when not connected', () => {
+      const result = subscribeStomp('/topic/test', vi.fn());
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('publishStomp', () => {
+    it('does nothing when not connected', () => {
+      publishStomp('/app/test', { data: 'hello' });
+      expect(mockPublish).not.toHaveBeenCalled();
+    });
+
+    it('sends message with provided non-identity headers when connected', () => {
+      // Need a connected client to test publish
+      const client = getStompClient();
+      // Simulate connected state
+      (client as unknown as Record<string, unknown>).connected = true;
+
+      publishStomp('/app/test', { data: 'hello' }, { 'X-Roadmap-ID': '42' });
+
+      expect(mockPublish).toHaveBeenCalledWith({
+        destination: '/app/test',
+        headers: { 'X-Roadmap-ID': '42' },
+        body: JSON.stringify({ data: 'hello' }),
+      });
+    });
+  });
+});
