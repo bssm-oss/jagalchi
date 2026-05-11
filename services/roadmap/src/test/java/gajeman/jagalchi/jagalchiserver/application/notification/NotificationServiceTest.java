@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,11 +62,13 @@ class NotificationServiceTest {
                 .nickname("owner")
                 .email("owner@test.com")
                 .build();
+        ReflectionTestUtils.setField(testUser, "id", 1L);
 
         testForker = User.builder()
                 .nickname("forker")
                 .email("forker@test.com")
                 .build();
+        ReflectionTestUtils.setField(testForker, "id", 2L);
 
         testRoadmap = Roadmap.builder()
                 .title("Test Roadmap")
@@ -119,7 +122,7 @@ class NotificationServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Notification> notificationPage = new PageImpl<>(List.of(testNotification), pageable, 1);
         
-        given(notificationRepository.findByUserId(1L, pageable)).willReturn(notificationPage);
+        given(notificationRepository.findByUserId(eq(1L), any(Pageable.class))).willReturn(notificationPage);
         given(notificationRepository.countByUserIdAndIsReadFalse(1L)).willReturn(1L);
 
         // when
