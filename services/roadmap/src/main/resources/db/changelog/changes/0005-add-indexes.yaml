@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0005-add-indexes
+      author: agent
+      changes:
+        # directories indexes
+        - createIndex:
+            indexName: idx_directories_owner_id
+            tableName: directories
+            columns:
+              - column:
+                  name: owner_id
+        - createIndex:
+            indexName: idx_directories_parent_id
+            tableName: directories
+            columns:
+              - column:
+                  name: parent_id
+
+        # roadmaps indexes
+        - createIndex:
+            indexName: idx_roadmaps_owner_id
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: owner_id
+        - createIndex:
+            indexName: idx_roadmaps_directory_id
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: directory_id
+        - createIndex:
+            indexName: idx_roadmaps_is_public
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: is_public
+
+        # roadmap_nodes indexes
+        - createIndex:
+            indexName: idx_roadmap_nodes_roadmap_id
+            tableName: roadmap_nodes
+            columns:
+              - column:
+                  name: roadmap_id
+
+        # roadmap_node_progress indexes
+        - createIndex:
+            indexName: idx_progress_roadmap_user
+            tableName: roadmap_node_progress
+            columns:
+              - column:
+                  name: roadmap_id
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_progress_node_id
+            tableName: roadmap_node_progress
+            columns:
+              - column:
+                  name: node_id

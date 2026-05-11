@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001-create-directories-table
+      author: agent
+      changes:
+        - createTable:
+            tableName: directories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: owner_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: directories
+            baseColumnNames: parent_id
+            referencedTableName: directories
+            referencedColumnNames: id
+            constraintName: fk_directories_parent
+            onDelete: SET NULL

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0011-add-fork-indexes
+      author: jagalchi
+      changes:
+        - createIndex:
+            indexName: idx_roadmaps_fork_count
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: fork_count
+        - createIndex:
+            indexName: idx_roadmaps_original_roadmap_id
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: original_roadmap_id
+        - createIndex:
+            indexName: idx_roadmaps_view_count
+            tableName: roadmaps
+            columns:
+              - column:
+                  name: view_count
