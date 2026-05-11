@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - README.md
+      - justfile
+      - .github/workflows/ci.yml
+      - apps/client/**
+      - services/ai/**
+      - services/api-gateway/**
+      - services/node/**
+      - services/roadmap/**
+      - services/user/**
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - justfile
+      - .github/workflows/ci.yml
+      - apps/client/**
+      - services/ai/**
+      - services/api-gateway/**
+      - services/node/**
+      - services/roadmap/**
+      - services/user/**
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      root: ${{ steps.filter.outputs.root }}
+      client: ${{ steps.filter.outputs.client }}
+      ai: ${{ steps.filter.outputs.ai }}
+      java: ${{ steps.filter.outputs.java }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            root:
+              - README.md
+              - justfile
+              - .github/workflows/ci.yml
+            client:
+              - apps/client/**
+            ai:
+              - services/ai/**
+            java:
+              - services/api-gateway/**
+              - services/node/**
+              - services/roadmap/**
+              - services/user/**
+
+  path-check:
+    name: Path checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.client == 'true' || needs.changes.outputs.ai == 'true' || needs.changes.outputs.java == 'true'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify monorepo paths
+        run: |
+          test -d apps/client
+          test -f apps/client/package.json
+          test -f apps/client/pnpm-lock.yaml
+          test -d services/ai
+          test -f services/ai/requirements.txt
+          test -f services/ai/manage.py
+          for service in api-gateway node roadmap user; do
+            test -d "services/$service"
+            test -f "services/$service/gradlew"
+            test -f "services/$service/build.gradle"
+            test -f "services/$service/settings.gradle"
+          done
+
+  client:
+    name: Client checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.client == 'true'
+    defaults:
+      run:
+        working-directory: apps/client
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 25
+          cache: pnpm
+          cache-dependency-path: apps/client/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test:run
+
+      - name: Build
+        run: pnpm build
+
+  ai:
+    name: AI service checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.ai == 'true'
+    defaults:
+      run:
+        working-directory: services/ai
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: services/ai/requirements.txt
+
+      - name: Install mysqlclient build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential default-libmysqlclient-dev pkg-config
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile Python files
+        run: python -m compileall manage.py jagalchi_ai
+
+      - name: Django check
+        run: python manage.py check
+
+  java:
+    name: Java service checks (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.java == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - api-gateway
+          - node
+          - roadmap
+          - user
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+
+      - name: Test
+        run: ./gradlew test
+
+      - name: Build
+        run: ./gradlew build
