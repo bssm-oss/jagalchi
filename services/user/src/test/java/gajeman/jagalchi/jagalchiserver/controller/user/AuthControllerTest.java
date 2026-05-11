@@ -8,7 +8,6 @@
     import gajeman.jagalchi.jagalchiserver.presentation.auth.AuthController;
     import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.ChangePasswordRequest;
     import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.LoginRequest;
-    import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.RefreshTokenRequest;
     import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.request.SignUpRequest;
     import gajeman.jagalchi.jagalchiserver.presentation.auth.dto.response.SignUpResponse;
     import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@
     import org.springframework.test.context.ActiveProfiles;
     import org.springframework.test.context.bean.override.mockito.MockitoBean;
     import org.springframework.test.web.servlet.MockMvc;
+    import jakarta.servlet.http.Cookie;
     import tools.jackson.databind.ObjectMapper;
 
     import static org.mockito.ArgumentMatchers.any;
@@ -120,7 +120,6 @@
         @Test
         void 리프레시_토큰으로_재발급한다() throws Exception {
             // given
-            RefreshTokenRequest request = new RefreshTokenRequest("refresh-token");
             LoginResult mockResult = LoginResult.from("new-access-token", "new-refresh-token");
 
             when(refreshAccessTokenCommand.refreshAccessToken(anyString())).thenReturn(mockResult);
@@ -128,8 +127,8 @@
 
             // when & then
             mockMvc.perform(patch("/users/auth/refresh")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
+                            .cookie(new Cookie("refreshToken", "refresh-token"))
+                            .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.accessToken").value("new-access-token"));
         }
