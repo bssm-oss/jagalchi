@@ -2,14 +2,6 @@ name: Dependency Review
 
 on:
   pull_request:
-    paths:
-      - .github/workflows/dependency-review.yml
-      - apps/client/package.json
-      - apps/client/pnpm-lock.yaml
-      - services/ai/requirements.txt
-      - services/**/build.gradle
-      - services/**/settings.gradle
-      - services/**/gradle/wrapper/gradle-wrapper.properties
   workflow_dispatch:
 
 permissions:

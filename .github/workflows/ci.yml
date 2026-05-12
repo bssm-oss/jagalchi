@@ -2,29 +2,9 @@ name: CI
 
 on:
   pull_request:
-    paths:
-      - README.md
-      - justfile
-      - .github/workflows/ci.yml
-      - apps/client/**
-      - services/ai/**
-      - services/api-gateway/**
-      - services/node/**
-      - services/roadmap/**
-      - services/user/**
   push:
     branches:
       - main
-    paths:
-      - README.md
-      - justfile
-      - .github/workflows/ci.yml
-      - apps/client/**
-      - services/ai/**
-      - services/api-gateway/**
-      - services/node/**
-      - services/roadmap/**
-      - services/user/**
 
 permissions:
   contents: read
