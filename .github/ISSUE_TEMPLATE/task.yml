@@ -1,0 +1,51 @@
+name: Task or docs
+description: Track repository maintenance, docs, CI, or refactoring work.
+title: "chore: "
+labels:
+  - chore
+  - triage
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - docs
+        - ci
+        - repo/tooling
+        - apps/client
+        - services/ai
+        - services/api-gateway
+        - services/node
+        - services/roadmap
+        - services/user
+        - multiple areas
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be improved or cleaned up?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      value: |
+        Included:
+        -
+
+        Excluded:
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Commands, review checks, or manual verification expected before closing.
+      placeholder: just validate
+    validations:
+      required: true

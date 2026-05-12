@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a reproducible defect.
+title: "fix: "
+labels:
+  - bug
+  - triage
+body:
+  - type: checkboxes
+    id: existing-issue
+    attributes:
+      label: Existing issue
+      description: Search open and closed issues before filing a duplicate.
+      options:
+        - label: I checked for an existing issue.
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - apps/client
+        - services/ai
+        - services/api-gateway
+        - services/node
+        - services/roadmap
+        - services/user
+        - repo/tooling
+        - unknown
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken, and what did you expect instead?
+      placeholder: The user cannot ... Expected ...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, request payloads, route names, or UI steps.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Add versions only when relevant.
+      value: |
+        - OS:
+        - Browser:
+        - Node:
+        - Python:
+        - Java:
+      render: markdown
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste logs, stack traces, screenshots, or CI links.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Done when
+      description: What must be true for this bug to be fixed?
+      placeholder: |
+        - The failing flow works.
+        - Regression coverage exists or the reason for no test is documented.
+    validations:
+      required: true

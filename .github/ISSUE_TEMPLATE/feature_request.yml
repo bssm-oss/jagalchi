@@ -1,0 +1,84 @@
+name: Feature request
+description: Propose a scoped product or platform change.
+title: "feat: "
+labels:
+  - enhancement
+  - triage
+body:
+  - type: checkboxes
+    id: existing-issue
+    attributes:
+      label: Existing issue
+      options:
+        - label: I checked for an existing issue or overlapping request.
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - apps/client
+        - services/ai
+        - services/api-gateway
+        - services/node
+        - services/roadmap
+        - services/user
+        - repo/tooling
+        - multiple areas
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: One sentence describing the user or maintainer outcome.
+      placeholder: Users can ... so that ...
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Be explicit about what is included and excluded.
+      value: |
+        Included:
+        -
+
+        Excluded:
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: api-policy
+    attributes:
+      label: API, policy, or data changes
+      description: List routes, payloads, auth/permission rules, database changes, or external API changes.
+      placeholder: |
+        - Method/path:
+        - Request/response:
+        - Permission:
+        - Data model:
+    validations:
+      required: false
+  - type: textarea
+    id: edge-cases
+    attributes:
+      label: Edge cases
+      description: List expected failures, boundary cases, or invalid states.
+      placeholder: |
+        -
+        -
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      description: Checklist for completion.
+      value: |
+        - Implementation is complete for the scoped area.
+        - Tests or documented verification cover the change.
+        - README or API docs are updated if behavior changes.
+    validations:
+      required: true
