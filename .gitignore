@@ -1,0 +1,10 @@
+# Local environment
+.envrc
+.direnv/
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# macOS
+.DS_Store
