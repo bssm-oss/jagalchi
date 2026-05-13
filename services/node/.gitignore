@@ -41,6 +41,10 @@ out/
 
 ### env ###
 .env
+.env.*
+!.env.example
+!.env.*.example
+env.list
 
 # Local test scripts and node client (should not be committed)
 node_modules/
